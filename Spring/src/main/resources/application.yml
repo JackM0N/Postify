@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: Postify
+  jackson:
+    time-zone: Europe/Warsaw
+    serialization:
+      fail-on-empty-beans: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postify
+    username: postgres
+    password: 123456
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+          show_sql: false
+          format_sql: true
+          use_sql_comments: false
+          ddl-auto: none
+          default_auto_commit: false
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.xml
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web:
+          filter:
+            OncePerRequestFilter: DEBUG
