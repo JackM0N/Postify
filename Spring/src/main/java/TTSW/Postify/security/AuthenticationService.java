@@ -12,7 +12,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
 import java.util.Collections;
 
 @Service
@@ -28,8 +27,6 @@ public class AuthenticationService {
     public AuthenticationResponse register(WebsiteUserDTO request) {
         WebsiteUser user = websiteUserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setJoinDate(LocalDate.now());
-        user.setProfilePictureUrl(null);
 
         Role role = roleRepository.findByRoleName("USER")
                 .orElseThrow(() -> new RuntimeException("Role not found"));
