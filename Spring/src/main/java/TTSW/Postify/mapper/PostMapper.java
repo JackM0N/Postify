@@ -6,7 +6,7 @@ import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PostMapper {
-    @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
     Post toEntity(PostDTO postDTO);
@@ -40,6 +40,6 @@ public interface PostMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "description", target = "description")
-    @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     Post partialUpdate(PostDTO postDTO, @MappingTarget Post post);
 }
