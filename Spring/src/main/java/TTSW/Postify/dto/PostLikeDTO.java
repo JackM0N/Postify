@@ -15,8 +15,10 @@ import java.io.Serializable;
 @Setter
 public class PostLikeDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO user;
+
     @NotNull
     PostDTO post;
 }

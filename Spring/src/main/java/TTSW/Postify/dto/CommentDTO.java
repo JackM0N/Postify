@@ -16,14 +16,20 @@ import java.time.LocalDateTime;
 @Setter
 public class CommentDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO user;
+
     @NotNull
     PostDTO post;
+
     @NotNull
     CommentDTO parentComment;
+
     @NotNull
     String text;
+
     LocalDateTime createdAt;
+
     LocalDateTime updatedAt;
 }

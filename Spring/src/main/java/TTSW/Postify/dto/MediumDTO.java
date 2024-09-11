@@ -12,11 +12,14 @@ import java.io.Serializable;
 @Value
 public class MediumDTO implements Serializable {
     Long id;
+
     @NotNull
     PostDTO post;
+
     @NotNull
     @Size(max = 255)
     String mediumUrl;
+
     @NotNull
     @Size(max = 50)
     String mediumType;

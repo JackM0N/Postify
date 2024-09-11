@@ -17,15 +17,25 @@ import java.util.Set;
 @Setter
 public class PostDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO user;
+
     String description;
+
     LocalDateTime createdAt;
+
     LocalDateTime updatedAt;
+
     LocalDateTime deletedAt;
+
     Set<CommentDTO> comments;
+
     Set<HashtagDTO> hashtags;
+
     Set<MediumDTO> media;
+
     Set<NotificationDTO> notifications;
+
     Set<PostLikeDTO> postLikes;
 }
