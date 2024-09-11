@@ -25,7 +25,7 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private WebsiteUser user;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description", length = 3000)
     private String description;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
