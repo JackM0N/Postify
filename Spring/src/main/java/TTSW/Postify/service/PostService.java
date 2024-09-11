@@ -3,7 +3,6 @@ package TTSW.Postify.service;
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.filter.PostFilter;
-import TTSW.Postify.mapper.MediumMapper;
 import TTSW.Postify.mapper.PostMapper;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,6 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final WebsiteUserRepository websiteUserRepository;
-    private final MediumMapper mediumMapper;
     private final MediumRepository mediumRepository;
 
     @Value("${directory.media}")
