@@ -31,3 +31,5 @@ logging:
         web:
           filter:
             OncePerRequestFilter: DEBUG
+directory:
+  media: ../Media/

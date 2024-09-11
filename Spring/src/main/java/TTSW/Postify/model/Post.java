@@ -2,6 +2,7 @@ package TTSW.Postify.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -45,6 +46,7 @@ public class Post {
     private Set<Hashtag> hashtags = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "post")
+    @Size(min = 1, message = "Post must contain at least one media")
     private Set<Medium> media = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "post")

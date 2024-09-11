@@ -3,6 +3,7 @@ package TTSW.Postify.dto;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Value;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
@@ -23,4 +24,6 @@ public class MediumDTO implements Serializable {
     @NotNull
     @Size(max = 50)
     String mediumType;
+
+    public MultipartFile file;
 }
