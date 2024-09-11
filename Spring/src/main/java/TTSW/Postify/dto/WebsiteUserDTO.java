@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -28,6 +28,6 @@ public class WebsiteUserDTO implements Serializable {
     String bio;
     @Size(max = 255)
     String profilePictureUrl;
-    LocalDate joinDate;
+    LocalDateTime joinDate;
     List<RoleDTO> roles;
 }
