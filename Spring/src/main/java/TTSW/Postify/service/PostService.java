@@ -21,10 +21,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +35,8 @@ public class PostService {
     private final WebsiteUserRepository websiteUserRepository;
     private final MediumRepository mediumRepository;
 
-    @Value("${directory.media}")
-    private final String mediaDirectory = "../Media/";
+    @Value("${directory.media.posts}")
+    private final String mediaDirectory = "../Media/posts/";
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);
@@ -83,6 +84,7 @@ public class PostService {
         }
 
         Post post = postMapper.toEntity(postDTO);
+        //TODO: Change to currentUser once created
         post.setUser(websiteUserRepository.findById(postDTO.getUser().getId())
                 .orElseThrow(() -> new RuntimeException("User not found")));
         postRepository.save(post);
@@ -93,7 +95,7 @@ public class PostService {
             postDir.mkdirs();
         }
 
-        Set<Medium> media = new LinkedHashSet<>();
+        List<Medium> media = new ArrayList<>();
         int index = 0;
 
         for (MediumDTO mediumDTO : postDTO.getMedia()) {
@@ -101,10 +103,9 @@ public class PostService {
             if (file != null && !file.isEmpty()) {
                 String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
                 String filename = "post_" + post.getId() + "_media_" + index + "." + extension;
-                String filePath = baseDir + "/" + filename;
 
-                File dest = new File(filePath);
-                file.transferTo(dest);
+                Path filePath = Paths.get(baseDir, filename);
+                Files.copy(file.getInputStream(), filePath);
 
                 Medium medium = new Medium();
                 medium.setPost(post);
@@ -112,10 +113,13 @@ public class PostService {
                 medium.setMediumUrl(baseDir + "/" + filename);
 
                 media.add(medium);
+                mediumRepository.save(medium);
                 index++;
             }
         }
-        mediumRepository.saveAll(media);
+
+        post.setMedia(media);
+        postRepository.save(post);
 
         return postMapper.toDto(post);
     }

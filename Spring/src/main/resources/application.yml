@@ -23,6 +23,11 @@ spring:
   liquibase:
     enabled: true
     change-log: db/changelog/db.changelog-master.xml
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
 logging:
   level:
     org:
@@ -32,4 +37,5 @@ logging:
           filter:
             OncePerRequestFilter: DEBUG
 directory:
-  media: ../Media/
+  media:
+    posts: ../Media/posts/

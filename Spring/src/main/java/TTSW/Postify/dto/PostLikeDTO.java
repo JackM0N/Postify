@@ -20,5 +20,5 @@ public class PostLikeDTO implements Serializable {
     WebsiteUserDTO user;
 
     @NotNull
-    PostDTO post;
+    Long postID;
 }

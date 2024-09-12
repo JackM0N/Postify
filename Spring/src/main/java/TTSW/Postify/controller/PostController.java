@@ -24,7 +24,7 @@ public class PostController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) throws IOException {
+    public ResponseEntity<PostDTO> createPost(@ModelAttribute PostDTO postDTO) throws IOException {
         return ResponseEntity.ok(postService.createPost(postDTO));
     }
 

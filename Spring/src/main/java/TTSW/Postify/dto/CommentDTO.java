@@ -21,7 +21,7 @@ public class CommentDTO implements Serializable {
     WebsiteUserDTO user;
 
     @NotNull
-    PostDTO post;
+    Long postId;
 
     @NotNull
     CommentDTO parentComment;

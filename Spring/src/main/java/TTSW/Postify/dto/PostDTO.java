@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,9 +34,7 @@ public class PostDTO implements Serializable {
 
     Set<HashtagDTO> hashtags;
 
-    Set<MediumDTO> media;
-
-    Set<NotificationDTO> notifications;
+    List<MediumDTO> media;
 
     Set<PostLikeDTO> postLikes;
 }

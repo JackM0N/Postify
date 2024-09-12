@@ -8,7 +8,9 @@ import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -47,7 +49,7 @@ public class Post {
 
     @OneToMany(mappedBy = "post")
     @Size(min = 1, message = "Post must contain at least one media")
-    private Set<Medium> media = new LinkedHashSet<>();
+    private List<Medium> media = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     private Set<Notification> notifications = new LinkedHashSet<>();
