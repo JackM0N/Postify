@@ -16,9 +16,11 @@ import java.io.Serializable;
 @Getter
 public class HashtagDTO implements Serializable {
     Long id;
+
     @NotNull
     @Size(max = 100)
     String hashtag;
+
     @NotNull
     PostDTO post;
 }

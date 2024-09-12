@@ -17,17 +17,25 @@ import java.util.List;
 @Getter
 public class WebsiteUserDTO implements Serializable {
     Long id;
+
     @Size(max = 50)
     String username;
+
     @Size(max = 100)
     String email;
+
     @Size(max = 255)
     String password;
+
     @Size(max = 100)
     String fullName;
+
     String bio;
+
     @Size(max = 255)
     String profilePictureUrl;
+
     LocalDateTime joinDate;
+
     List<RoleDTO> roles;
 }

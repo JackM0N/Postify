@@ -16,14 +16,20 @@ import java.time.LocalDateTime;
 @Setter
 public class MessageDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO sender;
+
     @NotNull
     WebsiteUserDTO receiver;
+
     @NotNull
     String messageText;
+
     @NotNull
     Boolean isRead;
+
     LocalDateTime createdAt;
+
     LocalDateTime updatedAt;
 }

@@ -2,12 +2,15 @@ package TTSW.Postify.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -25,7 +28,7 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private WebsiteUser user;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(name = "description", length = 3000)
     private String description;
 
     @ColumnDefault("CURRENT_TIMESTAMP")
@@ -45,7 +48,8 @@ public class Post {
     private Set<Hashtag> hashtags = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "post")
-    private Set<Medium> media = new LinkedHashSet<>();
+    @Size(min = 1, message = "Post must contain at least one media")
+    private List<Medium> media = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     private Set<Notification> notifications = new LinkedHashSet<>();
