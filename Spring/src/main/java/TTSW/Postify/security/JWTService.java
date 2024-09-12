@@ -17,7 +17,7 @@ public class JWTService {
     public String generateToken(WebsiteUser user) {
         return Jwts
                 .builder()
-                .subject(user.getUsername())
+                .subject(user.getEmail())
                 .claim("username", user.getUsername())
                 .claim("roles", user.getRoles())
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -44,13 +44,13 @@ public class JWTService {
         return claimsResolver.apply(claims);
     }
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaims(token, Claims::getSubject);
     }
 
     public boolean validateToken(String token, UserDetails user) {
-        String username = extractClaims(token, Claims::getSubject);
-        return (username.equals(user.getUsername())) && !isTokenExpired(token);
+        String email = extractEmail(token);
+        return (email.equals(user.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
