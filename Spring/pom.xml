@@ -107,6 +107,12 @@
 			<artifactId>mapstruct-processor</artifactId>
 			<version>1.5.5.Final</version>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-suite</artifactId>
+			<version>1.11.0-M1</version>
+			<scope>test</scope>
+		</dependency>
 
 	</dependencies>
 
