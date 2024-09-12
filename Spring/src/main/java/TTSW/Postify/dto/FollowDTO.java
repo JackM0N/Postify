@@ -16,9 +16,12 @@ import java.time.LocalDateTime;
 @Setter
 public class FollowDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO follower;
+
     @NotNull
     WebsiteUserDTO followed;
+
     LocalDateTime createdAt;
 }

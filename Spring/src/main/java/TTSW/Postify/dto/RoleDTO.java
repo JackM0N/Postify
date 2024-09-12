@@ -15,6 +15,7 @@ import java.io.Serializable;
 @Getter
 public class RoleDTO implements Serializable {
     Long id;
+
     @Size(max = 50)
     String roleName;
 }

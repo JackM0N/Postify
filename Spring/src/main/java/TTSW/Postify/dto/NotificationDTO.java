@@ -17,16 +17,23 @@ import java.time.LocalDateTime;
 @Setter
 public class NotificationDTO implements Serializable {
     Long id;
+
     @NotNull
     WebsiteUserDTO user;
+
     @NotNull
     WebsiteUserDTO triggeredBy;
+
     @NotNull
     @Size(max = 50)
     String notificationType;
+
     PostDTO post;
+
     CommentDTO comment;
+
     @NotNull
     Boolean isRead;
+
     LocalDateTime createdAt;
 }
