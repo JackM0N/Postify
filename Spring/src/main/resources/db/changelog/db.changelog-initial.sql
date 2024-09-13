@@ -107,3 +107,8 @@ CREATE TABLE hashtag
     post_id    BIGINT       NOT NULL REFERENCES post (post_id)
 );
 
+
+--changeset Stanislaw:2 labels:init,fix
+ALTER TABLE website_user
+    ADD COLUMN deleted_at TIMESTAMP;
+
