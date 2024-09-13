@@ -16,4 +16,5 @@ public class WebsiteUserFilter {
     private LocalDate joinDateTo;
     List<Long> roleIds;
     String searchText;
+    Boolean isDeleted;
 }

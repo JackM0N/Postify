@@ -33,7 +33,7 @@ public class WebsiteUserController {
     }
 
     @PutMapping("/edit-profile")
-    private ResponseEntity<WebsiteUserDTO> editProfile(@RequestBody WebsiteUserDTO websiteUserDTO) throws IOException {
+    private ResponseEntity<WebsiteUserDTO> editProfile(@ModelAttribute WebsiteUserDTO websiteUserDTO) throws IOException {
         return ResponseEntity.ok(websiteUserService.editWebsiteUser(websiteUserDTO));
     }
 

@@ -33,10 +33,10 @@ public class SecurityConfig {
                         .requestMatchers("/user/list")
                         .hasRole("ADMIN")
 
-                        .requestMatchers("/user/delete/**")
+                        .requestMatchers("/user/delete/**", "/user/edit-profile")
                         .hasAnyRole("USER", "ADMIN")
 
-                        .requestMatchers("/post/**", "/user/edit-profile")
+                        .requestMatchers("/post/**")
                         .hasRole("USER")
 
                         .requestMatchers("/register", "/login", "/user/{username}")

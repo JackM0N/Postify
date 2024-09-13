@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +38,13 @@ public class WebsiteUserService {
 
     public Page<WebsiteUserDTO> getWebsiteUsers(WebsiteUserFilter websiteUserFilter, Pageable pageable) {
         Specification<WebsiteUser> spec = Specification.where(null);
+        if (websiteUserFilter.getIsDeleted() != null){
+            if (websiteUserFilter.getIsDeleted()){
+                spec = spec.and((root, query, builder) -> builder.isNotNull(root.get("deletedAt")));
+            }else {
+                spec = spec.and((root, query, builder) -> builder.isNull(root.get("deletedAt")));
+            }
+        }
         if (websiteUserFilter.getJoinDateFrom() != null) {
             spec = spec.and((root, query, builder) -> builder
                     .greaterThanOrEqualTo(root.get("joinDate"), websiteUserFilter.getJoinDateFrom()));
@@ -84,6 +92,12 @@ public class WebsiteUserService {
         WebsiteUser websiteUser = getCurrentUser();
         websiteUser = websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
         if (websiteUserDTO.getProfilePicture() != null) {
+
+            if (!Files.exists(Paths.get(mediaDirectory))) {
+                File dirFile = new File(mediaDirectory);
+                dirFile.mkdirs();
+            }
+
             MultipartFile file = websiteUserDTO.getProfilePicture();
             String filename = "pfp_" + websiteUser.getUsername() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(mediaDirectory, filename);
@@ -102,6 +116,9 @@ public class WebsiteUserService {
                 .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
         boolean isAuthor = currentUser.equals(websiteUser);
         if (isAdmin || isAuthor) {
+            if (websiteUser.getDeletedAt() != null) {
+                throw new BadRequestException("This user does not exist or already got deleted");
+            }
             websiteUser.setDeletedAt(LocalDateTime.now());
             websiteUserRepository.save(websiteUser);
             return true;
