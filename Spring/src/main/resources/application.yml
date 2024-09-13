@@ -39,3 +39,4 @@ logging:
 directory:
   media:
     posts: ../Media/posts/
+    profilePictures: ../Media/profilePictures/

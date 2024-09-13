@@ -32,10 +32,10 @@ public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final MediumRepository mediumRepository;
+    private final WebsiteUserService websiteUserService;
 
     @Value("${directory.media.posts}")
     private final String mediaDirectory = "../Media/posts/";
-    private final WebsiteUserService websiteUserService;
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);
@@ -137,7 +137,7 @@ public class PostService {
         return true;
     }
 
-        private String getFileExtension(String filename) {
-            return filename.substring(filename.lastIndexOf('.') + 1);
-        }
+    private String getFileExtension(String filename) {
+        return filename.substring(filename.lastIndexOf('.') + 1);
+    }
 }
