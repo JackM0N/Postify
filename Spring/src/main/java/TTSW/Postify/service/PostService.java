@@ -8,7 +8,6 @@ import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
-import TTSW.Postify.repository.WebsiteUserRepository;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +31,11 @@ import java.util.*;
 public class PostService {
     private final PostRepository postRepository;
     private final PostMapper postMapper;
-    private final WebsiteUserRepository websiteUserRepository;
     private final MediumRepository mediumRepository;
 
     @Value("${directory.media.posts}")
     private final String mediaDirectory = "../Media/posts/";
+    private final WebsiteUserService websiteUserService;
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);
@@ -83,10 +82,13 @@ public class PostService {
             throw new RuntimeException("Post must contain at least one piece of media (photo or video)");
         }
 
+        if (!Files.exists(Paths.get(mediaDirectory))) {
+            File dirFile = new File(mediaDirectory);
+            dirFile.mkdirs();
+        }
+
         Post post = postMapper.toEntity(postDTO);
-        //TODO: Change to currentUser once created
-        post.setUser(websiteUserRepository.findById(postDTO.getUser().getId())
-                .orElseThrow(() -> new RuntimeException("User not found")));
+        post.setUser(websiteUserService.getCurrentUser());
         postRepository.save(post);
 
         String baseDir = mediaDirectory + post.getId();
