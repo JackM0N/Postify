@@ -82,11 +82,6 @@ public class PostService {
             throw new RuntimeException("Post must contain at least one piece of media (photo or video)");
         }
 
-        if (!Files.exists(Paths.get(mediaDirectory))) {
-            File dirFile = new File(mediaDirectory);
-            dirFile.mkdirs();
-        }
-
         Post post = postMapper.toEntity(postDTO);
         post.setUser(websiteUserService.getCurrentUser());
         postRepository.save(post);
