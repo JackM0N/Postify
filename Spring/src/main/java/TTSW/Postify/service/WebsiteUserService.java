@@ -9,6 +9,7 @@ import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.IAuthenticationFacade;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -72,7 +73,10 @@ public class WebsiteUserService {
 
     public WebsiteUserDTO getWebsiteUser(String username) {
         WebsiteUser websiteUser = websiteUserRepository.findByUsername(username)
-                .orElseThrow(() -> new BadCredentialsException("Invalid username"));
+                .orElse(null);
+        if (websiteUser == null || websiteUser.getDeletedAt() != null) {
+            throw new RuntimeException("This user does not exist or got deleted");
+        }
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
@@ -90,12 +94,20 @@ public class WebsiteUserService {
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
-    public boolean deleteWebsiteUser(Long id){
+    public boolean deleteWebsiteUser(Long id) throws BadRequestException {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
-        websiteUser.setDeletedAt(LocalDateTime.now());
-        websiteUserRepository.save(websiteUser);
-        return true;
+        WebsiteUser currentUser = getCurrentUser();
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
+        boolean isAuthor = currentUser.equals(websiteUser);
+        if (isAdmin || isAuthor) {
+            websiteUser.setDeletedAt(LocalDateTime.now());
+            websiteUserRepository.save(websiteUser);
+            return true;
+        }else {
+            throw new BadRequestException("You dont have permission to perform this action");
+        }
     }
 
     public WebsiteUser getCurrentUser() {

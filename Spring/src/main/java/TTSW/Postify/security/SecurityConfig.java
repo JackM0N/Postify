@@ -30,10 +30,16 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/post/**")
+                        .requestMatchers("/user/list")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/user/delete/**")
+                        .hasAnyRole("USER", "ADMIN")
+
+                        .requestMatchers("/post/**", "/user/edit-profile")
                         .hasRole("USER")
 
-                        .requestMatchers("/register", "/login")
+                        .requestMatchers("/register", "/login", "/user/{username}")
                         .permitAll()
 
                         .anyRequest()

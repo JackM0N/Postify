@@ -38,6 +38,8 @@ public class WebsiteUserDTO implements Serializable {
 
     LocalDateTime joinDate;
 
+    LocalDateTime deletedAt;
+
     List<RoleDTO> roles;
 
     MultipartFile profilePicture;
