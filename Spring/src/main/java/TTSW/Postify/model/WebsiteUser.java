@@ -59,4 +59,7 @@ public class WebsiteUser {
     )
     private List<Role> roles = new ArrayList<>();
 
+    @Column(name="deleted_at")
+    private LocalDateTime deletedAt;
+
 }
