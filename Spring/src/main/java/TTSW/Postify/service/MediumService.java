@@ -1,0 +1,128 @@
+package TTSW.Postify.service;
+
+import TTSW.Postify.dto.MediumDTO;
+import TTSW.Postify.dto.PostDTO;
+import TTSW.Postify.mapper.PostMapper;
+import TTSW.Postify.model.Medium;
+import TTSW.Postify.model.Post;
+import TTSW.Postify.model.WebsiteUser;
+import TTSW.Postify.repository.MediumRepository;
+import TTSW.Postify.repository.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+@Service
+@RequiredArgsConstructor
+public class MediumService {
+    private final MediumRepository mediumRepository;
+    private final PostRepository postRepository;
+
+    @Value("${directory.media.posts}")
+    private final String mediaDirectory = "../Media/posts/";
+    private final PostMapper postMapper;
+    private final WebsiteUserService websiteUserService;
+
+    public List<byte[]> getMediaForPost(Long id) throws IOException {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        List<Medium> media = post.getMedia();
+        List<byte[]> mediaBytes = new ArrayList<>();
+        for (Medium medium : media) {
+            Path mediaPath = Paths.get(medium.getMediumUrl());
+            mediaBytes.add(Files.readAllBytes(mediaPath));
+        }
+        return mediaBytes;
+    }
+
+    public PostDTO addMediumAtIndex(Integer index, MediumDTO mediumDTO) throws IOException {
+        Post post = postRepository.findById(mediumDTO.getPostId())
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        List<Medium> media = post.getMedia();
+
+        MultipartFile file = mediumDTO.getFile();
+        String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+        String filename = getFileName(post.getId(), index, extension);
+
+        String baseDir = mediaDirectory + post.getId();
+
+        Medium newMedium = new Medium();
+        newMedium.setPost(post);
+        newMedium.setMediumType(mediumDTO.getMediumType());
+        newMedium.setMediumUrl(baseDir + "/" + filename);
+
+        Path filePath = Paths.get(baseDir, filename);
+        Files.copy(file.getInputStream(), filePath);
+
+        media.add(index,newMedium);
+        mediumRepository.save(newMedium);
+
+        int i = 0;
+        for (Medium medium : media) {
+            String newExtension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
+            String newFilename = getFileName(post.getId(), i, newExtension);
+            medium.setMediumUrl(baseDir + "/" + newFilename);
+            i++;
+        }
+
+        mediumRepository.saveAll(media);
+        post.setMedia(media);
+        postRepository.save(post);
+        return postMapper.toDto(post);
+    }
+
+    private String getFileExtension(String filename) {
+        return filename.substring(filename.lastIndexOf('.') + 1);
+    }
+
+    private String getFileName(Long postId,int index, String extension) {
+        return "post_" + postId + "_media_" + index + "." + extension;
+    }
+
+    public PostDTO updateMedium(MediumDTO mediumDTO) throws IOException {
+        Post post = postRepository.findById(mediumDTO.getPostId())
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        if(currentUser.equals(post.getUser())) {
+            Medium medium = post.getMedia().get(Math.toIntExact(mediumDTO.getId()));
+            medium.setMediumType(mediumDTO.getMediumType());
+            if (mediumDTO.getFile() == null){
+                throw new EntityNotFoundException("File not found");
+            }
+            Path filePath = Paths.get(medium.getMediumUrl());
+            Files.deleteIfExists(filePath);
+            Files.copy(mediumDTO.getFile().getInputStream(), filePath);
+            mediumRepository.save(medium);
+            return postMapper.toDto(post);
+        }else {
+            throw new AccessDeniedException("You do not have permission to update this medium");
+        }
+    }
+
+    public boolean deleteMedium(MediumDTO mediumDTO) throws IOException {
+        Post post = postRepository.findById(mediumDTO.getPostId())
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
+        boolean isAuthor = currentUser.equals(post.getUser());
+        if (isAdmin || isAuthor) {
+            post.getMedia().remove(Math.toIntExact(mediumDTO.getId()));
+            postRepository.save(post);
+            return true;
+        }else {
+            throw new AccessDeniedException("You do not have permission to delete this medium");
+        }
+    }
+}
