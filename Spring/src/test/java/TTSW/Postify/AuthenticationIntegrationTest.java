@@ -32,7 +32,7 @@ public class AuthenticationIntegrationTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void register_newUser_success() {
+    void testRegister_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setUsername("newuser");
         request.setEmail("newuser@example.com");
@@ -49,7 +49,7 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void register_existingEmail_fail() {
+    void testRegister_MailAlreadyUsed() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("123456");
@@ -58,7 +58,7 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_existingUser_success() {
+    void testAuthenticate_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("123456");
@@ -69,7 +69,7 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_invalidCredentials_fail() {
+    void testAuthenticate_InvalidCredentials() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("iForgor");
@@ -78,7 +78,7 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_nonExistentUser_fail() {
+    void testAuthenticate_NoSuchUser() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("nonexistent@example.com");
         request.setPassword("password");
