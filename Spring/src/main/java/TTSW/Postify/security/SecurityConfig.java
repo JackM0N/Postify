@@ -34,13 +34,15 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
 
                         .requestMatchers("/user/delete/**", "/user/edit-profile", "/medium/delete/**",
-                                "/user/edit-profile/**")
+                                "/user/edit-profile/**", "/comment/create/**", "/comment/edit/**",
+                                "/comment/delete/**")
                         .hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers("/post/**","/medium/add/**", "/medium/update/**")
                         .hasRole("USER")
 
-                        .requestMatchers("/register", "/login", "/user/{username}", "/medium/list/**")
+                        .requestMatchers("/register", "/login", "/user/{username}", "/medium/list/**",
+                                "/comment/post/**")
                         .permitAll()
 
                         .anyRequest()
