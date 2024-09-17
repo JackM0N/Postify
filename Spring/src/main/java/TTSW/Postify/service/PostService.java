@@ -6,6 +6,7 @@ import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.mapper.PostMapper;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
+import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import jakarta.persistence.criteria.Root;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -121,20 +123,33 @@ public class PostService {
         return postMapper.toDto(post);
     }
 
-    public PostDTO updatePost(Long id, PostDTO postDTO) {
+    public PostDTO updatePost(Long id, PostDTO postDTO) throws AccessDeniedException {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        post = postMapper.partialUpdate(postDTO, post);
-        postRepository.save(post);
-        return postMapper.toDto(post);
+        if(currentUser.equals(post.getUser())) {
+            post = postMapper.partialUpdate(postDTO, post);
+            postRepository.save(post);
+            return postMapper.toDto(post);
+        }else {
+            throw new AccessDeniedException("You do not have permission to update this post");
+        }
     }
 
-    public boolean deletePost(Long id) {
+    public boolean deletePost(Long id) throws AccessDeniedException {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        post.setDeletedAt(LocalDateTime.now());
-        postRepository.save(post);
-        return true;
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        boolean isAdmin = currentUser.getRoles().stream()
+                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
+        boolean isAuthor = currentUser.equals(post.getUser());
+        if (isAdmin || isAuthor) {
+            post.setDeletedAt(LocalDateTime.now());
+            postRepository.save(post);
+            return true;
+        }else {
+            throw new AccessDeniedException("You do not have permission to update this post");
+        }
     }
 
     private String getFileExtension(String filename) {
