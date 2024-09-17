@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 public class AuthenticationIntegrationTest {
 
     @Autowired
@@ -32,7 +31,8 @@ public class AuthenticationIntegrationTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void register_newUser_success() {
+    @Transactional
+    void testRegister_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setUsername("newuser");
         request.setEmail("newuser@example.com");
@@ -49,7 +49,8 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void register_existingEmail_fail() {
+    @Transactional
+    void testRegister_MailAlreadyUsed() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("123456");
@@ -58,7 +59,8 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_existingUser_success() {
+    @Transactional
+    void testAuthenticate_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("123456");
@@ -69,7 +71,8 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_invalidCredentials_fail() {
+    @Transactional
+    void testAuthenticate_InvalidCredentials() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
         request.setPassword("iForgor");
@@ -78,7 +81,8 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    void authenticate_nonExistentUser_fail() {
+    @Transactional
+    void testAuthenticate_NoSuchUser() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("nonexistent@example.com");
         request.setPassword("password");

@@ -57,7 +57,7 @@ public class AuthenticationUnitTest {
     }
 
     @Test
-    void register_success() {
+    void testRegister_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("test@example.com");
         request.setPassword("password");
@@ -80,7 +80,7 @@ public class AuthenticationUnitTest {
     }
 
     @Test
-    void register_roleNotFound() {
+    void testRegister_NoSuchRole() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("test@example.com");
         request.setPassword("password");
@@ -95,7 +95,7 @@ public class AuthenticationUnitTest {
     }
 
     @Test
-    void authenticate_success() {
+    void testAuthenticate_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("test@example.com");
         request.setPassword("password");
@@ -113,7 +113,7 @@ public class AuthenticationUnitTest {
     }
 
     @Test
-    void authenticate_noUser() {
+    void testAuthenticate_NoSuchUser() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("test@example.com");
         request.setPassword("password");
@@ -127,7 +127,7 @@ public class AuthenticationUnitTest {
     }
 
     @Test
-    void authenticate_invalidCredentials() {
+    void testAuthenticate_InvalidCredentials() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("test@example.com");
         request.setPassword("wrongpassword");
