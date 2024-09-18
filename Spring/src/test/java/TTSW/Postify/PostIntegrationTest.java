@@ -56,7 +56,6 @@ public class PostIntegrationTest {
     private final String mediaDirectory = "../Media/posts/";
 
     @Test
-    @Transactional
     @WithAnonymousUser
     public void testGetPosts_Success() {
         PostFilter postFilter = new PostFilter();
@@ -72,7 +71,6 @@ public class PostIntegrationTest {
 
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
     public void testCreatePost_Success() throws IOException {
         WebsiteUser user = websiteUserService.getCurrentUser();
@@ -110,7 +108,6 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
     public void testUpdatePost_Success() throws AccessDeniedException {
         Post post = postRepository.findById(1L).orElse(null);
@@ -125,7 +122,6 @@ public class PostIntegrationTest {
     }
     
     @Test
-    @Transactional
     @WithMockUser("jane@example.com")
     public void testUpdatePost_NotOwner() {
         Post post = postRepository.findById(1L).orElse(null);
@@ -136,7 +132,6 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
     public void testDeletePost_Success() throws AccessDeniedException{
         boolean isDeleted = postService.deletePost(1L);
@@ -148,7 +143,6 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @Transactional
     @WithMockUser("jane@example.com")
     public void testDeletePost_NotOwner() {
         assertThrows((Exception.class), () -> postService.deletePost(1L));
