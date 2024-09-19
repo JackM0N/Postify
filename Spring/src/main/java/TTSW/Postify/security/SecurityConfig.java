@@ -36,7 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/delete/**", "/user/edit-profile", "/medium/delete/**",
                                 "/user/edit-profile/**","/comment/create/**", "/comment/edit/**",
                                 "/comment/delete/**", "/follow/followed-users", "/follow/followers",
-                                "/follow/create")
+                                "/follow/create", "/message/**")
                         .hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers("/post/**","/medium/add/**", "/medium/update/**")

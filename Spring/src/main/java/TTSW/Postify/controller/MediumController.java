@@ -26,14 +26,14 @@ public class MediumController {
         return ResponseEntity.ok(mediumService.addMediumAtIndex(index, mediumDTO));
     }
 
-    @PutMapping("/update")
-    private ResponseEntity<PostDTO> updateMedium(@RequestBody MediumDTO mediumDTO) throws IOException {
-        return ResponseEntity.ok(mediumService.updateMedium(mediumDTO));
+    @PutMapping("/update/{position}")
+    private ResponseEntity<PostDTO> updateMedium(@PathVariable int position, @RequestBody MediumDTO mediumDTO) throws IOException {
+        return ResponseEntity.ok(mediumService.updateMedium(mediumDTO,position));
     }
 
-    @DeleteMapping("/delete")
-    private ResponseEntity<Boolean> deleteMedium(@RequestBody MediumDTO mediumDTO) throws IOException {
-        return ResponseEntity.ok(mediumService.deleteMedium(mediumDTO));
+    @DeleteMapping("/delete/{position}")
+    private ResponseEntity<Boolean> deleteMedium(@PathVariable int position, @RequestBody MediumDTO mediumDTO) throws IOException {
+        return ResponseEntity.ok(mediumService.deleteMedium(mediumDTO, position));
     }
 
 }
