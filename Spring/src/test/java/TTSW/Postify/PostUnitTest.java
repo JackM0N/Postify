@@ -76,7 +76,7 @@ public class PostUnitTest {
             mediumMapperField.setAccessible(true);
             mediumMapperField.set(postMapper, mediumMapper);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            System.out.println("MapperImpl probably changed methods");
+            System.out.println("Reflection failed, MapperImpl probably changed methods");
             throw new RuntimeException(e);
         }
 
