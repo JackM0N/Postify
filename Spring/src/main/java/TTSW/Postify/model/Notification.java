@@ -1,5 +1,6 @@
 package TTSW.Postify.model;
 
+import TTSW.Postify.enums.NotificationType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -32,7 +33,7 @@ public class Notification {
     @Size(max = 50)
     @NotNull
     @Column(name = "notification_type", nullable = false, length = 50)
-    private String notificationType;
+    private NotificationType notificationType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
