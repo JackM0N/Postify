@@ -11,11 +11,11 @@ import TTSW.Postify.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -83,7 +83,7 @@ public class MediumService {
             postRepository.save(post);
             return postMapper.toDto(post);
         } else {
-            throw new AccessDeniedException("You dont have permission to add medium to this post");
+            throw new BadCredentialsException("You dont have permission to add medium to this post");
         }
     }
 
@@ -111,11 +111,11 @@ public class MediumService {
             mediumRepository.save(medium);
             return postMapper.toDto(post);
         }else {
-            throw new AccessDeniedException("You do not have permission to update this medium");
+            throw new BadCredentialsException("You do not have permission to update this medium");
         }
     }
 
-    public boolean deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
+    public boolean deleteMedium(MediumDTO mediumDTO, int position) {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
@@ -127,7 +127,7 @@ public class MediumService {
             postRepository.save(post);
             return true;
         }else {
-            throw new AccessDeniedException("You do not have permission to delete this medium");
+            throw new BadCredentialsException("You do not have permission to delete this medium");
         }
     }
 }

@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -53,7 +53,7 @@ public class CommentService {
             commentRepository.save(comment);
             return commentMapper.toDto(comment);
         }else{
-            throw new AccessDeniedException("You can only edit your own comments");
+            throw new BadCredentialsException("You can only edit your own comments");
         }
     }
 
@@ -67,7 +67,7 @@ public class CommentService {
         if(isAdmin || isAuthor){
             commentRepository.delete(comment);
         }else {
-            throw new AccessDeniedException("You dont have permission to delete this comment");
+            throw new BadCredentialsException("You dont have permission to delete this comment");
         }
     }
 }
