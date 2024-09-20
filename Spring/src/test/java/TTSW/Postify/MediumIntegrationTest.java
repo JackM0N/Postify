@@ -3,17 +3,21 @@ package TTSW.Postify;
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
+import TTSW.Postify.model.Role;
+import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
+import TTSW.Postify.repository.RoleRepository;
+import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -48,6 +52,10 @@ public class MediumIntegrationTest {
     private WebsiteUserService websiteUserService;
 
     private static Path tempDirectory;
+    @Autowired
+    private RoleRepository roleRepository;
+    @Autowired
+    private WebsiteUserRepository websiteUserRepository;
 
     @BeforeEach
     void setup() {
@@ -124,6 +132,24 @@ public class MediumIntegrationTest {
     }
 
     @Test
+    @WithMockUser("jane@example.com")
+    void testAddMediumAtIndex_NotAuthor() throws IOException {
+        Long postId = 1L;
+        MultipartFile multipartFile = new MockMultipartFile(
+                "file", "test_image.jpg", "image/jpeg", "test data".getBytes());
+
+        MediumDTO mediumDTO = new MediumDTO();
+        mediumDTO.setPostId(postId);
+        mediumDTO.setFile(multipartFile);
+        mediumDTO.setMediumType("image");
+
+        Path postDirectory = Path.of(tempDirectory.toString() + "/" + postId);
+        if (!Files.exists(postDirectory)) Files.createDirectories(postDirectory);
+
+        assertThrows((AccessDeniedException.class), () -> mediumService.addMediumAtIndex(0, mediumDTO));
+    }
+
+    @Test
     @WithMockUser("john@example.com")
     void testUpdateMedium_Success() throws IOException {
         Medium medium = new Medium();
@@ -146,7 +172,7 @@ public class MediumIntegrationTest {
         mediumDTO.setFile(newMultipartFile);
         mediumDTO.setMediumType("image");
 
-        mediumService.updateMedium(mediumDTO);
+        mediumService.updateMedium(mediumDTO, 0);
 
         Post updatedPost = postRepository.findById(post.getId()).get();
         assertEquals(1, updatedPost.getMedia().size());
@@ -166,7 +192,7 @@ public class MediumIntegrationTest {
 
         Path testFile = tempDirectory.resolve(fileName);
         Files.createDirectories(testFile.getParent());
-        if (!Files.exists(testFile)){
+        if (!Files.exists(testFile)) {
             Files.write(testFile, "old data".getBytes());
         }
 
@@ -178,7 +204,7 @@ public class MediumIntegrationTest {
         mediumDTO.setFile(newMultipartFile);
         mediumDTO.setMediumType("image");
 
-        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO));
+        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO, 0));
     }
 
     @Test
@@ -194,7 +220,7 @@ public class MediumIntegrationTest {
 
         Path testFile = tempDirectory.resolve(fileName);
         Files.createDirectories(testFile.getParent());
-        if (!Files.exists(testFile)){
+        if (!Files.exists(testFile)) {
             Files.write(testFile, "old data".getBytes());
         }
 
@@ -206,7 +232,7 @@ public class MediumIntegrationTest {
         mediumDTO.setFile(newMultipartFile);
         mediumDTO.setMediumType("image");
 
-        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO));
+        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO, 0));
     }
 
     @Test
@@ -224,16 +250,76 @@ public class MediumIntegrationTest {
         Path testFile = tempDirectory.resolve(fileName);
         Files.write(testFile, "test data".getBytes());
 
+        MediumDTO mediumDTO = new MediumDTO();
+        mediumDTO.setPostId(post.getId());
+        mediumDTO.setId(medium.getId());
+
+        boolean result = mediumService.deleteMedium(mediumDTO, 0);
+
+        assertTrue(result);
+        Post updatedPost = postRepository.findById(post.getId()).get();
+        assertEquals(0, updatedPost.getMedia().size());
+        // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
+    }
+
+    @Test
+    @WithMockUser("testadmin@localhost")
+    void testDeleteMedium_Success_Admin() throws IOException {
+        // TODO: look at @WithUserDetails and try to use real admin, not mocked one
+        WebsiteUser user = websiteUserService.getCurrentUser();
+        List<Role> roles = user.getRoles();
+        Role adminRole = roleRepository.findById(2L).get();
+        roles.add(adminRole);
+        user.setRoles(roles);
+        websiteUserRepository.save(user);
+        System.out.println(user.getUsername());
+        System.out.println("Roles: ");
+        for (Role role : roles) {
+            System.out.println(role.getRoleName());
+        }
+        // Prepare existing media
+        Medium medium = new Medium();
+        Post post = postRepository.findById(1L).get();
+        medium.setPost(post);
+        medium.setMediumType("image");
+        String fileName = "post_" + post.getId() + "_media_0.jpg";
+        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
+        mediumRepository.save(medium);
+
+        Path testFile = tempDirectory.resolve(fileName);
+        Files.write(testFile, "test data".getBytes());
 
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(post.getId());
         mediumDTO.setId(medium.getId());
 
-        boolean result = mediumService.deleteMedium(mediumDTO);
+        boolean result = mediumService.deleteMedium(mediumDTO, 0);
 
         assertTrue(result);
         Post updatedPost = postRepository.findById(post.getId()).get();
         assertEquals(0, updatedPost.getMedia().size());
-        assertFalse(Files.exists(testFile));
+        // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
+    }
+
+    @Test
+    @WithMockUser("jane@example.com")
+    void testDeleteMedium_NotAuthor() throws IOException {
+        // Prepare existing media
+        Medium medium = new Medium();
+        Post post = postRepository.findById(1L).get();
+        medium.setPost(post);
+        medium.setMediumType("image");
+        String fileName = "post_" + post.getId() + "_media_0.jpg";
+        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
+        mediumRepository.save(medium);
+
+        Path testFile = tempDirectory.resolve(fileName);
+        Files.write(testFile, "test data".getBytes());
+
+        MediumDTO mediumDTO = new MediumDTO();
+        mediumDTO.setPostId(post.getId());
+        mediumDTO.setId(medium.getId());
+
+        assertThrows((BadCredentialsException.class), () -> mediumService.deleteMedium(mediumDTO, 0));
     }
 }

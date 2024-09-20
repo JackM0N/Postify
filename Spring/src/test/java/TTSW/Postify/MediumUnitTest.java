@@ -78,12 +78,15 @@ public class MediumUnitTest {
         Post post = new Post();
         post.setId(1L);
         post.setMedia(new ArrayList<>());
+        WebsiteUser user = new WebsiteUser();
+        post.setUser(user);
         MultipartFile file = mock(MultipartFile.class);
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(1L);
         mediumDTO.setFile(file);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
+        when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(file.getOriginalFilename()).thenReturn("media.jpg");
         when(postMapper.toDto(post)).thenReturn(new PostDTO());
 
@@ -124,7 +127,7 @@ public class MediumUnitTest {
             filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
             filesMock.when(() -> Files.copy(any(InputStream.class), any(Path.class))).thenReturn(1L);
 
-            PostDTO result = mediumService.updateMedium(mediumDTO);
+            PostDTO result = mediumService.updateMedium(mediumDTO, 0);
 
             assertNotNull(result);
             verify(mediumRepository).save(any(Medium.class));
@@ -153,7 +156,7 @@ public class MediumUnitTest {
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         when(websiteUserService.getCurrentUser()).thenReturn(user);
 
-        boolean result = mediumService.deleteMedium(mediumDTO);
+        boolean result = mediumService.deleteMedium(mediumDTO,0);
 
         assertTrue(result);
         verify(postRepository).save(post);
