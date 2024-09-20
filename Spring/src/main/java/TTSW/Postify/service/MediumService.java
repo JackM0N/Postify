@@ -30,7 +30,7 @@ public class MediumService {
     private final PostRepository postRepository;
 
     @Value("${directory.media.posts}")
-    private final String mediaDirectory = "../Media/posts/";
+    private String mediaDirectory = "../Media/posts/";
     private final PostMapper postMapper;
     private final WebsiteUserService websiteUserService;
 
