@@ -50,36 +50,41 @@ public class MediumService {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         List<Medium> media = post.getMedia();
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
 
-        MultipartFile file = mediumDTO.getFile();
-        String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-        String filename = getFileName(post.getId(), index, extension);
+        if (currentUser.equals(post.getUser())) {
+            MultipartFile file = mediumDTO.getFile();
+            String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+            String filename = getFileName(post.getId(), index, extension);
 
-        String baseDir = mediaDirectory + post.getId();
+            String baseDir = mediaDirectory + post.getId();
 
-        Medium newMedium = new Medium();
-        newMedium.setPost(post);
-        newMedium.setMediumType(mediumDTO.getMediumType());
-        newMedium.setMediumUrl(baseDir + "/" + filename);
+            Medium newMedium = new Medium();
+            newMedium.setPost(post);
+            newMedium.setMediumType(mediumDTO.getMediumType());
+            newMedium.setMediumUrl(baseDir + "/" + filename);
 
-        Path filePath = Paths.get(baseDir, filename);
-        Files.copy(file.getInputStream(), filePath);
+            Path filePath = Paths.get(baseDir, filename);
+            Files.copy(file.getInputStream(), filePath);
 
-        media.add(index,newMedium);
-        mediumRepository.save(newMedium);
+            media.add(index, newMedium);
+            mediumRepository.save(newMedium);
 
-        int i = 0;
-        for (Medium medium : media) {
-            String newExtension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
-            String newFilename = getFileName(post.getId(), i, newExtension);
-            medium.setMediumUrl(baseDir + "/" + newFilename);
-            i++;
+            int i = 0;
+            for (Medium medium : media) {
+                String newExtension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
+                String newFilename = getFileName(post.getId(), i, newExtension);
+                medium.setMediumUrl(baseDir + "/" + newFilename);
+                i++;
+            }
+
+            mediumRepository.saveAll(media);
+            post.setMedia(media);
+            postRepository.save(post);
+            return postMapper.toDto(post);
+        } else {
+            throw new AccessDeniedException("You dont have permission to add medium to this post");
         }
-
-        mediumRepository.saveAll(media);
-        post.setMedia(media);
-        postRepository.save(post);
-        return postMapper.toDto(post);
     }
 
     private String getFileExtension(String filename) {
@@ -90,12 +95,12 @@ public class MediumService {
         return "post_" + postId + "_media_" + index + "." + extension;
     }
 
-    public PostDTO updateMedium(MediumDTO mediumDTO) throws IOException {
+    public PostDTO updateMedium(MediumDTO mediumDTO, int position) throws IOException {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         if(currentUser.equals(post.getUser())) {
-            Medium medium = post.getMedia().get(Math.toIntExact(mediumDTO.getId()));
+            Medium medium = post.getMedia().get(position);
             medium.setMediumType(mediumDTO.getMediumType());
             if (mediumDTO.getFile() == null){
                 throw new EntityNotFoundException("File not found");
@@ -110,7 +115,7 @@ public class MediumService {
         }
     }
 
-    public boolean deleteMedium(MediumDTO mediumDTO) throws IOException {
+    public boolean deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
@@ -118,7 +123,7 @@ public class MediumService {
                 .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
         boolean isAuthor = currentUser.equals(post.getUser());
         if (isAdmin || isAuthor) {
-            post.getMedia().remove(Math.toIntExact(mediumDTO.getId()));
+            post.getMedia().remove(position);
             postRepository.save(post);
             return true;
         }else {
