@@ -9,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/message")
@@ -24,17 +22,17 @@ public class MessageController {
 
     @PostMapping("/create")
     private ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO messageDTO) {
-        return ResponseEntity.ok(messageService.createMessageDTO(messageDTO));
+        return ResponseEntity.ok(messageService.createMessage(messageDTO));
     }
 
     @PutMapping("/update")
-    private ResponseEntity<MessageDTO> updateMessage(@RequestBody MessageDTO messageDTO) throws AccessDeniedException {
-        return ResponseEntity.ok(messageService.updateMessageDTO(messageDTO));
+    private ResponseEntity<MessageDTO> updateMessage(@RequestBody MessageDTO messageDTO) {
+        return ResponseEntity.ok(messageService.updateMessage(messageDTO));
     }
 
     @DeleteMapping("/delete/{id}")
-    private ResponseEntity<MessageDTO> deleteMessage(@PathVariable Long id) throws AccessDeniedException {
-        messageService.deleteMessageDTO(id);
+    private ResponseEntity<MessageDTO> deleteMessage(@PathVariable Long id) {
+        messageService.deleteMessage(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

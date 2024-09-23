@@ -73,7 +73,7 @@ public class MessageService {
         messageRepository.saveAll(messages);
     }
 
-    public MessageDTO createMessageDTO(MessageDTO messageDTO) {
+    public MessageDTO createMessage(MessageDTO messageDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Message message = messageMapper.toEntity(messageDTO);
         message.setSender(currentUser);
@@ -83,7 +83,7 @@ public class MessageService {
         return messageMapper.toDto(message);
     }
 
-    public MessageDTO updateMessageDTO(MessageDTO messageDTO) {
+    public MessageDTO updateMessage(MessageDTO messageDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Message message = messageRepository.findById(messageDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Message not found"));
@@ -96,7 +96,7 @@ public class MessageService {
         }
     }
 
-    public void deleteMessageDTO(Long id) {
+    public void deleteMessage(Long id) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Message not found"));

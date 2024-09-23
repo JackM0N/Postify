@@ -28,6 +28,7 @@ import java.util.Objects;
 public class MediumService {
     private final MediumRepository mediumRepository;
     private final PostRepository postRepository;
+    private final AuthorizationService authorizationService;
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
@@ -118,11 +119,7 @@ public class MediumService {
     public boolean deleteMedium(MediumDTO mediumDTO, int position) {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        boolean isAdmin = currentUser.getRoles().stream()
-                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
-        boolean isAuthor = currentUser.equals(post.getUser());
-        if (isAdmin || isAuthor) {
+        if (authorizationService.canModifyEntity(post)) {
             post.getMedia().remove(position);
             postRepository.save(post);
             return true;

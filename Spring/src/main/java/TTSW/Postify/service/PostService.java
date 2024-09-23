@@ -35,6 +35,7 @@ public class PostService {
     private final PostMapper postMapper;
     private final MediumRepository mediumRepository;
     private final WebsiteUserService websiteUserService;
+    private final AuthorizationService authorizationService;
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
@@ -139,11 +140,7 @@ public class PostService {
     public boolean deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        boolean isAdmin = currentUser.getRoles().stream()
-                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
-        boolean isAuthor = currentUser.equals(post.getUser());
-        if (isAdmin || isAuthor) {
+        if (authorizationService.canModifyEntity(post)) {
             post.setDeletedAt(LocalDateTime.now());
             postRepository.save(post);
             return true;

@@ -1,5 +1,6 @@
 package TTSW.Postify.model;
 
+import TTSW.Postify.interfaces.HasAuthor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "comment")
-public class Comment {
+public class Comment implements HasAuthor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id", nullable = false)

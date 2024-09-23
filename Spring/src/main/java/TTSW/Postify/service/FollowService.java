@@ -87,12 +87,14 @@ public class FollowService {
         return followMapper.toDto(follow);
     }
 
-    public void deleteFollow(Long id) {
+    public void deleteFollow(String followedUsername) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        Follow follow = followRepository.findById(id)
+        WebsiteUser followedUser = websiteUserRepository.findByUsername(followedUsername)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Follow follow = followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Follow not found"));
-        if (follow.getFollower().equals(currentUser)) {
-            followRepository.deleteById(id);
+        if (follow != null) {
+            followRepository.deleteById(follow.getId());
         }else{
             throw new RuntimeException("You can't perform this action");
         }
