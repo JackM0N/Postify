@@ -22,6 +22,7 @@ public class CommentService {
     private final CommentMapper commentMapper;
     private final WebsiteUserService websiteUserService;
     private final PostRepository postRepository;
+    private final AuthorizationService authorizationService;
 
     public Page<CommentDTO> getAllCommentsForPost(Long postId, Pageable pageable) {
         Post post = postRepository.findById(postId)
@@ -60,11 +61,7 @@ public class CommentService {
     public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
-        WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        boolean isAdmin = currentUser.getRoles().stream()
-                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
-        boolean isAuthor = currentUser.equals(comment.getUser());
-        if(isAdmin || isAuthor){
+        if(authorizationService.canModifyEntity(comment)){
             commentRepository.delete(comment);
         }else {
             throw new BadCredentialsException("You dont have permission to delete this comment");

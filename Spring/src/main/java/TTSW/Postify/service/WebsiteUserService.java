@@ -34,7 +34,7 @@ public class WebsiteUserService {
     private final WebsiteUserMapper websiteUserMapper;
 
     @Value("${directory.media.profilePictures}")
-    private String mediaDirectory = "../Media/profilePictures/";
+    private final String mediaDirectory = "../Media/profilePictures/";
 
     public Page<WebsiteUserDTO> getWebsiteUsers(WebsiteUserFilter websiteUserFilter, Pageable pageable) {
         Specification<WebsiteUser> spec = Specification.where(null);
@@ -108,7 +108,7 @@ public class WebsiteUserService {
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
-    public boolean deleteWebsiteUser(Long id) throws BadRequestException {
+    public void deleteWebsiteUser(Long id) throws IOException {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
         WebsiteUser currentUser = getCurrentUser();
@@ -119,9 +119,9 @@ public class WebsiteUserService {
             if (websiteUser.getDeletedAt() != null) {
                 throw new BadRequestException("This user does not exist or already got deleted");
             }
+            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
             websiteUser.setDeletedAt(LocalDateTime.now());
             websiteUserRepository.save(websiteUser);
-            return true;
         }else {
             throw new BadRequestException("You dont have permission to perform this action");
         }

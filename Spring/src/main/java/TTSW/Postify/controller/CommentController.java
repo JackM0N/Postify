@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
     private final CommentService commentService;
 
+    //TODO: PreAuthorize
     @GetMapping("/post/{id}")
     public ResponseEntity<Page<CommentDTO>> getComment(@PathVariable Long id, Pageable pageable) {
         return ResponseEntity.ok(commentService.getAllCommentsForPost(id, pageable));
