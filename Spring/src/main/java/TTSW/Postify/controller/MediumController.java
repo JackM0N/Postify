@@ -33,7 +33,8 @@ public class MediumController {
 
     @DeleteMapping("/delete/{position}")
     private ResponseEntity<Boolean> deleteMedium(@PathVariable int position, @RequestBody MediumDTO mediumDTO) throws IOException {
-        return ResponseEntity.ok(mediumService.deleteMedium(mediumDTO, position));
+        mediumService.deleteMedium(mediumDTO, position);
+        return ResponseEntity.ok().build();
     }
 
 }

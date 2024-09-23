@@ -4,7 +4,6 @@ import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.filter.WebsiteUserFilter;
 import TTSW.Postify.service.WebsiteUserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,8 @@ public class WebsiteUserController {
 
     @DeleteMapping("/delete/{id}")
     private ResponseEntity<Boolean> deleteUser(@PathVariable Long id) throws IOException {
-        return ResponseEntity.ok(websiteUserService.deleteWebsiteUser(id));
+        websiteUserService.deleteWebsiteUser(id);
+        return ResponseEntity.ok().build();
     }
 
 }
