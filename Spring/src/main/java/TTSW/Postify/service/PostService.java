@@ -38,7 +38,7 @@ public class PostService {
     private final AuthorizationService authorizationService;
 
     @Value("${directory.media.posts}")
-    private String mediaDirectory = "../Media/posts/";
+    private final String mediaDirectory = "../Media/posts/";
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);
@@ -137,13 +137,12 @@ public class PostService {
         }
     }
 
-    public boolean deletePost(Long id) {
+    public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         if (authorizationService.canModifyEntity(post)) {
             post.setDeletedAt(LocalDateTime.now());
             postRepository.save(post);
-            return true;
         }else {
             throw new BadCredentialsException("You do not have permission to update this post");
         }

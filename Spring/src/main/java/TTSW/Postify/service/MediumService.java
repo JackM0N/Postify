@@ -31,7 +31,7 @@ public class MediumService {
     private final AuthorizationService authorizationService;
 
     @Value("${directory.media.posts}")
-    private String mediaDirectory = "../Media/posts/";
+    private final String mediaDirectory = "../Media/posts/";
     private final PostMapper postMapper;
     private final WebsiteUserService websiteUserService;
 
@@ -116,7 +116,7 @@ public class MediumService {
         }
     }
 
-    public boolean deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
+    public void deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         if (authorizationService.canModifyEntity(post)) {
@@ -124,7 +124,6 @@ public class MediumService {
             Files.deleteIfExists(Path.of(medium.getMediumUrl()));
             post.getMedia().remove(position);
             postRepository.save(post);
-            return true;
         }else {
             throw new BadCredentialsException("You do not have permission to delete this medium");
         }
