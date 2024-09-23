@@ -146,7 +146,7 @@ public class MediumIntegrationTest {
         Path postDirectory = Path.of(tempDirectory.toString() + "/" + postId);
         if (!Files.exists(postDirectory)) Files.createDirectories(postDirectory);
 
-        assertThrows((AccessDeniedException.class), () -> mediumService.addMediumAtIndex(0, mediumDTO));
+        assertThrows((BadCredentialsException.class), () -> mediumService.addMediumAtIndex(0, mediumDTO));
     }
 
     @Test
