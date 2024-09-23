@@ -108,7 +108,7 @@ public class WebsiteUserService {
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
-    public boolean deleteWebsiteUser(Long id) throws BadRequestException {
+    public boolean deleteWebsiteUser(Long id) throws IOException {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
         WebsiteUser currentUser = getCurrentUser();
@@ -119,6 +119,7 @@ public class WebsiteUserService {
             if (websiteUser.getDeletedAt() != null) {
                 throw new BadRequestException("This user does not exist or already got deleted");
             }
+            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
             websiteUser.setDeletedAt(LocalDateTime.now());
             websiteUserRepository.save(websiteUser);
             return true;

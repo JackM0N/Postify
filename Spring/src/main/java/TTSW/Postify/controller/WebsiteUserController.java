@@ -38,7 +38,7 @@ public class WebsiteUserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    private ResponseEntity<Boolean> deleteUser(@PathVariable Long id) throws BadRequestException {
+    private ResponseEntity<Boolean> deleteUser(@PathVariable Long id) throws IOException {
         return ResponseEntity.ok(websiteUserService.deleteWebsiteUser(id));
     }
 

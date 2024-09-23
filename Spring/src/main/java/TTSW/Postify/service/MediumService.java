@@ -116,10 +116,12 @@ public class MediumService {
         }
     }
 
-    public boolean deleteMedium(MediumDTO mediumDTO, int position) {
+    public boolean deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         if (authorizationService.canModifyEntity(post)) {
+            Medium medium = post.getMedia().get(position);
+            Files.deleteIfExists(Path.of(medium.getMediumUrl()));
             post.getMedia().remove(position);
             postRepository.save(post);
             return true;
