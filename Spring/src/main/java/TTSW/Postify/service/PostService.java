@@ -16,12 +16,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -123,7 +123,7 @@ public class PostService {
         return postMapper.toDto(post);
     }
 
-    public PostDTO updatePost(Long id, PostDTO postDTO) throws AccessDeniedException {
+    public PostDTO updatePost(Long id, PostDTO postDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -132,11 +132,11 @@ public class PostService {
             postRepository.save(post);
             return postMapper.toDto(post);
         }else {
-            throw new AccessDeniedException("You do not have permission to update this post");
+            throw new BadCredentialsException("You do not have permission to update this post");
         }
     }
 
-    public boolean deletePost(Long id) throws AccessDeniedException {
+    public boolean deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
@@ -148,7 +148,7 @@ public class PostService {
             postRepository.save(post);
             return true;
         }else {
-            throw new AccessDeniedException("You do not have permission to update this post");
+            throw new BadCredentialsException("You do not have permission to update this post");
         }
     }
 

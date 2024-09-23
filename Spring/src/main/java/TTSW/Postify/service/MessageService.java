@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,7 +83,7 @@ public class MessageService {
         return messageMapper.toDto(message);
     }
 
-    public MessageDTO updateMessageDTO(MessageDTO messageDTO) throws AccessDeniedException {
+    public MessageDTO updateMessageDTO(MessageDTO messageDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Message message = messageRepository.findById(messageDTO.getId())
                 .orElseThrow(() -> new RuntimeException("Message not found"));
@@ -92,18 +92,18 @@ public class MessageService {
             messageRepository.save(message);
             return messageMapper.toDto(message);
         } else {
-            throw new AccessDeniedException("You dont have permission to edit this message");
+            throw new BadCredentialsException("You dont have permission to edit this message");
         }
     }
 
-    public void deleteMessageDTO(Long id) throws AccessDeniedException {
+    public void deleteMessageDTO(Long id) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
         if (message.getSender().getUsername().equals(currentUser.getUsername())) {
             messageRepository.delete(message);
         } else {
-            throw new AccessDeniedException("You dont dot have permission to delete this message");
+            throw new BadCredentialsException("You dont dot have permission to delete this message");
         }
     }
 }
