@@ -30,9 +30,9 @@ public class FollowController {
         return ResponseEntity.ok(followService.createFollow(followDTO));
     }
 
-    @DeleteMapping("/delete")
-    private ResponseEntity<?> deleteFollow(@RequestBody FollowDTO followDTO) {
-        followService.deleteFollow(followDTO.getId());
+    @DeleteMapping("/delete/{username}")
+    private ResponseEntity<?> deleteFollow(@PathVariable String username) {
+        followService.deleteFollow(username);
         return ResponseEntity.ok().build();
     }
 }

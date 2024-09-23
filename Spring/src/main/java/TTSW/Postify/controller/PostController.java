@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,13 +29,14 @@ public class PostController {
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<PostDTO> editPost(@PathVariable Long id, @RequestBody PostDTO postDTO) throws AccessDeniedException {
+    public ResponseEntity<PostDTO> editPost(@PathVariable Long id, @RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.updatePost(id, postDTO));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Boolean> deletePost(@PathVariable Long id) throws AccessDeniedException {
-        return ResponseEntity.ok(postService.deletePost(id));
+    public ResponseEntity<Boolean> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.ok().build();
     }
 
 }
