@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 public class AuthenticationIntegrationTest {
 
     @Autowired
@@ -31,7 +32,6 @@ public class AuthenticationIntegrationTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    @Transactional
     void testRegister_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setUsername("newuser");
@@ -49,7 +49,6 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testRegister_MailAlreadyUsed() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
@@ -59,7 +58,6 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testAuthenticate_Success() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
@@ -71,7 +69,6 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testAuthenticate_InvalidCredentials() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("john@example.com");
@@ -81,7 +78,6 @@ public class AuthenticationIntegrationTest {
     }
 
     @Test
-    @Transactional
     void testAuthenticate_NoSuchUser() {
         WebsiteUserDTO request = new WebsiteUserDTO();
         request.setEmail("nonexistent@example.com");

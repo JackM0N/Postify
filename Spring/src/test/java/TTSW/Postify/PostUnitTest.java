@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -75,7 +76,7 @@ public class PostUnitTest {
             mediumMapperField.setAccessible(true);
             mediumMapperField.set(postMapper, mediumMapper);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            System.out.println("MapperImpl probably changed methods");
+            System.out.println("Reflection failed, MapperImpl probably changed methods");
             throw new RuntimeException(e);
         }
 
@@ -142,12 +143,17 @@ public class PostUnitTest {
     }
 
     @Test
-    void testUpdatePost_Success() {
+    void testUpdatePost_Success() throws AccessDeniedException {
         Long postId = 1L;
         Post post = new Post();
+        WebsiteUser user = new WebsiteUser();
+        post.setId(postId);
+        post.setUser(user);
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
         PostDTO postDTO = new PostDTO();
         when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        when(websiteUserService.getCurrentUser()).thenReturn(user);
 
         PostDTO result = postService.updatePost(postId, postDTO);
 
@@ -167,10 +173,14 @@ public class PostUnitTest {
     }
 
     @Test
-    void testDeletePost_Success() {
+    void testDeletePost_Success() throws AccessDeniedException {
         Long postId = 1L;
         Post post = new Post();
+        WebsiteUser user = new WebsiteUser();
+        post.setId(postId);
+        post.setUser(user);
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(websiteUserService.getCurrentUser()).thenReturn(user);
 
         boolean result = postService.deletePost(postId);
 

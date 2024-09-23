@@ -37,7 +37,7 @@ public class PostService {
     private final WebsiteUserService websiteUserService;
 
     @Value("${directory.media.posts}")
-    private final String mediaDirectory = "../Media/posts/";
+    private String mediaDirectory = "../Media/posts/";
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);

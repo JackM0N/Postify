@@ -34,7 +34,7 @@ public class WebsiteUserService {
     private final WebsiteUserMapper websiteUserMapper;
 
     @Value("${directory.media.profilePictures}")
-    private final String mediaDirectory = "../Media/profilePictures/";
+    private String mediaDirectory = "../Media/profilePictures/";
 
     public Page<WebsiteUserDTO> getWebsiteUsers(WebsiteUserFilter websiteUserFilter, Pageable pageable) {
         Specification<WebsiteUser> spec = Specification.where(null);

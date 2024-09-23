@@ -24,6 +24,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -55,7 +56,6 @@ public class PostIntegrationTest {
     private final String mediaDirectory = "../Media/posts/";
 
     @Test
-    @Transactional
     @WithAnonymousUser
     public void testGetPosts_Success() {
         PostFilter postFilter = new PostFilter();
@@ -71,7 +71,6 @@ public class PostIntegrationTest {
 
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
     public void testCreatePost_Success() throws IOException {
         WebsiteUser user = websiteUserService.getCurrentUser();
@@ -109,9 +108,8 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
-    public void testUpdatePost_Success() {
+    public void testUpdatePost_Success() throws AccessDeniedException {
         Post post = postRepository.findById(1L).orElse(null);
         assertNotNull(post);
         post.setDescription("New post description");
@@ -122,23 +120,20 @@ public class PostIntegrationTest {
         assertEquals("New post description", updatedPost.getDescription());
         assertNotEquals(updateDate, updatedPost.getUpdatedAt());
     }
+    
+    @Test
+    @WithMockUser("jane@example.com")
+    public void testUpdatePost_NotOwner() {
+        Post post = postRepository.findById(1L).orElse(null);
+        assertNotNull(post);
+        post.setDescription("New post description");
 
-    //todo: wait for implementation
-//    @Test
-//    @Transactional
-//    @WithMockUser("jane@example.com")
-//    public void testUpdatePost_NotOwner() {
-//        Post post = postRepository.findById(1L).orElse(null);
-//        assertNotNull(post);
-//        post.setDescription("New post description");
-//
-//        assertThrows(Exception.class, () -> postService.updatePost(post.getId(), postMapper.toDto(post)));
-//    }
+        assertThrows(Exception.class, () -> postService.updatePost(post.getId(), postMapper.toDto(post)));
+    }
 
     @Test
-    @Transactional
     @WithMockUser("john@example.com")
-    public void testDeletePost_Success() {
+    public void testDeletePost_Success() throws AccessDeniedException{
         boolean isDeleted = postService.deletePost(1L);
 
         assertTrue(isDeleted);
@@ -147,12 +142,10 @@ public class PostIntegrationTest {
         assertNotNull(deletedPost.getDeletedAt());
     }
 
-    //todo: wait for implementation
-//    @Test
-//    @Transactional
-//    @WithMockUser("jane@example.com")
-//    public void testDeletePost_NotOwner() {
-//        assertThrows((Exception.class), () -> postService.deletePost(1L));
-//    }
+    @Test
+    @WithMockUser("jane@example.com")
+    public void testDeletePost_NotOwner() {
+        assertThrows((Exception.class), () -> postService.deletePost(1L));
+    }
 
 }
