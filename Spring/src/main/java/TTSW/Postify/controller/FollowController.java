@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,22 +16,26 @@ import org.springframework.web.bind.annotation.*;
 public class FollowController {
     private final FollowService followService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/followed-users")
     private ResponseEntity<Page<WebsiteUserDTO>> getFollowedUsers(Pageable pageable) {
         return ResponseEntity.ok(followService.getFollowed(pageable));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/followers")
     private ResponseEntity<Page<WebsiteUserDTO>> getFollowers(Pageable pageable) {
         return ResponseEntity.ok(followService.getFollowers(pageable));
     }
 
-    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PostMapping("")
     private ResponseEntity<FollowDTO> createFollow(@RequestBody FollowDTO followDTO) {
         return ResponseEntity.ok(followService.createFollow(followDTO));
     }
 
-    @DeleteMapping("/delete/{username}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @DeleteMapping("/{username}")
     private ResponseEntity<?> deleteFollow(@PathVariable String username) {
         followService.deleteFollow(username);
         return ResponseEntity.ok().build();
