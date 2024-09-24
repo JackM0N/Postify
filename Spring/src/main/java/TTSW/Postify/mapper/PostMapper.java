@@ -12,11 +12,6 @@ public interface PostMapper {
     @Mapping(target = "deletedAt", ignore = true)
     Post toEntity(PostDTO postDTO);
 
-    @AfterMapping
-    default void linkComments(@MappingTarget Post post) {
-        post.getComments().forEach(comment -> comment.setPost(post));
-    }
-
 //    @AfterMapping
 //    default void linkHashtags(@MappingTarget Post post) {
 //        post.getHashtags().forEach(hashtag -> hashtag.setPost(post));
