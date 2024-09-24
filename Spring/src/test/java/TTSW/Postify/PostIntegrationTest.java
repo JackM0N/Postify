@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,6 +85,7 @@ public class PostIntegrationTest {
         PostDTO postDTO = new PostDTO();
         postDTO.setDescription("New post description");
         postDTO.setMedia(Collections.singletonList(mediumDTO));
+        postDTO.setComments(new HashSet<>());
 
         PostDTO createdPost = postService.createPost(postDTO);
 
@@ -120,7 +122,7 @@ public class PostIntegrationTest {
         assertEquals("New post description", updatedPost.getDescription());
         assertNotEquals(updateDate, updatedPost.getUpdatedAt());
     }
-    
+
     @Test
     @WithMockUser("jane@example.com")
     public void testUpdatePost_NotOwner() {
@@ -133,10 +135,9 @@ public class PostIntegrationTest {
 
     @Test
     @WithMockUser("john@example.com")
-    public void testDeletePost_Success() throws AccessDeniedException{
-        boolean isDeleted = postService.deletePost(1L);
+    public void testDeletePost_Success() {
+        postService.deletePost(1L);
 
-        assertTrue(isDeleted);
         Post deletedPost = postRepository.findById(1L).orElse(null);
         assertNotNull(deletedPost);
         assertNotNull(deletedPost.getDeletedAt());
@@ -147,5 +148,4 @@ public class PostIntegrationTest {
     public void testDeletePost_NotOwner() {
         assertThrows((Exception.class), () -> postService.deletePost(1L));
     }
-
 }

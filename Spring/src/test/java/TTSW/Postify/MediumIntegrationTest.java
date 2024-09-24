@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -254,9 +253,8 @@ public class MediumIntegrationTest {
         mediumDTO.setPostId(post.getId());
         mediumDTO.setId(medium.getId());
 
-        boolean result = mediumService.deleteMedium(mediumDTO, 0);
+        mediumService.deleteMedium(mediumDTO, 0);
 
-        assertTrue(result);
         Post updatedPost = postRepository.findById(post.getId()).get();
         assertEquals(0, updatedPost.getMedia().size());
         // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
@@ -293,9 +291,8 @@ public class MediumIntegrationTest {
         mediumDTO.setPostId(post.getId());
         mediumDTO.setId(medium.getId());
 
-        boolean result = mediumService.deleteMedium(mediumDTO, 0);
+        mediumService.deleteMedium(mediumDTO, 0);
 
-        assertTrue(result);
         Post updatedPost = postRepository.findById(post.getId()).get();
         assertEquals(0, updatedPost.getMedia().size());
         // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
