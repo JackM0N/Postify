@@ -34,5 +34,5 @@ public class PostDTO implements Serializable {
 
     List<MediumDTO> media;
 
-    Set<PostLikeDTO> postLikes;
+    Set<Long> postLikesIds;
 }

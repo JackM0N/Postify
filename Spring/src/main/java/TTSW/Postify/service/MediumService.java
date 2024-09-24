@@ -30,11 +30,11 @@ public class MediumService {
     private final MediumRepository mediumRepository;
     private final PostRepository postRepository;
     private final AuthorizationService authorizationService;
-
-    @Value("${directory.media.posts}")
-    private final String mediaDirectory = "../Media/posts/";
     private final PostMapper postMapper;
     private final WebsiteUserService websiteUserService;
+
+    @Value("${directory.media.posts}")
+    private String mediaDirectory = "../Media/posts/";
 
     public List<byte[]> getMediaForPost(Long id) throws IOException {
         Post post = postRepository.findById(id)
