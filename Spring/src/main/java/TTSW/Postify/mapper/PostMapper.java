@@ -5,17 +5,12 @@ import TTSW.Postify.model.Post;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = MediumMapper.class)
+        uses = {MediumMapper.class, PostLikeMapper.class})
 public interface PostMapper {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
     Post toEntity(PostDTO postDTO);
-
-    @AfterMapping
-    default void linkComments(@MappingTarget Post post) {
-        post.getComments().forEach(comment -> comment.setPost(post));
-    }
 
 //    @AfterMapping
 //    default void linkHashtags(@MappingTarget Post post) {
@@ -29,9 +24,10 @@ public interface PostMapper {
 
 //    @AfterMapping
 //    default void linkPostLikes(@MappingTarget Post post) {
-//        post.getPostLikes().forEach(postLike -> postLike.setPost(post));
+//        post.getPostLikesIds().forEach(postLike -> postLike.setPost(post));
 //    }
 
+    @Mapping(source = "postLikes", target = "postLikesIds")
     PostDTO toDto(Post post);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

@@ -10,6 +10,7 @@ import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
@@ -29,11 +30,11 @@ public class MediumService {
     private final MediumRepository mediumRepository;
     private final PostRepository postRepository;
     private final AuthorizationService authorizationService;
+    private final PostMapper postMapper;
+    private final WebsiteUserService websiteUserService;
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
-    private final PostMapper postMapper;
-    private final WebsiteUserService websiteUserService;
 
     public List<byte[]> getMediaForPost(Long id) throws IOException {
         Post post = postRepository.findById(id)
@@ -101,11 +102,20 @@ public class MediumService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         if(currentUser.equals(post.getUser())) {
+            if (position < 0 || position >= post.getMedia().size()) {
+                position = post.getMedia().size() - 1;
+            }
+
             Medium medium = post.getMedia().get(position);
+
+            if (!medium.getMediumUrl().contains(mediaDirectory) || Files.exists(Paths.get(medium.getMediumUrl()))) {
+                throw new BadRequestException("Medium url doesn't match or does not exist");
+            }
             medium.setMediumType(mediumDTO.getMediumType());
             if (mediumDTO.getFile() == null){
                 throw new EntityNotFoundException("File not found");
             }
+
             Path filePath = Paths.get(medium.getMediumUrl());
             Files.deleteIfExists(filePath);
             Files.copy(mediumDTO.getFile().getInputStream(), filePath);
