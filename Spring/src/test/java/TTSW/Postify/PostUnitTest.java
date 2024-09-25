@@ -3,6 +3,7 @@ package TTSW.Postify;
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.filter.PostFilter;
+import TTSW.Postify.interfaces.HasAuthor;
 import TTSW.Postify.mapper.MediumMapper;
 import TTSW.Postify.mapper.MediumMapperImpl;
 import TTSW.Postify.mapper.PostMapper;
@@ -12,6 +13,7 @@ import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
+import TTSW.Postify.service.AuthorizationService;
 import TTSW.Postify.service.PostService;
 import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,12 +25,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -59,6 +61,9 @@ public class PostUnitTest {
     @Mock
     private WebsiteUserService websiteUserService;
 
+    @Mock
+    private AuthorizationService authorizationService;
+
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
 
@@ -79,7 +84,6 @@ public class PostUnitTest {
             System.out.println("Reflection failed, MapperImpl probably changed methods");
             throw new RuntimeException(e);
         }
-
     }
 
     @Test
@@ -143,7 +147,7 @@ public class PostUnitTest {
     }
 
     @Test
-    void testUpdatePost_Success() throws AccessDeniedException {
+    void testUpdatePost_Success() {
         Long postId = 1L;
         Post post = new Post();
         WebsiteUser user = new WebsiteUser();
@@ -164,6 +168,24 @@ public class PostUnitTest {
     }
 
     @Test
+    void testUpdatePost_NotAuthor() {
+        Long postId = 1L;
+        Post post = new Post();
+        WebsiteUser user = new WebsiteUser();
+        post.setId(postId);
+        post.setUser(user);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        PostDTO postDTO = new PostDTO();
+        when(postRepository.save(any(Post.class))).thenReturn(post);
+
+        WebsiteUser notAuthor = new WebsiteUser();
+        notAuthor.setUsername("notAuthor");
+        when(websiteUserService.getCurrentUser()).thenReturn(notAuthor);
+
+        assertThrows(BadCredentialsException.class, () -> postService.updatePost(postId, postDTO));
+    }
+
+    @Test
     void testUpdatePost_NoSuchPost() {
         Long postId = 1L;
         when(postRepository.findById(postId)).thenReturn(Optional.empty());
@@ -173,20 +195,32 @@ public class PostUnitTest {
     }
 
     @Test
-    void testDeletePost_Success() throws AccessDeniedException {
+    void testDeletePost_Success() {
         Long postId = 1L;
         Post post = new Post();
         WebsiteUser user = new WebsiteUser();
         post.setId(postId);
         post.setUser(user);
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
-        when(websiteUserService.getCurrentUser()).thenReturn(user);
+        when(authorizationService.canModifyEntity(any(HasAuthor.class))).thenReturn(true);
 
-        boolean result = postService.deletePost(postId);
+        postService.deletePost(postId);
 
-        assertTrue(result);
         assertNotNull(post.getDeletedAt());
         verify(postRepository).save(post);
+    }
+
+    @Test
+    void testDeletePost_NotAuthorized() {
+        Long postId = 1L;
+        Post post = new Post();
+        WebsiteUser user = new WebsiteUser();
+        post.setId(postId);
+        post.setUser(user);
+        when(postRepository.findById(postId)).thenReturn(Optional.of(post));
+        when(authorizationService.canModifyEntity(any(Post.class))).thenReturn(false);
+
+        assertThrows((BadCredentialsException.class), () -> postService.deletePost(postId));
     }
 
     @Test
