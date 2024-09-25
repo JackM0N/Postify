@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,22 +16,26 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
     private final MessageService messageService;
 
-    @GetMapping("/user/{username}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/{username}")
     private ResponseEntity<Page<MessageDTO>> getUserMessages(@PathVariable String username, Pageable pageable) {
         return ResponseEntity.ok(messageService.getMessagesWithUser(username, pageable));
     }
 
-    @PostMapping("/create")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PostMapping("")
     private ResponseEntity<MessageDTO> createMessage(@RequestBody MessageDTO messageDTO) {
         return ResponseEntity.ok(messageService.createMessage(messageDTO));
     }
 
-    @PutMapping("/update")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PutMapping("")
     private ResponseEntity<MessageDTO> updateMessage(@RequestBody MessageDTO messageDTO) {
         return ResponseEntity.ok(messageService.updateMessage(messageDTO));
     }
 
-    @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @DeleteMapping("/{id}")
     private ResponseEntity<MessageDTO> deleteMessage(@PathVariable Long id) {
         messageService.deleteMessage(id);
         return new ResponseEntity<>(HttpStatus.OK);
