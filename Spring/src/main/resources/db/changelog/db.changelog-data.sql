@@ -114,3 +114,10 @@ VALUES ((SELECT user_id FROM website_user WHERE username = 'john_doe'),
        ((SELECT user_id FROM website_user WHERE username = 'lucas_perez'),
         (SELECT user_id FROM website_user WHERE username = 'john_doe'), 'You need to check out that new restaurant!');
 
+
+--changeset Stanislaw:3 labels:init,data
+INSERT INTO user_role (user_id, role_id)
+VALUES ((SELECT user_id FROM website_user WHERE username = 'testadmin'),
+        (SELECT role_id FROM role WHERE role_name = 'USER')),
+       ((SELECT user_id FROM website_user WHERE username = 'testadmin'),
+        (SELECT role_id FROM role WHERE role_name = 'ADMIN'));
