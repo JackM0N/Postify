@@ -1,13 +1,12 @@
 package TTSW.Postify.service;
 
 import TTSW.Postify.dto.WebsiteUserDTO;
+import TTSW.Postify.enums.Role;
 import TTSW.Postify.filter.WebsiteUserFilter;
 import TTSW.Postify.mapper.WebsiteUserMapper;
-import TTSW.Postify.model.Role;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.IAuthenticationFacade;
-import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,12 +52,12 @@ public class WebsiteUserService {
             spec = spec.and((root, query, builder) -> builder
                     .lessThanOrEqualTo(root.get("joinDate"), websiteUserFilter.getJoinDateTo()));
         }
-        if (websiteUserFilter.getRoleIds() != null && !websiteUserFilter.getRoleIds().isEmpty()) {
-            spec = spec.and((root, query, builder) -> {
-                Join<WebsiteUser, Role> rolesJoin = root.join("roles");
-                return rolesJoin.get("id").in(websiteUserFilter.getRoleIds());
-            });
-        }
+//        if (websiteUserFilter.getRoleIds() != null && !websiteUserFilter.getRoleIds().isEmpty()) {
+//            spec = spec.and((root, query, builder) -> {
+//                Join<WebsiteUser, Role> rolesJoin = root.join("roles");
+//                return rolesJoin.get("id").in(websiteUserFilter.getRoleIds());
+//            });
+//        }
         if (websiteUserFilter.getSearchText() != null
                 && !websiteUserFilter.getSearchText().isEmpty()
                 && !isNumeric(websiteUserFilter.getSearchText() )) {
@@ -112,8 +111,8 @@ public class WebsiteUserService {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new BadCredentialsException("User not found"));
         WebsiteUser currentUser = getCurrentUser();
-        boolean isAdmin = currentUser.getRoles().stream()
-                .anyMatch(role -> "ADMIN".equals(role.getRoleName()));
+        boolean isAdmin = currentUser.getUserRoles().stream()
+                .anyMatch(role -> role.getRoleName() == Role.ADMIN);
         boolean isAuthor = currentUser.equals(websiteUser);
         if (isAdmin || isAuthor) {
             if (websiteUser.getDeletedAt() != null) {

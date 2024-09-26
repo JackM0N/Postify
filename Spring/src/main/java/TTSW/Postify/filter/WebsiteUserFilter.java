@@ -1,5 +1,6 @@
 package TTSW.Postify.filter;
 
+import TTSW.Postify.enums.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +15,7 @@ public class WebsiteUserFilter {
     private LocalDate joinDateFrom;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate joinDateTo;
-    List<Long> roleIds;
+    List<Role> roleIds;
     String searchText;
     Boolean isDeleted;
 }

@@ -1,5 +1,6 @@
 package TTSW.Postify.dto;
 
+import TTSW.Postify.enums.Role;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
@@ -40,7 +41,7 @@ public class WebsiteUserDTO implements Serializable {
 
     LocalDateTime deletedAt;
 
-    List<RoleDTO> roles;
+    List<Role> roles;
 
     MultipartFile profilePicture;
 }
