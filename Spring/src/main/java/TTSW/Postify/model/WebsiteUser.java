@@ -51,15 +51,10 @@ public class WebsiteUser {
     @Column(name = "join_date")
     private LocalDateTime joinDate;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "role_id")
-    )
-    private List<Role> roles = new ArrayList<>();
-
     @Column(name="deleted_at")
     private LocalDateTime deletedAt;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserRole> userRoles = new ArrayList<>();
 
 }

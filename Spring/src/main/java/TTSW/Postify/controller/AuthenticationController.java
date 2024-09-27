@@ -4,11 +4,9 @@ import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.AuthenticationService;
 import TTSW.Postify.security.JWTService;
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,19 +18,16 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JWTService jwtService;
 
-    @PermitAll
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody WebsiteUserDTO request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
-    @PermitAll
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody WebsiteUserDTO request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestParam("token") String token) {
         try {

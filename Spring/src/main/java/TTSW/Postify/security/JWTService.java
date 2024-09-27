@@ -1,5 +1,6 @@
 package TTSW.Postify.security;
 
+import TTSW.Postify.model.UserRole;
 import TTSW.Postify.model.WebsiteUser;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JWTService {
@@ -19,7 +21,7 @@ public class JWTService {
                 .builder()
                 .subject(user.getEmail())
                 .claim("username", user.getUsername())
-                .claim("roles", user.getRoles())
+                .claim("roles", user.getUserRoles().stream().map(UserRole::getRoleName).collect(Collectors.toList()))
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + SecurityConstants.JWT_TOKEN_EXPIRATION_TIME))
                 .signWith(getSigninKey())

@@ -108,7 +108,7 @@ public class MediumService {
 
             Medium medium = post.getMedia().get(position);
 
-            if (!medium.getMediumUrl().contains(mediaDirectory) || Files.exists(Paths.get(medium.getMediumUrl()))) {
+            if (!medium.getMediumUrl().contains(mediaDirectory) || !Files.exists(Paths.get(medium.getMediumUrl()))) {
                 throw new BadRequestException("Medium url doesn't match or does not exist");
             }
             medium.setMediumType(mediumDTO.getMediumType());

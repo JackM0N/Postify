@@ -32,6 +32,21 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/user/list")
+                        .hasAuthority("ROLE_ADMIN")
+
+                        .requestMatchers("/refresh-token", "/comment/create/**", "/comment/delete/**",
+                                "/comment/edit", "/follow/followed-users", "/follow/followers",
+                                "follow/create", "/follow/delete/**", "/medium/add/**",
+                                "/medium/edit/**", "/medium/delete/**", "/message/**",
+                                "/post/create", "/post/edit/**", "/post/delete/**", "/user/edit-profile",
+                                "/user/delete/**")
+                        .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+
+                        .requestMatchers("/login", "/register", "/comment/post/**", "/medium/list/**",
+                                "/post/list", "/user/profile/**")
+                        .permitAll()
+
                         .anyRequest().authenticated())
                 .userDetailsService(userDetails)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
