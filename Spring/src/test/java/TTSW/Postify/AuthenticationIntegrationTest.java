@@ -1,8 +1,8 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.WebsiteUserDTO;
+import TTSW.Postify.enums.Role;
 import TTSW.Postify.model.WebsiteUser;
-import TTSW.Postify.repository.RoleRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.AuthenticationService;
@@ -26,9 +26,6 @@ public class AuthenticationIntegrationTest {
     private WebsiteUserRepository websiteUserRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Test
@@ -43,8 +40,8 @@ public class AuthenticationIntegrationTest {
         WebsiteUser user = websiteUserRepository.findByEmail("newuser@example.com").get();
         assertEquals("newuser@example.com", user.getEmail());
         assertTrue(passwordEncoder.matches("newpassword", user.getPassword()));
-        assertEquals(1, user.getRoles().size());
-        assertEquals("USER", user.getRoles().get(0).getRoleName());
+        assertEquals(1, user.getUserRoles().size());
+        assertEquals(Role.USER, user.getUserRoles().get(0).getRoleName());
         assertNotNull(response.token());
     }
 

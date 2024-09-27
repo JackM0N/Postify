@@ -3,9 +3,7 @@ package TTSW.Postify;
 import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.mapper.WebsiteUserMapperImpl;
-import TTSW.Postify.model.Role;
 import TTSW.Postify.model.WebsiteUser;
-import TTSW.Postify.repository.RoleRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.AuthenticationService;
@@ -42,9 +40,6 @@ public class AuthenticationUnitTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
-    @Mock
-    private RoleRepository roleRepository;
-
     @Spy
     private WebsiteUserMapper websiteUserMapper = new WebsiteUserMapperImpl();
 
@@ -65,11 +60,7 @@ public class AuthenticationUnitTest {
         WebsiteUser user = new WebsiteUser();
         user.setEmail(request.getEmail());
 
-        Role role = new Role();
-        role.setRoleName("USER");
-
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
-        when(roleRepository.findByRoleName("USER")).thenReturn(Optional.of(role));
         when(websiteUserRepository.save(any(WebsiteUser.class))).thenReturn(user);
         when(jwtService.generateToken(any(WebsiteUser.class))).thenReturn("mockToken");
 
@@ -77,21 +68,6 @@ public class AuthenticationUnitTest {
 
         assertEquals("mockToken", response.token());
         verify(websiteUserRepository).save(any(WebsiteUser.class));
-    }
-
-    @Test
-    void testRegister_NoSuchRole() {
-        WebsiteUserDTO request = new WebsiteUserDTO();
-        request.setEmail("test@example.com");
-        request.setPassword("password");
-
-        when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
-        when(roleRepository.findByRoleName("MODERATOR")).thenReturn(Optional.empty());
-
-        RuntimeException exception = assertThrows(RuntimeException.class, () ->
-                authenticationService.register(request));
-
-        assertEquals("Role not found", exception.getMessage());
     }
 
     @Test
