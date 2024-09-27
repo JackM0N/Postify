@@ -40,7 +40,7 @@ public class SecurityConfig {
                                 "follow/create", "/follow/delete/**", "/medium/add/**",
                                 "/medium/edit/**", "/medium/delete/**", "/message/**",
                                 "/post/create", "/post/edit/**", "/post/delete/**", "/user/edit-profile",
-                                "/user/delete/**")
+                                "/user/delete/**", "/post/like/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
                         .requestMatchers("/login", "/register", "/comment/post/**", "/medium/list/**",
