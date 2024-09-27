@@ -7,6 +7,7 @@ import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.IAuthenticationFacade;
+import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,12 +53,13 @@ public class WebsiteUserService {
             spec = spec.and((root, query, builder) -> builder
                     .lessThanOrEqualTo(root.get("joinDate"), websiteUserFilter.getJoinDateTo()));
         }
-//        if (websiteUserFilter.getRoleIds() != null && !websiteUserFilter.getRoleIds().isEmpty()) {
-//            spec = spec.and((root, query, builder) -> {
-//                Join<WebsiteUser, Role> rolesJoin = root.join("roles");
-//                return rolesJoin.get("id").in(websiteUserFilter.getRoleIds());
-//            });
-//        }
+        //Role filtering
+        if (websiteUserFilter.getRoles() != null && !websiteUserFilter.getRoles().isEmpty()) {
+            spec = spec.and((root, query, builder) -> {
+                Join<WebsiteUser, Role> rolesJoin = root.join("userRoles");
+                return rolesJoin.get("roleName").in(websiteUserFilter.getRoles());
+            });
+        }
         if (websiteUserFilter.getSearchText() != null
                 && !websiteUserFilter.getSearchText().isEmpty()
                 && !isNumeric(websiteUserFilter.getSearchText() )) {
