@@ -30,7 +30,7 @@ public class PostDTO implements Serializable {
 
     LocalDateTime deletedAt;
 
-    Set<HashtagDTO> hashtags;
+    List<HashtagDTO> hashtags;
 
     List<MediumDTO> media;
 
