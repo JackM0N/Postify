@@ -85,7 +85,6 @@ public class PostIntegrationTest {
         PostDTO postDTO = new PostDTO();
         postDTO.setDescription("New post description");
         postDTO.setMedia(Collections.singletonList(mediumDTO));
-        postDTO.setComments(new HashSet<>());
 
         PostDTO createdPost = postService.createPost(postDTO);
 
