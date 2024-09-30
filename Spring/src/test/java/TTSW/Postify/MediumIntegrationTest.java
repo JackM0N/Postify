@@ -3,11 +3,9 @@ package TTSW.Postify;
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
-import TTSW.Postify.model.Role;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
-import TTSW.Postify.repository.RoleRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.WebsiteUserService;
@@ -51,8 +49,7 @@ public class MediumIntegrationTest {
     private WebsiteUserService websiteUserService;
 
     private static Path tempDirectory;
-    @Autowired
-    private RoleRepository roleRepository;
+
     @Autowired
     private WebsiteUserRepository websiteUserRepository;
 
@@ -265,17 +262,6 @@ public class MediumIntegrationTest {
     void testDeleteMedium_Success_Admin() throws IOException {
         // TODO: look at @WithUserDetails and try to use real admin, not mocked one
         WebsiteUser user = websiteUserService.getCurrentUser();
-        List<Role> roles = user.getRoles();
-        Role adminRole = roleRepository.findById(2L).get();
-        roles.add(adminRole);
-        user.setRoles(roles);
-        websiteUserRepository.save(user);
-        System.out.println(user.getUsername());
-        System.out.println("Roles: ");
-        for (Role role : roles) {
-            System.out.println(role.getRoleName());
-        }
-        // Prepare existing media
         Medium medium = new Medium();
         Post post = postRepository.findById(1L).get();
         medium.setPost(post);

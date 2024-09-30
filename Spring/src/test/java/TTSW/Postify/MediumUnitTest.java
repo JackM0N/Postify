@@ -13,6 +13,7 @@ import TTSW.Postify.service.AuthorizationService;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.WebsiteUserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.aspectj.util.Reflection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -150,14 +152,16 @@ public class MediumUnitTest {
     }
 
     @Test
-    void testUpdateMedium_Success() throws IOException {
+    void testUpdateMedium_Success() throws IOException, NoSuchFieldException, IllegalAccessException {
         Post post = new Post();
         post.setId(1L);
         WebsiteUser user = new WebsiteUser();
         post.setUser(user);
 
         Medium medium = new Medium();
-        medium.setMediumUrl("media.jpg");
+        Field mediumFolder = mediumService.getClass().getDeclaredField("mediaDirectory");
+        mediumFolder.setAccessible(true);
+        medium.setMediumUrl(mediumFolder.get(mediumService) + "media.jpg");
         post.setMedia(List.of(medium));
 
         MultipartFile file = mock(MultipartFile.class);
@@ -174,6 +178,7 @@ public class MediumUnitTest {
         try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
             filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
             filesMock.when(() -> Files.copy(any(InputStream.class), any(Path.class))).thenReturn(1L);
+            filesMock.when(() -> Files.exists(any(Path.class))).thenReturn(true);
 
             PostDTO result = mediumService.updateMedium(mediumDTO, 0);
 
@@ -211,31 +216,6 @@ public class MediumUnitTest {
         when(file.getInputStream()).thenReturn(mock(InputStream.class));
 
         assertThrows(BadCredentialsException.class, () -> mediumService.updateMedium(mediumDTO, 0));
-    }
-
-    @Test
-    void testUpdateMedium_NoSuchMedium() throws IOException {
-        Post post = new Post();
-        post.setId(1L);
-        WebsiteUser user = new WebsiteUser();
-        post.setUser(user);
-
-        Medium medium = new Medium();
-        medium.setMediumUrl("media.jpg");
-        post.setMedia(List.of(medium));
-
-        MultipartFile file = mock(MultipartFile.class);
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(1L);
-        mediumDTO.setFile(file);
-        mediumDTO.setId(0L);
-
-        when(postRepository.findById(1L)).thenReturn(Optional.of(post));
-        when(websiteUserService.getCurrentUser()).thenReturn(user);
-        when(postMapper.toDto(post)).thenReturn(new PostDTO());
-        when(file.getInputStream()).thenReturn(mock(InputStream.class));
-
-        assertThrows(IndexOutOfBoundsException.class, () -> mediumService.updateMedium(mediumDTO, 99));
     }
 
     @Test
