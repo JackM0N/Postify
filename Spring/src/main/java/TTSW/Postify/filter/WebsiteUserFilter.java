@@ -15,7 +15,7 @@ public class WebsiteUserFilter {
     private LocalDate joinDateFrom;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate joinDateTo;
-    List<Role> roleIds;
+    List<Role> roles;
     String searchText;
     Boolean isDeleted;
 }

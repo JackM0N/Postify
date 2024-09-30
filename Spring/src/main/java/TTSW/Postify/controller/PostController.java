@@ -2,6 +2,7 @@ package TTSW.Postify.controller;
 
 import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.filter.PostFilter;
+import TTSW.Postify.service.PostLikeService;
 import TTSW.Postify.service.PostService;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +18,7 @@ import java.io.IOException;
 @RequestMapping("/post")
 public class PostController {
     private final PostService postService;
+    private final PostLikeService postLikeService;
 
     @GetMapping("/list")
     public ResponseEntity<Page<PostDTO>> getPosts(PostFilter filter, Pageable pageable) {
@@ -37,6 +39,11 @@ public class PostController {
     public ResponseEntity<Boolean> deletePost(@PathVariable Long id) {
         postService.deletePost(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/like/{id}")
+    public ResponseEntity<Boolean> likePost(@PathVariable Long id) {
+        return ResponseEntity.ok(postLikeService.likePost(id));
     }
 
 }

@@ -1,6 +1,7 @@
 package TTSW.Postify.controller;
 
 import TTSW.Postify.dto.CommentDTO;
+import TTSW.Postify.service.CommentLikeService;
 import TTSW.Postify.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/comment")
 public class CommentController {
     private final CommentService commentService;
+    private final CommentLikeService commentLikeService;
 
     @GetMapping("/post/{id}")
     public ResponseEntity<Page<CommentDTO>> getComment(@PathVariable Long id, Pageable pageable) {
@@ -34,5 +36,10 @@ public class CommentController {
     public ResponseEntity<CommentDTO> deleteComment(@PathVariable Long id) {
         commentService.deleteComment(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/like/{id}")
+    public ResponseEntity<Boolean> likeComment(@PathVariable Long id) {
+        return ResponseEntity.ok(commentLikeService.likeComment(id));
     }
 }
