@@ -29,7 +29,7 @@ public class CommentService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         Specification<Comment> specification = (root, query, builder) ->
                 builder.equal(root.get("post"), post);
-        Page<Comment> comments = commentRepository.findAll(specification,pageable);
+        Page<Comment> comments = commentRepository.findAll(specification, pageable);
         return comments.map(commentMapper::toDto);
     }
 
@@ -37,7 +37,7 @@ public class CommentService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Comment comment = commentMapper.toEntity(commentDTO);
         comment.setUser(currentUser);
-        if(comment.getParentComment() != null){
+        if (comment.getParentComment() != null) {
             comment.setParentComment(commentRepository.findById(commentDTO.getParentComment().getId())
                     .orElseThrow(() -> new EntityNotFoundException("Parent comment not found")));
         }
@@ -49,11 +49,11 @@ public class CommentService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Comment comment = commentRepository.findById(commentDTO.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
-        if(currentUser.equals(comment.getUser())){
+        if (currentUser.equals(comment.getUser())) {
             commentMapper.partialUpdate(commentDTO, comment);
             commentRepository.save(comment);
             return commentMapper.toDto(comment);
-        }else{
+        } else {
             throw new BadCredentialsException("You can only edit your own comments");
         }
     }
@@ -61,9 +61,9 @@ public class CommentService {
     public void deleteComment(Long id) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment not found"));
-        if(authorizationService.canModifyEntity(comment)){
+        if (authorizationService.canModifyEntity(comment)) {
             commentRepository.delete(comment);
-        }else {
+        } else {
             throw new BadCredentialsException("You dont have permission to delete this comment");
         }
     }
