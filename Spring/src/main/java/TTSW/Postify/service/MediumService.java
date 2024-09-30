@@ -93,7 +93,7 @@ public class MediumService {
         return filename.substring(filename.lastIndexOf('.') + 1);
     }
 
-    private String getFileName(Long postId,int index, String extension) {
+    private String getFileName(Long postId, int index, String extension) {
         return "post_" + postId + "_media_" + index + "." + extension;
     }
 
@@ -101,18 +101,17 @@ public class MediumService {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        if(currentUser.equals(post.getUser())) {
+        if (currentUser.equals(post.getUser())) {
             if (position < 0 || position >= post.getMedia().size()) {
                 position = post.getMedia().size() - 1;
             }
 
             Medium medium = post.getMedia().get(position);
-
-            if (!medium.getMediumUrl().contains(mediaDirectory) || !Files.exists(Paths.get(medium.getMediumUrl()))) {
+            if (!Path.of(medium.getMediumUrl()).startsWith(Path.of(mediaDirectory)) || !Files.exists(Paths.get(medium.getMediumUrl()))) {
                 throw new BadRequestException("Medium url doesn't match or does not exist");
             }
             medium.setMediumType(mediumDTO.getMediumType());
-            if (mediumDTO.getFile() == null){
+            if (mediumDTO.getFile() == null) {
                 throw new EntityNotFoundException("File not found");
             }
 
@@ -121,7 +120,7 @@ public class MediumService {
             Files.copy(mediumDTO.getFile().getInputStream(), filePath);
             mediumRepository.save(medium);
             return postMapper.toDto(post);
-        }else {
+        } else {
             throw new BadCredentialsException("You do not have permission to update this medium");
         }
     }
@@ -134,7 +133,7 @@ public class MediumService {
             Files.deleteIfExists(Path.of(medium.getMediumUrl()));
             post.getMedia().remove(position);
             postRepository.save(post);
-        }else {
+        } else {
             throw new BadCredentialsException("You do not have permission to delete this medium");
         }
     }
