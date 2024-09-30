@@ -22,12 +22,12 @@ public class MediumController {
     }
 
     @PutMapping("/add/{index}")
-    private ResponseEntity<PostDTO> addMedium(@PathVariable Integer index, @RequestBody MediumDTO mediumDTO) throws IOException {
+    private ResponseEntity<PostDTO> addMedium(@PathVariable Integer index, @ModelAttribute MediumDTO mediumDTO) throws IOException {
         return ResponseEntity.ok(mediumService.addMediumAtIndex(index, mediumDTO));
     }
 
     @PutMapping("/edit/{position}")
-    private ResponseEntity<PostDTO> updateMedium(@PathVariable int position, @RequestBody MediumDTO mediumDTO) throws IOException {
+    private ResponseEntity<PostDTO> updateMedium(@PathVariable int position, @ModelAttribute MediumDTO mediumDTO) throws IOException {
         return ResponseEntity.ok(mediumService.updateMedium(mediumDTO,position));
     }
 
