@@ -5,10 +5,10 @@ import TTSW.Postify.mapper.CommentMapper;
 import TTSW.Postify.mapper.CommentMapperImpl;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Post;
-import TTSW.Postify.model.Role;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.CommentRepository;
 import TTSW.Postify.repository.PostRepository;
+import TTSW.Postify.service.AuthorizationService;
 import TTSW.Postify.service.CommentService;
 import TTSW.Postify.service.WebsiteUserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,6 +41,9 @@ public class CommentUnitTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private AuthorizationService authorizationService;
 
     @Spy
     private CommentMapper commentMapper = new CommentMapperImpl();
@@ -153,7 +156,7 @@ public class CommentUnitTest {
     @Test
     void deleteComment_Success() {
         when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
-        when(websiteUserService.getCurrentUser()).thenReturn(user);
+        when(authorizationService.canModifyEntity(comment)).thenReturn(true);
 
         commentService.deleteComment(1L);
 
@@ -161,21 +164,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void deleteComment_Success_Admin() {
-        WebsiteUser adminUser = new WebsiteUser();
-        Role role = new Role();
-        role.setRoleName("ADMIN");
-        adminUser.setRoles(Collections.singletonList(role));
-        when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
-        when(websiteUserService.getCurrentUser()).thenReturn(adminUser);
-
-        commentService.deleteComment(1L);
-
-        verify(commentRepository, times(1)).delete(comment);
-    }
-
-    @Test
-    void deleteComment_NotAuthor() {
+    void deleteComment_NotAuthorized() {
         WebsiteUser anotherUser = new WebsiteUser();
         anotherUser.setId(2L);
 
