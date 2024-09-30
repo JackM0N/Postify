@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,7 +84,6 @@ public class PostIntegrationTest {
         PostDTO postDTO = new PostDTO();
         postDTO.setDescription("New post description");
         postDTO.setMedia(Collections.singletonList(mediumDTO));
-        postDTO.setComments(new HashSet<>());
 
         PostDTO createdPost = postService.createPost(postDTO);
 

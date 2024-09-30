@@ -4,10 +4,7 @@ import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.interfaces.HasAuthor;
-import TTSW.Postify.mapper.MediumMapper;
-import TTSW.Postify.mapper.MediumMapperImpl;
-import TTSW.Postify.mapper.PostMapper;
-import TTSW.Postify.mapper.PostMapperImpl;
+import TTSW.Postify.mapper.*;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
@@ -55,6 +52,9 @@ public class PostUnitTest {
     @Spy
     private PostMapper postMapper = new PostMapperImpl();
 
+    @Spy
+    private PostLikeMapper postLikeMapper = new PostLikeMapperImpl();
+
     @Mock
     private MediumRepository mediumRepository;
 
@@ -80,6 +80,10 @@ public class PostUnitTest {
             Field mediumMapperField = PostMapperImpl.class.getDeclaredField("mediumMapper");
             mediumMapperField.setAccessible(true);
             mediumMapperField.set(postMapper, mediumMapper);
+
+            Field postLikeMapperField = PostMapperImpl.class.getDeclaredField("postLikeMapper");
+            postLikeMapperField.setAccessible(true);
+            postLikeMapperField.set(postMapper, postLikeMapper);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             System.out.println("Reflection failed, MapperImpl probably changed methods");
             throw new RuntimeException(e);
