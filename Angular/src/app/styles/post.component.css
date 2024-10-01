@@ -1,0 +1,23 @@
+.post {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 10px;
+  }
+  
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .post-media img, .post-media video {
+    width: 100%;
+    margin-top: 10px;
+  }
+  
+  .post-description {
+    margin-top: 10px;
+    font-size: 16px;
+  }
