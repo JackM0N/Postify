@@ -13,6 +13,8 @@ import org.junit.platform.suite.api.Suite;
         MediumIntegrationTest.class,
         CommentUnitTest.class,
         CommentIntegrationTest.class,
+        AuthorizationUnitTest.class,
+        AuthorizationIntegrationTest.class,
 })
 public class AllTestsSuite {
     // yes, this should be empty
