@@ -5,11 +5,12 @@ import TTSW.Postify.model.Post;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {MediumMapper.class, PostLikeMapper.class})
+        uses = {MediumMapper.class, PostLikeMapper.class, HashtagMapper.class})
 public interface PostMapper {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
+    @Mapping(target = "hashtags", source = "hashtags")
     Post toEntity(PostDTO postDTO);
 
 //    @AfterMapping

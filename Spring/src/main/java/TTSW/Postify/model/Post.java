@@ -45,8 +45,8 @@ public class Post implements HasAuthor {
     @OneToMany(mappedBy = "post")
     private Set<Comment> comments = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "post")
-    private Set<Hashtag> hashtags = new LinkedHashSet<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Hashtag> hashtags = new ArrayList<>();
 
     @OneToMany(mappedBy = "post")
     @Size(min = 1, message = "Post must contain at least one media")

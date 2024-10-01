@@ -8,6 +8,7 @@ import org.mapstruct.*;
 public interface CommentMapper {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "post.id", source = "postId")
     Comment toEntity(CommentDTO commentDTO);
 
     CommentDTO toDto(Comment comment);
