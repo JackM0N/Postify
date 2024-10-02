@@ -4,25 +4,24 @@
       <ul>
         <h1 class="logo">Postify</h1>
         <hr class="divider">
-        <li><a href="#">Notifications</a></li>
-        <li><a href="#">Posts</a></li>
-        <li><a href="#">Followed Users</a></li>
-        <li><a href="#">Messages</a></li>
+        <li><a routerLink="/notifications">Notifications</a></li>
+        <li><a routerLink="/posts">Posts</a></li>
+        <li><a routerLink="/followed-users">Followed Users</a></li>
+        <li><a routerLink="/messages">Messages</a></li>
       </ul>
       <div class="auth-links">
-        <a href="#">Login</a>
-        <a href="#">Register</a>
+        <a routerLink="/login">Login</a>
+        <a routerLink="/register">Register</a>
       </div>
     </nav>
+    <footer class="footer z-20">
+      <p>&copy; 2024 Postify</p>
+    </footer>
   </div>
 </header>
 
 <main class="grow flex flex-col justify-between">
   <div class="main-container">
-
+    <router-outlet></router-outlet>
   </div>
 </main>
-
-<footer class="footer z-20">
-  <p>&copy; 2024 Postify</p>
-</footer>

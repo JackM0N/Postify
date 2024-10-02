@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
-import { CommonModule, DatePipe } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
-import { HttpClientModule } from '@angular/common/http';
+import { formatDateTimeArray } from '../../../Util/formatDate';
 
 @Component({
   selector: 'app-post',
@@ -13,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class PostComponent implements OnInit {
   posts: PostDTO[] = [];
+  protected formatDateTimeArray = formatDateTimeArray;
 
   constructor(private postService: PostService) {}
 
@@ -22,7 +20,10 @@ export class PostComponent implements OnInit {
 
   loadPosts(): void {
     this.postService.getPosts({}, {}).subscribe(data => {
-      this.posts = data.content; // Assuming you receive paginated data
-    });
+        console.log('Loaded posts:', data);
+        this.posts = data.content
+      }, error => {
+        console.error('Error loading posts:', error);
+      });
   }
 }

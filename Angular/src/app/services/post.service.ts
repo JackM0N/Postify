@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PostDTO } from '../models/post.model'; // Import your PostDTO model
-import { Page } from '../models/page.model'; // If you're using pagination
+import { PostDTO } from '../models/post.model';
+import { Page } from '../models/page.model';
 
 @Injectable({
   providedIn: 'root'

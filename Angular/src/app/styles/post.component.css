@@ -21,3 +21,11 @@
     margin-top: 10px;
     font-size: 16px;
   }
+
+  .post-stats {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+  }
