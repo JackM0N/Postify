@@ -22,7 +22,6 @@ import jakarta.persistence.EntityNotFoundException;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-
 @SpringBootTest
 @Transactional
 class CommentIntegrationTest {
@@ -71,6 +70,19 @@ class CommentIntegrationTest {
         assertNotNull(savedComment);
         assertEquals("New comment", savedComment.getText());
         assertNotNull(savedComment.getId());
+    }
+
+    @Test
+    @WithMockUser("john@example.com")
+    void testCreateComment_NoSuchPost() {
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setText("New comment");
+        commentDTO.setPostId(999L);
+        WebsiteUserDTO websiteUserDTO = websiteUserMapper.toDto(websiteUserRepository.findById(1L).get());
+        commentDTO.setUser(websiteUserDTO);
+
+        // TODO: brakuje sprawdzenia czy post istnieje
+        assertThrows(EntityNotFoundException.class, () -> commentService.createComment(commentDTO));
     }
 
     @Test
