@@ -30,7 +30,6 @@ public class Notification {
     @JoinColumn(name = "triggered_by_id", nullable = false)
     private WebsiteUser triggeredBy;
 
-    @Size(max = 50)
     @NotNull
     @Column(name = "notification_type", nullable = false, length = 50)
     private NotificationType notificationType;

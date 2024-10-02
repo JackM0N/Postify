@@ -21,13 +21,13 @@ public class PostLikeService {
     private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
 
-    public Boolean likePost(Long postId){
+    public Boolean likePost(Long postId) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         PostLike likeExists = postLikeRepository.findByUserIdAndPostId(currentUser.getId(), postId)
                 .orElse(null);
-        if(likeExists != null){
-           postLikeRepository.delete(likeExists);
-           return false;
+        if (likeExists != null) {
+            postLikeRepository.delete(likeExists);
+            return false;
         }
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post Not Found"));

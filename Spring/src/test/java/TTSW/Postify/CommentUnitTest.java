@@ -77,7 +77,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void getAllCommentsForPost_Success() {
+    void testGetAllCommentsForPost_Success() {
         Page<Comment> commentPage = new PageImpl<>(Collections.singletonList(comment));
         when(postRepository.findById(anyLong())).thenReturn(Optional.of(post));
         when(commentRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(commentPage);
@@ -91,7 +91,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void getAllCommentsForPost_PostNotFound() {
+    void testGetAllCommentsForPost_PostNotFound() {
         when(postRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> commentService.getAllCommentsForPost(1L, Pageable.unpaged()));
@@ -99,7 +99,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void createComment_Success() {
+    void testCreateComment_Success() {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
 
@@ -111,7 +111,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void createComment_Success_WithParentComment() {
+    void testCreateComment_Success_WithParentComment() {
         Comment parentComment = new Comment();
         parentComment.setId(2L);
         comment.setParentComment(parentComment);
@@ -130,7 +130,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void updateComment_Success() {
+    void testUpdateComment_Success() {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
 
@@ -142,7 +142,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void updateComment_NotAuthor() {
+    void testUpdateComment_NotAuthor() {
         WebsiteUser anotherUser = new WebsiteUser();
         anotherUser.setId(2L);
 
@@ -154,7 +154,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void deleteComment_Success() {
+    void testDeleteComment_Success() {
         when(commentRepository.findById(anyLong())).thenReturn(Optional.of(comment));
         when(authorizationService.canModifyEntity(comment)).thenReturn(true);
 
@@ -164,7 +164,7 @@ public class CommentUnitTest {
     }
 
     @Test
-    void deleteComment_NotAuthorized() {
+    void testDeleteComment_NotAuthorized() {
         WebsiteUser anotherUser = new WebsiteUser();
         anotherUser.setId(2L);
 
