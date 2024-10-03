@@ -102,6 +102,7 @@ public class CommentUnitTest {
     void testCreateComment_Success() {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
 
         CommentDTO result = commentService.createComment(commentDTO);
 
@@ -120,6 +121,7 @@ public class CommentUnitTest {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(commentRepository.findById(2L)).thenReturn(Optional.of(parentComment));
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
 
         CommentDTO result = commentService.createComment(commentDTO);
 
