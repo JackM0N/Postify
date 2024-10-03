@@ -11,6 +11,8 @@ public interface PostMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)
     @Mapping(target = "hashtags", source = "hashtags")
+    @Mapping(target = "commentCount", constant = "0L")
+    @Mapping(target = "likeCount", constant = "0L")
     Post toEntity(PostDTO postDTO);
 
 //    @AfterMapping
