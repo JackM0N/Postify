@@ -35,6 +35,9 @@ public class FollowService {
     public Page<WebsiteUserDTO> getFollowers(Pageable pageable) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         List<Follow> follows = followRepository.findByFollowedId(currentUser.getId());
+        if (follows == null || follows.isEmpty()) {
+            return Page.empty();
+        }
         List<Long> followerIds = follows.stream()
                 .map(follow -> follow.getFollower().getId())
                 .collect(Collectors.toList());
@@ -45,6 +48,9 @@ public class FollowService {
     public Page<WebsiteUserDTO> getFollowed(Pageable pageable) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         List<Follow> followed = followRepository.findByFollowerId(currentUser.getId());
+        if (followed == null || followed.isEmpty()) {
+            return Page.empty();
+        }
         List<Long> followedIds = followed.stream()
                 .map(follow -> follow.getFollowed().getId())
                 .collect(Collectors.toList());

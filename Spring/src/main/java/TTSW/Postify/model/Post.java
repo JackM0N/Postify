@@ -58,4 +58,14 @@ public class Post implements HasAuthor {
     @OneToMany(mappedBy = "post")
     private Set<PostLike> postLikes = new LinkedHashSet<>();
 
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "like_count", nullable = false)
+    private Long likeCount;
+
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "comment_count", nullable = false)
+    private Long commentCount;
+
 }
