@@ -44,4 +44,8 @@ public class Comment implements HasAuthor {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @NotNull
+    @ColumnDefault("0")
+    @Column(name = "like_count", nullable = false)
+    private Long likeCount;
 }
