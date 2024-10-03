@@ -25,12 +25,21 @@ public class PostLikeService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         PostLike likeExists = postLikeRepository.findByUserIdAndPostId(currentUser.getId(), postId)
                 .orElse(null);
-        if (likeExists != null) {
-            postLikeRepository.delete(likeExists);
-            return false;
-        }
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post Not Found"));
+
+        if (likeExists != null) {
+            postLikeRepository.delete(likeExists);
+            Notification existingNotification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
+                    post.getUser().getId(), currentUser.getId(), NotificationType.POST_LIKE, postId
+            ).orElse(null);
+            if (existingNotification != null && !existingNotification.getIsRead()) {
+                notificationRepository.delete(existingNotification);
+            }
+            return false;
+        }
+
         PostLike postLike = new PostLike();
         postLike.setPost(post);
         postLike.setUser(currentUser);

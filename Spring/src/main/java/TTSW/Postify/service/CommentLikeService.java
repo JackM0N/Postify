@@ -25,12 +25,20 @@ public class CommentLikeService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         CommentLike likeExists = commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), commentId)
                 .orElse(null);
-        if(likeExists != null){
-            commentLikeRepository.delete(likeExists);
-            return false;
-        }
+
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        if(likeExists != null){
+            commentLikeRepository.delete(likeExists);
+            Notification existingNotification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                    comment.getUser().getId(), currentUser.getId(), NotificationType.COMMENT_LIKE, commentId
+            ).orElse(null);
+            if (existingNotification != null && !existingNotification.getIsRead()) {
+                notificationRepository.delete(existingNotification);
+            }
+            return false;
+        }
         CommentLike like = new CommentLike();
         like.setComment(comment);
         like.setUser(currentUser);
