@@ -35,6 +35,9 @@ public class CommentService {
 
     public CommentDTO createComment(CommentDTO commentDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        if (postRepository.findById(commentDTO.getPostId()).isEmpty()) {
+            throw new EntityNotFoundException("Post not found");
+        }
         Comment comment = commentMapper.toEntity(commentDTO);
         comment.setUser(currentUser);
         if (comment.getParentComment() != null) {
