@@ -1,9 +1,11 @@
 package TTSW.Postify;
 
+import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.CommentLikeRepository;
 import TTSW.Postify.repository.CommentRepository;
+import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.CommentLikeService;
 import TTSW.Postify.service.WebsiteUserService;
@@ -35,6 +37,9 @@ public class CommentLikeIntegrationTest {
     @Autowired
     private WebsiteUserService websiteUserService;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Test
     @WithMockUser("john@example.com")
     void testLikeComment_Success() {
@@ -43,9 +48,10 @@ public class CommentLikeIntegrationTest {
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertTrue(result);
-        assertEquals(1, commentLikeRepository.findByUserIdAndCommentId(
-                websiteUserService.getCurrentUser().getId(), comment.getId()
-        ).stream().toList().size());
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(
+                websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
     }
 
     @Test
@@ -60,6 +66,8 @@ public class CommentLikeIntegrationTest {
 
         assertFalse(result);
         assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isEmpty());
     }
 
     @Test
