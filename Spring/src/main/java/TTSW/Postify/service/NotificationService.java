@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
@@ -29,6 +31,16 @@ public class NotificationService {
         return notifications.map(notificationMapper::toDto);
     }
 
+    public Page<NotificationDTO> getUnreadNotifications(Pageable pageable) {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        Specification<Notification> specification = (root, query, builder) ->
+                builder.equal(root.get("user"), currentUser);
+        specification = specification.and((root, query, builder) -> builder.equal(root.get("isRead"), false));
+        Page<Notification> notifications = notificationRepository.findAll(specification, pageable);
+        notifications.forEach(notification -> notification.setIsRead(true));
+        return notifications.map(notificationMapper::toDto);
+    }
+
     public void deleteNotification(Long notificationId) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Notification notification = notificationRepository.findById(notificationId)
@@ -38,5 +50,22 @@ public class NotificationService {
         }else {
             throw new BadCredentialsException("You are not allowed to delete this notification");
         }
+    }
+
+    public void deleteNotifications(List<Long> notificationIds) {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        List<Notification> notifications = notificationRepository.findAllById(notificationIds);
+        notifications.forEach(notification -> {
+            if (!notification.getUser().equals(currentUser)) {
+                throw new BadCredentialsException("You are not allowed to delete this notification");
+            }
+        });
+        notificationRepository.deleteAll(notifications);
+    }
+
+    public void deleteAllNotifications() {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        List<Notification> notifications = notificationRepository.findByUserId(currentUser.getId());
+        notificationRepository.deleteAll(notifications);
     }
 }
