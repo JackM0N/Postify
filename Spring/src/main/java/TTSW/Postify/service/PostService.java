@@ -2,14 +2,13 @@ package TTSW.Postify.service;
 
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
+import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.mapper.PostMapper;
-import TTSW.Postify.model.Follow;
-import TTSW.Postify.model.Medium;
-import TTSW.Postify.model.Post;
-import TTSW.Postify.model.WebsiteUser;
+import TTSW.Postify.model.*;
 import TTSW.Postify.repository.FollowRepository;
 import TTSW.Postify.repository.MediumRepository;
+import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.PostRepository;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -42,6 +41,7 @@ public class PostService {
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
+    private final NotificationRepository notificationRepository;
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);
@@ -72,9 +72,9 @@ public class PostService {
         if (postDTO.getMedia() == null || postDTO.getMedia().isEmpty()) {
             throw new RuntimeException("Post must contain at least one piece of media (photo or video)");
         }
-
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postMapper.toEntity(postDTO);
-        post.setUser(websiteUserService.getCurrentUser());
+        post.setUser(currentUser);
         postRepository.save(post);
 
         String baseDir = mediaDirectory + post.getId();
@@ -108,6 +108,17 @@ public class PostService {
 
         post.setMedia(media);
         postRepository.save(post);
+
+        List<Follow> followers = followRepository.findByFollowedId(currentUser.getId());
+        followers.forEach(follow -> {
+            Notification notification = new Notification();
+            notification.setTriggeredBy(currentUser);
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setUser(follow.getFollower());
+            notification.setPost(post);
+            notification.setNotificationType(NotificationType.POST);
+            notificationRepository.save(notification);
+        });
 
         return postMapper.toDto(post);
     }
