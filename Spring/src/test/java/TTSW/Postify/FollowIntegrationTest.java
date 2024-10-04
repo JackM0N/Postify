@@ -2,6 +2,9 @@ package TTSW.Postify;
 
 import TTSW.Postify.dto.FollowDTO;
 import TTSW.Postify.dto.WebsiteUserDTO;
+import TTSW.Postify.enums.NotificationType;
+import TTSW.Postify.model.Notification;
+import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.service.FollowService;
 import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.Test;
@@ -12,6 +15,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +30,8 @@ public class FollowIntegrationTest {
 
     @Autowired
     private WebsiteUserService websiteUserService;
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Test
     @WithMockUser("john@example.com")
@@ -61,6 +69,19 @@ public class FollowIntegrationTest {
 
         assertNotNull(result);
         assertEquals(3L, result.getFollowed().getId());
+
+        // check if notification was made
+        List<Notification> notifications = notificationRepository.findAll();
+        Notification followedNotification = null;
+        for (Notification notification : notifications) {
+            if (notification.getNotificationType() == NotificationType.FOLLOW
+                    && Objects.equals(notification.getUser().getId(), followedUserDTO.getId())
+                    && notification.getTriggeredBy().getId().equals(1L)) {
+                followedNotification = notification;
+                break;
+            }
+        }
+        assertNotNull(followedNotification);
     }
 
     @Test
