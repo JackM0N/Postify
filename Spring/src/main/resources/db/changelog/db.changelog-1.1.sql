@@ -146,3 +146,17 @@ CREATE TRIGGER decrement_comment_like_count_trigger
     FOR EACH ROW
 EXECUTE FUNCTION decrement_comment_like_count();
 
+
+--changeset Stanislaw:7 labels:data,fix
+UPDATE notification
+    SET notification_type = 'POST_LIKE'
+    WHERE notification_type = 'like';
+
+UPDATE notification
+    SET notification_type = 'COMMENT'
+    WHERE notification_type = 'comment';
+
+UPDATE notification
+    SET notification_type = 'FOLLOW'
+    WHERE notification_type = 'follow';
+
