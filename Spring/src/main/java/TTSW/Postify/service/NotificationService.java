@@ -5,10 +5,12 @@ import TTSW.Postify.mapper.NotificationMapper;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.NotificationRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +30,13 @@ public class NotificationService {
     }
 
     public void deleteNotification(Long notificationId) {
-        notificationRepository.deleteById(notificationId);
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
+        if (notification.getUser().equals(currentUser)) {
+            notificationRepository.deleteById(notificationId);
+        }else {
+            throw new BadCredentialsException("You are not allowed to delete this notification");
+        }
     }
 }
