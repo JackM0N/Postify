@@ -11,6 +11,7 @@ import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.FollowRepository;
 import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -93,16 +95,37 @@ public class FollowService {
         return followMapper.toDto(follow);
     }
 
+    //TODO: Ask which is better: spec or repo method (from comment/postlike)
     public void deleteFollow(String followedUsername) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         WebsiteUser followedUser = websiteUserRepository.findByUsername(followedUsername)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Follow follow = followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
                 .orElseThrow(() -> new RuntimeException("Follow not found"));
-        if (follow != null) {
-            followRepository.deleteById(follow.getId());
-        }else{
-            throw new RuntimeException("You can't perform this action");
+
+        followRepository.deleteById(follow.getId());
+
+        Specification<Notification> specification = getNotificationSpecification(followedUsername, currentUser);
+
+        List<Notification> notificationsToDelete = notificationRepository.findAll(specification);
+        if(!notificationsToDelete.isEmpty()) {
+            notificationRepository.deleteAll(notificationsToDelete);
         }
+    }
+
+    private static Specification<Notification> getNotificationSpecification(String followedUsername, WebsiteUser currentUser) {
+        return (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(builder.equal(root.get("user").get("username"), followedUsername));
+            predicates.add(builder.equal(root.get("triggeredBy"), currentUser));
+            predicates.add(builder.isNull(root.get("post")));
+            predicates.add(builder.isNull(root.get("comment")));
+            predicates.add(builder.isFalse(root.get("isRead")));
+            predicates.add(builder.equal(root.get("notificationType"), NotificationType.FOLLOW));
+
+            // Combine all predicates with AND
+            return builder.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

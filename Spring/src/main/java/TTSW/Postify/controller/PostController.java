@@ -25,6 +25,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getPosts(filter, pageable));
     }
 
+    @GetMapping("/followed")
+    public ResponseEntity<Page<PostDTO>> getFollowedPosts(PostFilter filter, Pageable pageable) {
+        return ResponseEntity.ok(postService.getFollowedPosts(filter, pageable));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<PostDTO> createPost(@ModelAttribute PostDTO postDTO) throws IOException {
         return ResponseEntity.ok(postService.createPost(postDTO));
