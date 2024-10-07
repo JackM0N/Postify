@@ -125,6 +125,23 @@ public class FollowUnitTest {
     }
 
     @Test
+    void testCreateFollow_AlreadyFollowed() {
+        WebsiteUser currentUser = new WebsiteUser();
+        currentUser.setId(1L);
+        WebsiteUser followedUser = new WebsiteUser();
+        followedUser.setId(2L);
+        FollowDTO followDTO = new FollowDTO();
+        followDTO.setFollowed(websiteUserMapper.toDto(followedUser));
+
+        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
+        when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
+
+        followService.createFollow(followDTO);
+        // repeated action throws error
+        assertThrows(RuntimeException.class, () -> followService.createFollow(followDTO));
+    }
+
+    @Test
     void testCreateFollow_UserNotFound() {
         WebsiteUser currentUser = new WebsiteUser();
         currentUser.setId(1L);

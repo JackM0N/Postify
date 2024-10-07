@@ -30,6 +30,7 @@ public class FollowIntegrationTest {
 
     @Autowired
     private WebsiteUserService websiteUserService;
+
     @Autowired
     private NotificationRepository notificationRepository;
 

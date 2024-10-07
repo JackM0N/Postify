@@ -81,7 +81,6 @@ class CommentIntegrationTest {
         WebsiteUserDTO websiteUserDTO = websiteUserMapper.toDto(websiteUserRepository.findById(1L).get());
         commentDTO.setUser(websiteUserDTO);
 
-        // TODO: brakuje sprawdzenia czy post istnieje
         assertThrows(EntityNotFoundException.class, () -> commentService.createComment(commentDTO));
     }
 
