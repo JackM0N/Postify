@@ -20,7 +20,6 @@ export class PostComponent implements OnInit {
 
   loadPosts(): void {
     this.postService.getPosts({}, {}).subscribe(data => {
-        console.log('Loaded posts:', data);
         this.posts = data.content
       }, error => {
         console.error('Error loading posts:', error);
