@@ -7,6 +7,7 @@ import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.CommentRepository;
+import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.service.AuthorizationService;
 import TTSW.Postify.service.CommentService;
@@ -44,6 +45,9 @@ public class CommentUnitTest {
 
     @Mock
     private AuthorizationService authorizationService;
+
+    @Mock
+    private NotificationRepository notificationRepository;
 
     @Spy
     private CommentMapper commentMapper = new CommentMapperImpl();
@@ -103,6 +107,7 @@ public class CommentUnitTest {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(notificationRepository.save(any())).thenReturn(null);
 
         CommentDTO result = commentService.createComment(commentDTO);
 
@@ -122,6 +127,7 @@ public class CommentUnitTest {
         when(commentRepository.findById(2L)).thenReturn(Optional.of(parentComment));
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(notificationRepository.save(any())).thenReturn(null);
 
         CommentDTO result = commentService.createComment(commentDTO);
 
