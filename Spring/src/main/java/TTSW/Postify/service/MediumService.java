@@ -137,4 +137,32 @@ public class MediumService {
             throw new BadCredentialsException("You do not have permission to delete this medium");
         }
     }
+
+    public String getMediaType(byte[] bytes) {
+        if (bytes == null || bytes.length < 4) {
+            return "application/octet-stream"; // Default
+        }
+
+        // JPG: 0xFF 0xD8 0xFF
+        if (bytes[0] == (byte) 0xFF && bytes[1] == (byte) 0xD8 && bytes[2] == (byte) 0xFF) {
+            return "image/jpeg";
+        }
+
+        // PNG: 0x89 0x50 0x4E 0x47
+        if (bytes[0] == (byte) 0x89 && bytes[1] == (byte) 0x50 && bytes[2] == (byte) 0x4E && bytes[3] == (byte) 0x47) {
+            return "image/png";
+        }
+
+        // GIF: 0x47 0x49 0x46
+        if (bytes[0] == (byte) 0x47 && bytes[1] == (byte) 0x49 && bytes[2] == (byte) 0x46) {
+            return "image/gif";
+        }
+
+        // MP4: 0x00 0x00 0x00 0x18 0x66 0x74 0x79 0x70
+        if (bytes.length > 11 && bytes[4] == (byte) 0x66 && bytes[5] == (byte) 0x74 && bytes[6] == (byte) 0x79 && bytes[7] == (byte) 0x70) {
+            return "video/mp4";
+        }
+
+        return "application/octet-stream";
+    }
 }
