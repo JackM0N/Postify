@@ -1,9 +1,12 @@
 package TTSW.Postify;
 
+import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Comment;
+import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.CommentLikeRepository;
 import TTSW.Postify.repository.CommentRepository;
+import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.CommentLikeService;
 import TTSW.Postify.service.WebsiteUserService;
@@ -35,6 +38,9 @@ public class CommentLikeIntegrationTest {
     @Autowired
     private WebsiteUserService websiteUserService;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     @Test
     @WithMockUser("john@example.com")
     void testLikeComment_Success() {
@@ -43,14 +49,19 @@ public class CommentLikeIntegrationTest {
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertTrue(result);
-        assertEquals(1, commentLikeRepository.findByUserIdAndCommentId(
-                websiteUserService.getCurrentUser().getId(), comment.getId()
-        ).stream().toList().size());
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(
+                websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
     }
 
     @Test
     @WithMockUser("john@example.com")
-    void testLikeComment_RevertLike() {
+    void testLikeComment_RevertLike_NoNotification() {
+        // user1 liked comment
+        // user2 received and possibly deleted notification
+        // user1 unliked comment
+
         WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
         Comment comment = commentRepository.findById(2L).orElseThrow();
 
@@ -60,6 +71,68 @@ public class CommentLikeIntegrationTest {
 
         assertFalse(result);
         assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+    }
+
+    @Test
+    @WithMockUser("john@example.com")
+    void testLikeComment_RevertLike_NotificationIsUnread() {
+        // user1 liked comment
+        // user1 unliked comment
+        // user2 should not receive like notification as it is no longer true
+
+        // like
+        WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
+        Comment comment = commentRepository.findById(1L).orElseThrow();
+
+        Boolean result = commentLikeService.likeComment(comment.getId());
+
+        assertTrue(result);
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(
+                websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
+
+        // revert
+        result = commentLikeService.likeComment(comment.getId());
+
+        assertFalse(result);
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isEmpty());
+    }
+
+    @Test
+    @WithMockUser("john@example.com")
+    void testLikeComment_RevertLike_NotificationIsRead() {
+        // user1 liked comment
+        // user2 received notification
+        // user1 unliked comment
+        // user2's notification should still be there
+
+        // like
+        WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
+        Comment comment = commentRepository.findById(1L).orElseThrow();
+
+        Boolean result = commentLikeService.likeComment(comment.getId());
+
+        assertTrue(result);
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(
+                websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
+
+        // read notification
+        Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L
+        ).orElseThrow();
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+
+        // revert
+        result = commentLikeService.likeComment(comment.getId());
+
+        assertFalse(result);
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
     }
 
     @Test

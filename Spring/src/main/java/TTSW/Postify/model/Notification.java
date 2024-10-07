@@ -31,6 +31,7 @@ public class Notification {
     private WebsiteUser triggeredBy;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     @Column(name = "notification_type", nullable = false, length = 50)
     private NotificationType notificationType;
 
