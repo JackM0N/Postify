@@ -11,6 +11,7 @@ import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.FollowRepository;
 import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,27 +78,37 @@ public class FollowService {
         return followers.map(websiteUserMapper::toDto);
     }
 
+    public Boolean isFollowed(Long userId) {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        WebsiteUser checkUser = websiteUserRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("This user does not exist"));
+        Optional<Follow> follow = followRepository.findByFollowedIdAndFollowerId(checkUser.getId(), currentUser.getId());
+        return follow.isPresent();
+    }
+
     public FollowDTO createFollow(FollowDTO followDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         WebsiteUser followedUser = websiteUserRepository.findById(followDTO.getFollowed().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("User is already followed by you"));
+        Follow existingFollow = followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
+                .orElse(null);
+        if (existingFollow == null) {
+            Follow follow = followMapper.toEntity(followDTO);
+            follow.setFollower(currentUser);
+            follow.setFollowed(followedUser);
 
-        Follow follow = followMapper.toEntity(followDTO);
-        follow.setFollower(currentUser);
-        follow.setFollowed(followedUser);
+            Notification notification = new Notification();
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setTriggeredBy(currentUser);
+            notification.setUser(followedUser);
+            notification.setNotificationType(NotificationType.FOLLOW);
 
-        Notification notification = new Notification();
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setTriggeredBy(currentUser);
-        notification.setUser(followedUser);
-        notification.setNotificationType(NotificationType.FOLLOW);
+            notificationRepository.save(notification);
+            followRepository.save(follow);
 
-        notificationRepository.save(notification);
-        followRepository.save(follow);
-
-        return followMapper.toDto(follow);
+            return followMapper.toDto(follow);
+        }
+        throw new RuntimeException("This user is already followed by you");
     }
 
     //TODO: Ask which is better: spec or repo method (from comment/postlike)

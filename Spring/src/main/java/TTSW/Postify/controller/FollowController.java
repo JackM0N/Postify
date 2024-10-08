@@ -25,6 +25,11 @@ public class FollowController {
         return ResponseEntity.ok(followService.getFollowers(pageable));
     }
 
+    @GetMapping("/is-followed/{userId}")
+    private ResponseEntity<Boolean> isFollowed(@PathVariable Long userId) {
+        return ResponseEntity.ok(followService.isFollowed(userId));
+    }
+
     @PostMapping("/create")
     private ResponseEntity<FollowDTO> createFollow(@RequestBody FollowDTO followDTO) {
         return ResponseEntity.ok(followService.createFollow(followDTO));
