@@ -4,30 +4,25 @@ import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.WebsiteUser;
-import TTSW.Postify.repository.CommentLikeRepository;
-import TTSW.Postify.repository.CommentRepository;
-import TTSW.Postify.repository.NotificationRepository;
-import TTSW.Postify.repository.WebsiteUserRepository;
+import TTSW.Postify.repository.*;
 import TTSW.Postify.service.CommentLikeService;
 import TTSW.Postify.service.WebsiteUserService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@WithMockUser("john@example.com")
 public class CommentLikeIntegrationTest {
 
     @Autowired
     private CommentLikeService commentLikeService;
-
-    @Autowired
-    private WebsiteUserRepository websiteUserRepository;
 
     @Autowired
     private CommentRepository commentRepository;
@@ -41,78 +36,85 @@ public class CommentLikeIntegrationTest {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    @Test
-    @WithMockUser("john@example.com")
-    void testLikeComment_Success() {
-        Comment comment = commentRepository.findById(1L).orElseThrow();
+    @Autowired
+    private FollowHelper followHelper;
 
+    private WebsiteUser john;
+    private WebsiteUser jane;
+    private Comment comment;
+
+    @BeforeEach
+    public void setup() {
+        john = websiteUserService.getCurrentUser();
+        jane = followHelper.ensureJaneIsFollowing(john);
+        comment = commentRepository.findById(1L).orElseThrow();
+    }
+
+
+    @Test
+    void testLikeComment_Success() {
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertTrue(result);
         assertTrue(commentLikeRepository.findByUserIdAndCommentId(
                 websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
-                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
+                jane.getId(), john.getId(), NotificationType.COMMENT_LIKE, comment.getId()).isPresent());
     }
 
     @Test
-    @WithMockUser("john@example.com")
-    void testLikeComment_RevertLike_NoNotification() {
-        // user1 liked comment
-        // user2 received and possibly deleted notification
-        // user1 unliked comment
+    void testLikeComment_CommentNotFound() {
+        Long nonExistentCommentId = 999L;
 
-        WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
-        Comment comment = commentRepository.findById(2L).orElseThrow();
+        assertThrows(RuntimeException.class, () -> commentLikeService.likeComment(nonExistentCommentId));
+    }
+
+    @Test
+    void testLikeComment_RevertLike_NoNotification() {
+        // john liked comment
+        // jane received and possibly deleted notification
+        // john unliked comment
 
         commentLikeService.likeComment(comment.getId());
 
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertFalse(result);
-        assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(john.getId(), comment.getId()).isEmpty());
     }
 
     @Test
-    @WithMockUser("john@example.com")
-    void testLikeComment_RevertLike_NotificationIsUnread() {
-        // user1 liked comment
-        // user1 unliked comment
-        // user2 should not receive like notification as it is no longer true
+    void testLikeComment_RevertLike_NotificationUnread() {
+        // john liked comment
+        // john unliked comment
+        // jane should not receive like notification as it is no longer true
 
         // like
-        WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
-        Comment comment = commentRepository.findById(1L).orElseThrow();
-
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertTrue(result);
         assertTrue(commentLikeRepository.findByUserIdAndCommentId(
-                websiteUserService.getCurrentUser().getId(), comment.getId()).isPresent());
+                john.getId(), comment.getId()).isPresent());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
-                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
+                jane.getId(), john.getId(), NotificationType.COMMENT_LIKE, comment.getId()).isPresent());
 
         // revert
         result = commentLikeService.likeComment(comment.getId());
 
         assertFalse(result);
-        assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(john.getId(), comment.getId()).isEmpty());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
-                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isEmpty());
+                jane.getId(), john.getId(), NotificationType.COMMENT_LIKE, comment.getId()).isEmpty());
     }
 
     @Test
-    @WithMockUser("john@example.com")
-    void testLikeComment_RevertLike_NotificationIsRead() {
-        // user1 liked comment
-        // user2 received notification
-        // user1 unliked comment
-        // user2's notification should still be there
+    void testLikeComment_RevertLike_NotificationRead() {
+        // john liked comment
+        // jane received notification
+        // john unliked comment
+        // jane's notification should still be there
 
         // like
-        WebsiteUser currentUser = websiteUserRepository.findById(1L).orElseThrow();
-        Comment comment = commentRepository.findById(1L).orElseThrow();
-
         Boolean result = commentLikeService.likeComment(comment.getId());
 
         assertTrue(result);
@@ -121,8 +123,7 @@ public class CommentLikeIntegrationTest {
 
         // read notification
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
-                2L, 1L, NotificationType.COMMENT_LIKE, 1L
-        ).orElseThrow();
+                jane.getId(), john.getId(), NotificationType.COMMENT_LIKE, comment.getId()).orElseThrow();
         notification.setIsRead(true);
         notificationRepository.save(notification);
 
@@ -130,17 +131,9 @@ public class CommentLikeIntegrationTest {
         result = commentLikeService.likeComment(comment.getId());
 
         assertFalse(result);
-        assertTrue(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()).isEmpty());
+        assertTrue(commentLikeRepository.findByUserIdAndCommentId(john.getId(), comment.getId()).isEmpty());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
-                2L, 1L, NotificationType.COMMENT_LIKE, 1L).isPresent());
-    }
-
-    @Test
-    @WithMockUser("john@example.com")
-    void testLikeComment_CommentNotFound() {
-        Long nonExistentCommentId = 999L;
-
-        assertThrows(RuntimeException.class, () -> commentLikeService.likeComment(nonExistentCommentId));
+                jane.getId(), john.getId(), NotificationType.COMMENT_LIKE, comment.getId()).isPresent());
     }
 }
 
