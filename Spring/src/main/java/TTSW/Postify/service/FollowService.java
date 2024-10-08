@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FollowService {
+    //TODO: Make method to check if currently viewed user is followed by logged in user
+    //TODO: Add filter to followers (user.username, created_at)
     private final FollowRepository followRepository;
     private final WebsiteUserRepository websiteUserRepository;
     private final WebsiteUserService websiteUserService;
@@ -78,6 +80,8 @@ public class FollowService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         WebsiteUser followedUser = websiteUserRepository.findById(followDTO.getFollowed().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("User is already followed by you"));
 
         Follow follow = followMapper.toEntity(followDTO);
         follow.setFollower(currentUser);

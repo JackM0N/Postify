@@ -5,16 +5,11 @@ export interface PostDTO {
     createdAt: [];
     commentCount: number;
     likeCount: number;
-    media: MediumDTO[];
+    media?: { url: string; type: string }[];
+    currentMediumIndex?: number;
   }
   
   export interface WebsiteUserDTO {
     id: number;
     username: string;
-  }
-  
-  export interface MediumDTO {
-    id: number;
-    type: string; // e.g., "image" or "video"
-    url: string;  // Path to media
   }
