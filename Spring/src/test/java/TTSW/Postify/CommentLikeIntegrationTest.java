@@ -37,7 +37,7 @@ public class CommentLikeIntegrationTest {
     private NotificationRepository notificationRepository;
 
     @Autowired
-    private FollowHelper followHelper;
+    private WebsiteUserRepository websiteUserRepository;
 
     private WebsiteUser john;
     private WebsiteUser jane;
@@ -46,8 +46,8 @@ public class CommentLikeIntegrationTest {
     @BeforeEach
     public void setup() {
         john = websiteUserService.getCurrentUser();
-        jane = followHelper.ensureJaneIsFollowing(john);
-        comment = commentRepository.findById(1L).orElseThrow();
+        jane = websiteUserRepository.findByUsername("jane_smith").get();
+        comment = commentRepository.findById(1L).get();
     }
 
 
