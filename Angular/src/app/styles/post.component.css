@@ -29,3 +29,22 @@
     font-size: 14px;
     color: #666;
   }
+
+  .navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.navigation-buttons button {
+    background-color: #007bff; /* Bootstrap primary color */
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.navigation-buttons button:disabled {
+    background-color: #ccc; /* Disabled button color */
+}
