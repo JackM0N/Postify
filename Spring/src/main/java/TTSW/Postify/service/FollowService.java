@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class FollowService {
-    //TODO: Make method to check if currently viewed user is followed by logged in user
-    //TODO: Add filter to followers (user.username, created_at)
     private final FollowRepository followRepository;
     private final WebsiteUserRepository websiteUserRepository;
     private final WebsiteUserService websiteUserService;
@@ -38,12 +36,20 @@ public class FollowService {
     private final FollowMapper followMapper;
     private final NotificationRepository notificationRepository;
 
-    public Page<WebsiteUserDTO> getFollowers(Pageable pageable) {
+    public Page<WebsiteUserDTO> getFollowers(String searchText, Pageable pageable) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        List<Follow> follows = followRepository.findByFollowedId(currentUser.getId());
-        if (follows == null || follows.isEmpty()) {
+        Specification<Follow> spec = (root, query, builder) -> builder.equal(root.get("followed").get("id"), currentUser.getId());
+        if (searchText != null && !searchText.isEmpty()) {
+            String likePattern = "%" + searchText.toLowerCase() + "%";
+            spec = spec.and(((root, query, builder) -> builder.like(root.get("followed").get("username"), likePattern)));
+        }
+
+        Page<Follow> follows = followRepository.findAll(spec,pageable);
+
+        if (follows.isEmpty()) {
             return Page.empty();
         }
+
         List<Long> followerIds = follows.stream()
                 .map(follow -> follow.getFollower().getId())
                 .collect(Collectors.toList());
@@ -51,12 +57,21 @@ public class FollowService {
         return getWebsiteUserDTOS(pageable, followerIds);
     }
 
-    public Page<WebsiteUserDTO> getFollowed(Pageable pageable) {
+    public Page<WebsiteUserDTO> getFollowed(String searchText, Pageable pageable) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
-        List<Follow> followed = followRepository.findByFollowerId(currentUser.getId());
-        if (followed == null || followed.isEmpty()) {
+
+        Specification<Follow> spec = (root, query, builder) -> builder.equal(root.get("follower").get("id"), currentUser.getId());
+        if (searchText != null && !searchText.isEmpty()) {
+            String likePattern = "%" + searchText.toLowerCase() + "%";
+            spec = spec.and(((root, query, builder) -> builder.like(root.get("follower").get("username"), likePattern)));
+        }
+
+        Page<Follow> followed = followRepository.findAll(spec,pageable);
+
+        if (followed.isEmpty()) {
             return Page.empty();
         }
+
         List<Long> followedIds = followed.stream()
                 .map(follow -> follow.getFollowed().getId())
                 .collect(Collectors.toList());
