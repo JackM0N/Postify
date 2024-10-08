@@ -116,6 +116,8 @@ public class FollowUnitTest {
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.empty());
 
         FollowDTO result = followService.createFollow(followDTO);
 
@@ -135,9 +137,19 @@ public class FollowUnitTest {
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.empty());
 
         followService.createFollow(followDTO);
+
         // repeated action throws error
+        Follow follow = new Follow();
+        follow.setFollowed(followedUser);
+        follow.setFollower(currentUser);
+
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.of(follow));
+
         assertThrows(RuntimeException.class, () -> followService.createFollow(followDTO));
     }
 
