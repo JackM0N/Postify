@@ -105,25 +105,25 @@ public class FollowService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         WebsiteUser followedUser = websiteUserRepository.findById(followDTO.getFollowed().getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Follow existingFollow = followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId())
-                .orElse(null);
-        if (existingFollow == null) {
-            Follow follow = followMapper.toEntity(followDTO);
-            follow.setFollower(currentUser);
-            follow.setFollowed(followedUser);
 
-            Notification notification = new Notification();
-            notification.setCreatedAt(LocalDateTime.now());
-            notification.setTriggeredBy(currentUser);
-            notification.setUser(followedUser);
-            notification.setNotificationType(NotificationType.FOLLOW);
-
-            notificationRepository.save(notification);
-            followRepository.save(follow);
-
-            return followMapper.toDto(follow);
+        if (followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()).isPresent()) {
+            throw new RuntimeException("This user is already followed by you");
         }
-        throw new RuntimeException("This user is already followed by you");
+
+        Follow follow = followMapper.toEntity(followDTO);
+        follow.setFollower(currentUser);
+        follow.setFollowed(followedUser);
+
+        Notification notification = new Notification();
+        notification.setCreatedAt(LocalDateTime.now());
+        notification.setTriggeredBy(currentUser);
+        notification.setUser(followedUser);
+        notification.setNotificationType(NotificationType.FOLLOW);
+
+        notificationRepository.save(notification);
+        followRepository.save(follow);
+
+        return followMapper.toDto(follow);
     }
 
     //TODO: Ask which is better: spec or repo method (from comment/postlike)
