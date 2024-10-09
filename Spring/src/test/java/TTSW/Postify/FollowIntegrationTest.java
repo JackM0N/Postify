@@ -39,7 +39,7 @@ public class FollowIntegrationTest {
     void testGetFollowers_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<WebsiteUserDTO> result = followService.getFollowers(pageable);
+        Page<WebsiteUserDTO> result = followService.getFollowers(null, pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
@@ -51,7 +51,7 @@ public class FollowIntegrationTest {
     void testGetFollowed_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        Page<WebsiteUserDTO> result = followService.getFollowed(pageable);
+        Page<WebsiteUserDTO> result = followService.getFollowed(null, pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
@@ -93,7 +93,7 @@ public class FollowIntegrationTest {
         followService.deleteFollow(followedUsername);
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<WebsiteUserDTO> result = followService.getFollowed(pageable);
+        Page<WebsiteUserDTO> result = followService.getFollowed(null, pageable);
 
         assertEquals(0, result.getTotalElements());
     }

@@ -26,7 +26,7 @@ public class FollowHelper {
     private FollowRepository followRepository;
 
     public WebsiteUser ensureJaneIsFollowing(WebsiteUser user) {
-        List<WebsiteUserDTO> followers = followService.getFollowers(Pageable.unpaged()).stream().toList();
+        List<WebsiteUserDTO> followers = followService.getFollowers(null, Pageable.unpaged()).stream().toList();
         boolean isJaneHere = followers.stream().anyMatch(f -> f.getId() == 2L);
 
         WebsiteUser jane = websiteUserRepository.findByUsername("jane_smith").get();

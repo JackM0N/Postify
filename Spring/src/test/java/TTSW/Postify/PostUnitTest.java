@@ -123,6 +123,7 @@ public class PostUnitTest {
 
         WebsiteUser user = new WebsiteUser();
         user.setUsername("testuser");
+        user.setId(1L);
         post.setUser(user);
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(followRepository.findByFollowedId(any(Long.class))).thenReturn(new ArrayList<>());
