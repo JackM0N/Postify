@@ -1,5 +1,6 @@
 import { AuthInterceptor } from './services/auth.intereptor';
-import { LoginComponent } from './components/page-components/authentication/login.component';
+import { LoginComponent } from './components/authentication/login.component';
+import { RegistrationComponent } from './components/authentication/registration.component';
 
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
@@ -13,7 +14,8 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,

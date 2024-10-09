@@ -1,4 +1,7 @@
-package TTSW.Postify.model;
+package TTSW.Postify.repository;
 
-public interface UserRoleRepository extends org.springframework.data.jpa.repository.JpaRepository<TTSW.Postify.model.UserRole, java.lang.Long> {
-  }
+import TTSW.Postify.model.UserRole;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
+}
