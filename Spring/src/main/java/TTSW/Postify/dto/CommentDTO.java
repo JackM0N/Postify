@@ -23,6 +23,7 @@ public class CommentDTO implements Serializable {
     @NotNull
     Long postId;
 
+    //TODO: CHANGE TO ID to stop reccursive calls
     @NotNull
     CommentDTO parentComment;
 
