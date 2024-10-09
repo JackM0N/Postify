@@ -16,13 +16,18 @@ public class FollowController {
     private final FollowService followService;
 
     @GetMapping("/followed-users")
-    private ResponseEntity<Page<WebsiteUserDTO>> getFollowedUsers(Pageable pageable) {
-        return ResponseEntity.ok(followService.getFollowed(pageable));
+    private ResponseEntity<Page<WebsiteUserDTO>> getFollowedUsers(String searchText, Pageable pageable) {
+        return ResponseEntity.ok(followService.getFollowed(searchText, pageable));
     }
 
     @GetMapping("/followers")
-    private ResponseEntity<Page<WebsiteUserDTO>> getFollowers(Pageable pageable) {
-        return ResponseEntity.ok(followService.getFollowers(pageable));
+    private ResponseEntity<Page<WebsiteUserDTO>> getFollowers(String searchText, Pageable pageable) {
+        return ResponseEntity.ok(followService.getFollowers(searchText, pageable));
+    }
+
+    @GetMapping("/is-followed/{userId}")
+    private ResponseEntity<Boolean> isFollowed(@PathVariable Long userId) {
+        return ResponseEntity.ok(followService.isFollowed(userId));
     }
 
     @PostMapping("/create")
