@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class NotificationDTO implements Serializable {
     Long id;
 
+    // TODO: change to simplifiedUserDTO
     @NotNull
     WebsiteUserDTO user;
 

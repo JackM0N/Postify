@@ -65,21 +65,22 @@ public class FollowUnitTest {
     void testGetFollowers_Success() {
         WebsiteUser currentUser = new WebsiteUser();
         currentUser.setId(1L);
+        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
+
         Follow follow = new Follow();
         follow.setFollower(currentUser);
         follow.setFollowed(new WebsiteUser());
         List<Follow> follows = Collections.singletonList(follow);
-        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
-        when(followRepository.findByFollowedId(1L)).thenReturn(follows);
+        Page<Follow> page = new PageImpl<>(follows);
+        when(followRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(page);
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<WebsiteUserDTO> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
         when(websiteUserRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
 
-        Page<WebsiteUserDTO> result = followService.getFollowers(pageable);
+        Page<WebsiteUserDTO> result = followService.getFollowers(null, pageable);
 
         assertNotNull(result);
-        verify(followRepository, times(1)).findByFollowedId(1L);
         verify(websiteUserRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }
 
@@ -87,21 +88,22 @@ public class FollowUnitTest {
     void testGetFollowed_Success() {
         WebsiteUser currentUser = new WebsiteUser();
         currentUser.setId(1L);
+        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
+
         Follow follow = new Follow();
         follow.setFollower(currentUser);
         follow.setFollowed(new WebsiteUser());
         List<Follow> followed = Collections.singletonList(follow);
-        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
-        when(followRepository.findByFollowerId(1L)).thenReturn(followed);
+        Page<Follow> page = new PageImpl<>(followed);
+        when(followRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(page);
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<WebsiteUserDTO> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
         when(websiteUserRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
 
-        Page<WebsiteUserDTO> result = followService.getFollowed(pageable);
+        Page<WebsiteUserDTO> result = followService.getFollowed(null, pageable);
 
         assertNotNull(result);
-        verify(followRepository, times(1)).findByFollowerId(1L);
         verify(websiteUserRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }
 
@@ -116,12 +118,41 @@ public class FollowUnitTest {
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.empty());
 
         FollowDTO result = followService.createFollow(followDTO);
 
         assertNotNull(result);
         verify(followRepository, times(1)).save(any(Follow.class));
         verify(notificationRepository, times(1)).save(any(Notification.class));
+    }
+
+    @Test
+    void testCreateFollow_AlreadyFollowed() {
+        WebsiteUser currentUser = new WebsiteUser();
+        currentUser.setId(1L);
+        WebsiteUser followedUser = new WebsiteUser();
+        followedUser.setId(2L);
+        FollowDTO followDTO = new FollowDTO();
+        followDTO.setFollowed(websiteUserMapper.toDto(followedUser));
+
+        when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
+        when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.empty());
+
+        followService.createFollow(followDTO);
+
+        // repeated action throws error
+        Follow follow = new Follow();
+        follow.setFollowed(followedUser);
+        follow.setFollower(currentUser);
+
+        when(followRepository.findByFollowedIdAndFollowerId(followedUser.getId(), currentUser.getId()))
+                .thenReturn(Optional.of(follow));
+
+        assertThrows(RuntimeException.class, () -> followService.createFollow(followDTO));
     }
 
     @Test

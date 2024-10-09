@@ -8,6 +8,7 @@ import TTSW.Postify.mapper.*;
 import TTSW.Postify.model.Medium;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
+import TTSW.Postify.repository.FollowRepository;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.service.AuthorizationService;
@@ -30,6 +31,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,6 +65,9 @@ public class PostUnitTest {
 
     @Mock
     private AuthorizationService authorizationService;
+
+    @Mock
+    private FollowRepository followRepository;
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
@@ -118,8 +123,10 @@ public class PostUnitTest {
 
         WebsiteUser user = new WebsiteUser();
         user.setUsername("testuser");
+        user.setId(1L);
         post.setUser(user);
         when(websiteUserService.getCurrentUser()).thenReturn(user);
+        when(followRepository.findByFollowedId(any(Long.class))).thenReturn(new ArrayList<>());
 
         // original save() updates id of saved object, this is simulated here
         when(postRepository.save(any(Post.class))).thenAnswer(invocation -> {
