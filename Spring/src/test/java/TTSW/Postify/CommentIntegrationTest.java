@@ -14,7 +14,6 @@ import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.CommentService;
-import TTSW.Postify.service.NotificationService;
 import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,13 +54,11 @@ class CommentIntegrationTest {
     private WebsiteUserMapper websiteUserMapper;
 
     @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
-    private CommentMapperImpl commentMapperImpl;
+    private CommentMapperImpl commentMapper;
+
 
     @Test
     @WithAnonymousUser
@@ -82,7 +79,7 @@ class CommentIntegrationTest {
         WebsiteUser john = websiteUserService.getCurrentUser();
         WebsiteUser jane = websiteUserRepository.findByUsername("jane_smith").get();
         Post post = postRepository.findById(2L).get();
-        assertEquals(post.getUser().getUsername(), "jane_smith");
+        assertEquals(post.getUser(), jane);
 
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setText("New comment");
@@ -94,6 +91,37 @@ class CommentIntegrationTest {
         assertNotNull(savedComment);
         assertEquals("New comment", savedComment.getText());
         assertNotNull(savedComment.getId());
+
+        // notification
+        Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
+                jane.getId(), john.getId(), NotificationType.COMMENT, savedComment.getId()).get();
+        assertNotNull(notification);
+    }
+
+    @Test
+    void testCreateComment_Success_WithParentComment() {
+        WebsiteUser john = websiteUserService.getCurrentUser();
+        WebsiteUser jane = websiteUserRepository.findByUsername("jane_smith").get();
+        Post post = postRepository.findById(1L).get();
+        assertNotNull(post);
+        assertEquals(post.getUser(), john);
+
+        Comment janeComment = commentRepository.findById(1L).get();
+        assertNotNull(janeComment);
+        assertEquals(janeComment.getUser(), jane);
+
+        CommentDTO commentDTO = new CommentDTO();
+        commentDTO.setText("New comment");
+        commentDTO.setPostId(post.getId());
+        commentDTO.setParentComment(commentMapper.toDto(janeComment));
+        commentDTO.setUser(websiteUserMapper.toDto(john));
+
+        CommentDTO savedComment = commentService.createComment(commentDTO);
+
+        assertNotNull(savedComment);
+        assertEquals("New comment", savedComment.getText());
+        assertNotNull(savedComment.getId());
+        assertEquals(savedComment.getParentComment().getId(), janeComment.getId());
 
         // notification
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
@@ -118,7 +146,7 @@ class CommentIntegrationTest {
         Comment comment = commentRepository.findById(1L).get();
         assertNotNull(comment);
         assertEquals(comment.getUser(), websiteUserService.getCurrentUser());
-        CommentDTO commentDTO = commentMapperImpl.toDto(comment);
+        CommentDTO commentDTO = commentMapper.toDto(comment);
         commentDTO.setText("Updated comment text");
 
         CommentDTO updatedComment = commentService.updateComment(commentDTO);
@@ -132,7 +160,7 @@ class CommentIntegrationTest {
         Comment comment = commentRepository.findById(1L).get();
         assertNotNull(comment);
         assertNotEquals(comment.getUser(), websiteUserService.getCurrentUser());
-        CommentDTO commentDTO = commentMapperImpl.toDto(comment);
+        CommentDTO commentDTO = commentMapper.toDto(comment);
         commentDTO.setText("Not my comment, can I update it?");
 
         assertThrows(BadCredentialsException.class, () -> commentService.updateComment(commentDTO));
