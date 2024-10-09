@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-registration',
@@ -16,7 +18,11 @@ export class RegistrationComponent {
     bio: ''
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private toastr: ToastrService,
+) {}
 
   register(): void {
     if (this.registrationData.password !== this.registrationData.confirmPassword) {
@@ -34,9 +40,11 @@ export class RegistrationComponent {
 
     this.authService.register(registrationRequest).subscribe(
       response => {
-        console.log('Registration successful', response);
+        this.toastr.success('Registration was successful')
+        this.router.navigate(['/login'])
       },
       error => {
+        this.toastr.error('Error during registration. Please try again.')
         console.error('Error during registration', error);
       }
     );
