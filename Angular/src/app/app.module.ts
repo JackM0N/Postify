@@ -1,6 +1,8 @@
 import { AuthInterceptor } from './services/auth.intereptor';
-import { LoginComponent } from './components/page-components/authentication/login.component';
+import { LoginComponent } from './components/authentication/login.component';
+import { RegistrationComponent } from './components/authentication/registration.component';
 
+import { ToastrModule } from 'ngx-toastr';
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -13,13 +15,15 @@ import { FormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [
     provideClientHydration(),
