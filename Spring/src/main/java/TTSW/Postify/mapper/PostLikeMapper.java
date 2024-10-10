@@ -7,8 +7,10 @@ import org.mapstruct.*;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = SimplifiedWebsiteUserMapper.class)
 public interface PostLikeMapper {
+    @Mapping(target = "user", source = "user")
     PostLike toEntity(PostLikeDTO postLikeDTO);
 
     PostLikeDTO toDto(PostLike postLike);

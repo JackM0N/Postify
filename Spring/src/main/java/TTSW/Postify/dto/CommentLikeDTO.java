@@ -17,7 +17,7 @@ public class CommentLikeDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO user;
+    SimplifiedWebsiteUserDTO user;
 
     @NotNull
     CommentDTO comment;
