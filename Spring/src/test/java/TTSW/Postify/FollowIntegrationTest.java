@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@WithMockUser("john@example.com")
 public class FollowIntegrationTest {
 
     @Autowired
@@ -35,7 +36,6 @@ public class FollowIntegrationTest {
     private NotificationRepository notificationRepository;
 
     @Test
-    @WithMockUser("john@example.com")
     void testGetFollowers_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -47,7 +47,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testGetFollowed_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -59,7 +58,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testCreateFollow_Success() {
         WebsiteUserDTO followedUserDTO = new WebsiteUserDTO();
         followedUserDTO.setId(3L);
@@ -86,7 +84,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testDeleteFollow_Success() {
         String followedUsername = "jane_smith";
 
@@ -99,7 +96,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testDeleteFollow_FollowNotFound() {
         String followedUsername = "non_existent_user";
 
