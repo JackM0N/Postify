@@ -75,6 +75,7 @@ public class CommentLikeUnitTest {
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(commentLikeRepository.findByUserIdAndCommentId(currentUser.getId(), comment.getId()))
                 .thenReturn(Optional.of(existingLike));
+        when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
 
         Boolean result = commentLikeService.likeComment(comment.getId());
 

@@ -2,14 +2,14 @@ package TTSW.Postify;
 
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
+import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.mapper.PostMapper;
+import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
-import TTSW.Postify.repository.MediumRepository;
-import TTSW.Postify.repository.PostRepository;
-import TTSW.Postify.service.PostService;
-import TTSW.Postify.service.WebsiteUserService;
+import TTSW.Postify.repository.*;
+import TTSW.Postify.service.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +24,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -35,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@WithMockUser("john@example.com")
 public class PostIntegrationTest {
 
     @Autowired
@@ -47,13 +47,16 @@ public class PostIntegrationTest {
     private WebsiteUserService websiteUserService;
 
     @Autowired
-    private MediumRepository mediumRepository;
-
-    @Autowired
     private PostMapper postMapper;
 
     @Value("${directory.media.posts}")
     private final String mediaDirectory = "../Media/posts/";
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private FollowHelper followHelper;
 
     @Test
     @WithAnonymousUser
@@ -71,30 +74,39 @@ public class PostIntegrationTest {
 
 
     @Test
-    @WithMockUser("john@example.com")
     public void testCreatePost_Success() throws IOException {
-        WebsiteUser user = websiteUserService.getCurrentUser();
+        // post
+        WebsiteUser john = websiteUserService.getCurrentUser();
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setMediumType("image");
         MockMultipartFile multipartFile = new MockMultipartFile(
-                "file", "test_image.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes()
-        );
+                "file", "test_image.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes());
         mediumDTO.setFile(multipartFile);
 
         PostDTO postDTO = new PostDTO();
         postDTO.setDescription("New post description");
         postDTO.setMedia(Collections.singletonList(mediumDTO));
 
+        // notification
+        // create follow if it does not exist
+        WebsiteUser jane = followHelper.ensureJaneIsFollowing(john);
+
+        // post
         PostDTO createdPost = postService.createPost(postDTO);
 
         assertNotNull(createdPost.getId());
         assertEquals("New post description", createdPost.getDescription());
         assertNotNull(createdPost.getCreatedAt());
-        assertEquals(user.getId(), createdPost.getUser().getId());
+        assertEquals(john.getId(), createdPost.getUser().getId());
 
         List<MediumDTO> media = createdPost.getMedia();
         assertEquals(1, media.size());
         assertEquals(mediumDTO.getMediumType(), media.get(0).getMediumType());
+
+        // notification
+        Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
+                jane.getId(), john.getId(), NotificationType.POST,createdPost.getId()).orElseThrow();
+        assertNotNull(notification);
 
         // cleanup
         Path path = Path.of(mediaDirectory + "/" + createdPost.getId());
@@ -108,8 +120,7 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
-    public void testUpdatePost_Success() throws AccessDeniedException {
+    public void testUpdatePost_Success() {
         Post post = postRepository.findById(1L).orElse(null);
         assertNotNull(post);
         post.setDescription("New post description");
@@ -132,7 +143,6 @@ public class PostIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     public void testDeletePost_Success() {
         postService.deletePost(1L);
 

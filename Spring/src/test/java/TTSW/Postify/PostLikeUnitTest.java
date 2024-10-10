@@ -77,6 +77,7 @@ public class PostLikeUnitTest {
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(postLikeRepository.findByUserIdAndPostId(currentUser.getId(), post.getId())).thenReturn(Optional.of(existingPostLike));
+        when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
 
         Boolean result = postLikeService.likePost(post.getId());
 

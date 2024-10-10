@@ -45,6 +45,7 @@ public class CommentService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         Comment comment = commentMapper.toEntity(commentDTO);
         comment.setUser(currentUser);
+        comment.setPost(post);
 
         Notification notification = new Notification();
         notification.setComment(comment);
