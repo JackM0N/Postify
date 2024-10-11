@@ -18,10 +18,10 @@ public class FollowDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO follower;
+    SimplifiedWebsiteUserDTO follower;
 
     @NotNull
-    WebsiteUserDTO followed;
+    SimplifiedWebsiteUserDTO followed;
 
     LocalDateTime createdAt;
 }

@@ -5,8 +5,9 @@ import TTSW.Postify.model.Post;
 import org.mapstruct.*;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-        uses = {MediumMapper.class, PostLikeMapper.class, HashtagMapper.class})
+        uses = {MediumMapper.class, PostLikeMapper.class, HashtagMapper.class,SimplifiedWebsiteUserMapper.class})
 public interface PostMapper {
+    @Mapping(target = "user", source =  "user")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "deletedAt", ignore = true)

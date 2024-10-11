@@ -18,10 +18,10 @@ public class MessageDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO sender;
+    SimplifiedWebsiteUserDTO sender;
 
     @NotNull
-    WebsiteUserDTO receiver;
+    SimplifiedWebsiteUserDTO receiver;
 
     @NotNull
     String messageText;

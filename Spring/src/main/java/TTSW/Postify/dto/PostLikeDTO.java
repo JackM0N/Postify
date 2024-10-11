@@ -17,7 +17,7 @@ public class PostLikeDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO user;
+    SimplifiedWebsiteUserDTO user;
 
     @NotNull
     Long postID;

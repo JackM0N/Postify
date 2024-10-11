@@ -4,14 +4,16 @@
       <ul>
         <h1 class="logo">Postify</h1>
         <hr class="divider">
-        <li><a routerLink="/notifications">Notifications</a></li>
         <li><a routerLink="/posts">Posts</a></li>
-        <li><a routerLink="/followed-users">Followed Users</a></li>
-        <li><a routerLink="/messages">Messages</a></li>
+        <li *ngIf="isLoggedIn"><a routerLink="/notifications">Notifications</a></li>
+        <li *ngIf="isLoggedIn"><a routerLink="/followed-users">Followed Users</a></li>
+        <li *ngIf="isLoggedIn"><a routerLink="/messages">Messages</a></li>
       </ul>
       <div class="auth-links">
-        <a routerLink="/login">Login</a>
-        <a routerLink="/register">Register</a>
+        <a *ngIf="!isLoggedIn" routerLink="/login">Login</a>
+        <a *ngIf="!isLoggedIn" routerLink="/register">Register</a>
+        <a *ngIf="isLoggedIn" routerLink="/account">{{ username }}</a>
+        <a *ngIf="isLoggedIn" (click)="logout()">Logout</a>
       </div>
     </nav>
     <footer class="footer z-20">
