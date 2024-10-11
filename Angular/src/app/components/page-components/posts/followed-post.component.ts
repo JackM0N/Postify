@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
 import { formatDateTimeArray } from '../../../Util/formatDate';
-import { Page } from '../../../models/page.model';
 
 @Component({
   selector: 'app-followed-posts',
@@ -30,7 +29,6 @@ export class FollowedPostsComponent implements OnInit {
         });
       }, error => {
         console.error('Error loading followed posts:', error);
-        this.followedPosts = [];
       });
   }
 
