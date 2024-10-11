@@ -1,6 +1,8 @@
 import { AuthInterceptor } from './services/auth.intereptor';
-import { LoginComponent } from './components/page-components/authentication/login.component';
+import { LoginComponent } from './components/authentication/login.component';
+import { RegistrationComponent } from './components/authentication/registration.component';
 
+import { ToastrModule } from 'ngx-toastr';
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
@@ -9,19 +11,38 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { HttpClientModule } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
+
+export function tokenGetter() {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    return localStorage.getItem('token');
+  } else {
+    return null;
+  }
+}
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    RegistrationComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    ToastrModule.forRoot(),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,  // Define how to retrieve the token
+        allowedDomains: ['localhost:8080'],  // Define the allowed domains for which the JWT will be sent
+        disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'],  // Define the routes where the JWT should not be sent
+      }
+    })
   ],
   providers: [
+    JwtHelperService,
     provideClientHydration(),
     provideAnimationsAsync(),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}

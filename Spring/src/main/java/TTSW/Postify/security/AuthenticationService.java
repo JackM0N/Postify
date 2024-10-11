@@ -4,6 +4,7 @@ import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.enums.Role;
 import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.model.UserRole;
+import TTSW.Postify.repository.UserRoleRepository;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class AuthenticationService {
     private final JWTService jwtService;
     private final AuthenticationManager authenticationManager;
     private final WebsiteUserMapper websiteUserMapper;
+    private final UserRoleRepository userRoleRepository;
 
     public AuthenticationResponse register(WebsiteUserDTO request) {
         WebsiteUser user = websiteUserMapper.toEntity(request);
@@ -33,6 +35,7 @@ public class AuthenticationService {
 
         user.setUserRoles(Collections.singletonList(userRole));
         user = websiteUserRepository.save(user);
+        userRoleRepository.save(userRole);
         String token = jwtService.generateToken(user);
         return new AuthenticationResponse(token);
     }

@@ -20,10 +20,10 @@ public class NotificationDTO implements Serializable {
 
     // TODO: change to simplifiedUserDTO
     @NotNull
-    WebsiteUserDTO user;
+    SimplifiedWebsiteUserDTO user;
 
     @NotNull
-    WebsiteUserDTO triggeredBy;
+    SimplifiedWebsiteUserDTO triggeredBy;
 
     @NotNull
     @Size(max = 50)

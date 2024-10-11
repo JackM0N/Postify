@@ -18,14 +18,13 @@ public class CommentDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO user;
+    SimplifiedWebsiteUserDTO user;
 
     @NotNull
     Long postId;
 
-    //TODO: CHANGE TO ID to stop reccursive calls
     @NotNull
-    CommentDTO parentComment;
+    Long parentCommentId;
 
     @NotNull
     String text;

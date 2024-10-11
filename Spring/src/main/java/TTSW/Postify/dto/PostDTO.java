@@ -20,7 +20,7 @@ public class PostDTO implements Serializable {
     Long id;
 
     @NotNull
-    WebsiteUserDTO user;
+    SimplifiedWebsiteUserDTO user;
 
     String description;
 

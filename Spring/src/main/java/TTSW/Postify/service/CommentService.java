@@ -55,7 +55,7 @@ public class CommentService {
         notification.setCreatedAt(LocalDateTime.now());
 
         if (comment.getParentComment() != null) {
-            comment.setParentComment(commentRepository.findById(commentDTO.getParentComment().getId())
+            comment.setParentComment(commentRepository.findById(commentDTO.getParentCommentId())
                     .orElseThrow(() -> new EntityNotFoundException("Parent comment not found")));
             notification.setUser(comment.getParentComment().getUser());
         }

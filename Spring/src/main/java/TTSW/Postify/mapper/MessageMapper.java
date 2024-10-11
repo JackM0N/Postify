@@ -4,8 +4,11 @@ import TTSW.Postify.dto.MessageDTO;
 import TTSW.Postify.model.Message;
 import org.mapstruct.*;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+        uses = SimplifiedWebsiteUserMapper.class)
 public interface MessageMapper {
+    @Mapping(target = "sender", source = "sender")
+    @Mapping(target = "receiver", source = "receiver")
     @Mapping(target = "isRead", constant = "false")
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target = "updatedAt", ignore = true)
