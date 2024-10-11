@@ -2,32 +2,35 @@ import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
 import { formatDateTimeArray } from '../../../Util/formatDate';
+import { Page } from '../../../models/page.model';
 
 @Component({
-  selector: 'app-post',
-  templateUrl: './post.component.html',
+  selector: 'app-followed-posts',
+  templateUrl: './followed-post.component.html',
   styleUrls: ['../../../styles/post.component.css'],
 })
-export class PostComponent implements OnInit {
-  posts: PostDTO[] = [];
-  currentMediumIndex: number = 0;
+export class FollowedPostsComponent implements OnInit {
+  followedPosts: PostDTO[] = [];
   protected formatDateTimeArray = formatDateTimeArray;
+  currentPage = 0;
+  pageSize = 10;
 
   constructor(private postService: PostService) {}
 
   ngOnInit(): void {
-    this.loadPosts();
+    this.loadFollowedPosts();
   }
 
-  loadPosts(): void {
-    this.postService.getPosts({}, {}).subscribe(data => {
-        this.posts = data.content
-        this.posts.forEach(post => {
+  loadFollowedPosts(): void {
+    this.postService.getFollowedPosts(0, 10).subscribe(data => {
+        this.followedPosts = data.content;
+        this.followedPosts.forEach(post => {
           post.currentMediumIndex = post.currentMediumIndex ?? 0;
           this.loadMediaForPost(post);
         });
       }, error => {
-        console.error('Error loading posts:', error);
+        console.error('Error loading followed posts:', error);
+        this.followedPosts = [];
       });
   }
 

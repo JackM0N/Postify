@@ -20,4 +20,8 @@ export class PostService {
   getPostMedia(postId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.mediaUrl}/list/${postId}`);
   }
+
+  getFollowedPosts(page: number, size: number): Observable<Page<PostDTO>> {
+    return this.http.get<Page<PostDTO>>(`${this.baseUrl}/followed?page=${page}&size=${size}`);
+  }
 }

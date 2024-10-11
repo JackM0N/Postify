@@ -2,6 +2,8 @@ import { AuthInterceptor } from './services/auth.intereptor';
 import { LoginComponent } from './components/authentication/login.component';
 import { RegistrationComponent } from './components/authentication/registration.component';
 
+import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
+
 import { ToastrModule } from 'ngx-toastr';
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
@@ -26,6 +28,7 @@ export function tokenGetter() {
     AppComponent,
     LoginComponent,
     RegistrationComponent,
+    FollowedPostsComponent,
   ],
   imports: [
     BrowserModule,
