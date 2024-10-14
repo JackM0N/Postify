@@ -1,0 +1,31 @@
+.notification {
+    border: 1px solid #ddd;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f9f9f9; /* Slightly lighter background for notifications */
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+}
+
+.notification-message {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.no-posts-message {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+    color: #888;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+}

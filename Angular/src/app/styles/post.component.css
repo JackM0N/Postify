@@ -48,3 +48,10 @@
 .navigation-buttons button:disabled {
     background-color: #ccc; /* Disabled button color */
 }
+
+.no-posts-message {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  color: #888;
+}
