@@ -89,7 +89,6 @@ public class FollowService {
         };
 
         Page<WebsiteUser> followers = websiteUserRepository.findAll(spec, pageable);
-
         return followers.map(websiteUserMapper::toDto);
     }
 

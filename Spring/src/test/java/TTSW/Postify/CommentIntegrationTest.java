@@ -1,9 +1,11 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.CommentDTO;
+import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
 import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.mapper.CommentMapperImpl;
+import TTSW.Postify.mapper.SimplifiedWebsiteUserMapperImpl;
 import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Notification;
@@ -59,6 +61,9 @@ class CommentIntegrationTest {
     @Autowired
     private CommentMapperImpl commentMapper;
 
+    @Autowired
+    private SimplifiedWebsiteUserMapperImpl simplifiedWebsiteUserMapper;
+
 
     @Test
     @WithAnonymousUser
@@ -84,7 +89,7 @@ class CommentIntegrationTest {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setText("New comment");
         commentDTO.setPostId(post.getId());
-        commentDTO.setUser(websiteUserMapper.toDto(john));
+        commentDTO.setUser(simplifiedWebsiteUserMapper.toDto(john));
 
         CommentDTO savedComment = commentService.createComment(commentDTO);
 
@@ -113,15 +118,15 @@ class CommentIntegrationTest {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setText("New comment");
         commentDTO.setPostId(post.getId());
-        commentDTO.setParentComment(commentMapper.toDto(janeComment));
-        commentDTO.setUser(websiteUserMapper.toDto(john));
+        commentDTO.setParentCommentId(janeComment.getId());
+        commentDTO.setUser(simplifiedWebsiteUserMapper.toDto(john));
 
         CommentDTO savedComment = commentService.createComment(commentDTO);
 
         assertNotNull(savedComment);
         assertEquals("New comment", savedComment.getText());
         assertNotNull(savedComment.getId());
-        assertEquals(savedComment.getParentComment().getId(), janeComment.getId());
+        assertEquals(savedComment.getParentCommentId(), janeComment.getId());
 
         // notification
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
@@ -134,7 +139,7 @@ class CommentIntegrationTest {
         CommentDTO commentDTO = new CommentDTO();
         commentDTO.setText("New comment");
         commentDTO.setPostId(999L);
-        WebsiteUserDTO websiteUserDTO = websiteUserMapper.toDto(websiteUserRepository.findById(1L).get());
+        SimplifiedWebsiteUserDTO websiteUserDTO = simplifiedWebsiteUserMapper.toDto(websiteUserRepository.findById(1L).get());
         commentDTO.setUser(websiteUserDTO);
 
         assertThrows(EntityNotFoundException.class, () -> commentService.createComment(commentDTO));

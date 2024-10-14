@@ -1,6 +1,7 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.FollowDTO;
+import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
 import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Notification;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
+@WithMockUser("john@example.com")
 public class FollowIntegrationTest {
 
     @Autowired
@@ -35,7 +37,6 @@ public class FollowIntegrationTest {
     private NotificationRepository notificationRepository;
 
     @Test
-    @WithMockUser("john@example.com")
     void testGetFollowers_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -47,7 +48,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testGetFollowed_Success() {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -59,9 +59,8 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testCreateFollow_Success() {
-        WebsiteUserDTO followedUserDTO = new WebsiteUserDTO();
+        SimplifiedWebsiteUserDTO followedUserDTO = new SimplifiedWebsiteUserDTO();
         followedUserDTO.setId(3L);
         FollowDTO followDTO = new FollowDTO();
         followDTO.setFollowed(followedUserDTO);
@@ -86,7 +85,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testDeleteFollow_Success() {
         String followedUsername = "jane_smith";
 
@@ -99,7 +97,6 @@ public class FollowIntegrationTest {
     }
 
     @Test
-    @WithMockUser("john@example.com")
     void testDeleteFollow_FollowNotFound() {
         String followedUsername = "non_existent_user";
 
