@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -12,29 +13,33 @@ export class AppComponent implements OnInit{
   isLoggedIn = false;
   username: string | null = null;
 
-  constructor(private jwtHelper: JwtHelperService, private router: Router) {}
+  constructor(
+    private jwtHelper: JwtHelperService, 
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.checkLoginStatus();
+    this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+      this.isLoggedIn = isLoggedIn;
+      if (isLoggedIn) {
+        this.loadUserData();
+      } else {
+        this.username = null;
+      }
+    });
   }
 
-  checkLoginStatus(): void {
+  loadUserData(): void {
     const token = localStorage.getItem('token');
-    
     if (token && !this.jwtHelper.isTokenExpired(token)) {
       const decodedToken = this.jwtHelper.decodeToken(token);
       this.username = decodedToken?.username || null;
-      this.isLoggedIn = true;
-    } else {
-      this.isLoggedIn = false;
-      this.username = null;
     }
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    this.isLoggedIn = false;
-    this.username = null;
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }
