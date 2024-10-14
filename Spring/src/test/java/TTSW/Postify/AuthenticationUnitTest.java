@@ -1,9 +1,12 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.WebsiteUserDTO;
+import TTSW.Postify.enums.Role;
 import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.mapper.WebsiteUserMapperImpl;
+import TTSW.Postify.model.UserRole;
 import TTSW.Postify.model.WebsiteUser;
+import TTSW.Postify.repository.UserRoleRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.AuthenticationService;
@@ -19,6 +22,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,6 +44,9 @@ public class AuthenticationUnitTest {
     @Mock
     private AuthenticationManager authenticationManager;
 
+    @Mock
+    private UserRoleRepository userRoleRepository;
+
     @Spy
     private WebsiteUserMapper websiteUserMapper = new WebsiteUserMapperImpl();
 
@@ -60,9 +67,15 @@ public class AuthenticationUnitTest {
         WebsiteUser user = new WebsiteUser();
         user.setEmail(request.getEmail());
 
+        UserRole userRole = new UserRole();
+        userRole.setUser(user);
+        userRole.setRoleName(Role.USER);
+        user.setUserRoles(Collections.singletonList(userRole));
+
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(websiteUserRepository.save(any(WebsiteUser.class))).thenReturn(user);
         when(jwtService.generateToken(any(WebsiteUser.class))).thenReturn("mockToken");
+        when(userRoleRepository.save(userRole)).thenReturn(userRole);
 
         AuthenticationResponse response = authenticationService.register(request);
 

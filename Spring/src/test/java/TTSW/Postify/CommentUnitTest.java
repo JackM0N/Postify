@@ -1,8 +1,7 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.CommentDTO;
-import TTSW.Postify.mapper.CommentMapper;
-import TTSW.Postify.mapper.CommentMapperImpl;
+import TTSW.Postify.mapper.*;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
@@ -25,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -52,6 +52,9 @@ public class CommentUnitTest {
     @Spy
     private CommentMapper commentMapper = new CommentMapperImpl();
 
+    @Spy
+    private SimplifiedWebsiteUserMapper simplifiedWebsiteUserMapper = new SimplifiedWebsiteUserMapperImpl();
+
     @InjectMocks
     private CommentService commentService;
 
@@ -78,6 +81,16 @@ public class CommentUnitTest {
         commentDTO = new CommentDTO();
         commentDTO.setId(1L);
         commentDTO.setText("Sample comment DTO");
+
+        // websiteUserMapper instance inside CommentMapper
+        try {
+            Field simplifiedWebsiteUserMapperField = CommentMapperImpl.class.getDeclaredField("simplifiedWebsiteUserMapper");
+            simplifiedWebsiteUserMapperField.setAccessible(true);
+            simplifiedWebsiteUserMapperField.set(commentMapper, simplifiedWebsiteUserMapper);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.out.println("Reflection failed, MapperImpl probably changed methods");
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -121,10 +134,9 @@ public class CommentUnitTest {
         Comment parentComment = new Comment();
         parentComment.setId(2L);
         comment.setParentComment(parentComment);
-        commentDTO.setParentComment(new CommentDTO());
-        commentDTO.getParentComment().setId(2L);
+        commentDTO.setParentCommentId(parentComment.getId());
         when(websiteUserService.getCurrentUser()).thenReturn(user);
-        when(commentRepository.findById(2L)).thenReturn(Optional.of(parentComment));
+        when(commentRepository.findById(parentComment.getId())).thenReturn(Optional.of(parentComment));
         when(commentRepository.save(any(Comment.class))).thenReturn(comment);
         when(postRepository.findById(any())).thenReturn(Optional.of(post));
         when(notificationRepository.save(any())).thenReturn(null);
@@ -133,8 +145,8 @@ public class CommentUnitTest {
 
         assertNotNull(result);
         assertEquals(commentDTO.getText(), result.getText());
-        assertEquals(2L, comment.getParentComment().getId());
-        verify(commentRepository, times(1)).findById(2L);
+        assertEquals(result.getParentCommentId(), parentComment.getId()); // TODO: brakuje ustawiania parentComment w mapperze
+        verify(commentRepository, times(1)).findById(parentComment.getId());
     }
 
     @Test

@@ -2,10 +2,7 @@ package TTSW.Postify;
 
 import TTSW.Postify.dto.FollowDTO;
 import TTSW.Postify.dto.WebsiteUserDTO;
-import TTSW.Postify.mapper.FollowMapper;
-import TTSW.Postify.mapper.FollowMapperImpl;
-import TTSW.Postify.mapper.WebsiteUserMapper;
-import TTSW.Postify.mapper.WebsiteUserMapperImpl;
+import TTSW.Postify.mapper.*;
 import TTSW.Postify.model.Follow;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.WebsiteUser;
@@ -26,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +46,9 @@ public class FollowUnitTest {
     private WebsiteUserMapper websiteUserMapper = new WebsiteUserMapperImpl();
 
     @Spy
+    private SimplifiedWebsiteUserMapper simplifiedWebsiteUserMapper = new SimplifiedWebsiteUserMapperImpl();
+
+    @Spy
     private FollowMapper followMapper = new FollowMapperImpl();
 
     @Mock
@@ -59,6 +60,15 @@ public class FollowUnitTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // initialize SimplifiedWebsiteUserMapper inside FollowMapperImpl
+        try {
+            Field simplifiedWebsiteUserMapperField = FollowMapperImpl.class.getDeclaredField("simplifiedWebsiteUserMapper");
+            simplifiedWebsiteUserMapperField.setAccessible(true);
+            simplifiedWebsiteUserMapperField.set(followMapper, simplifiedWebsiteUserMapper);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.out.println("Reflection failed, MapperImpl probably changed methods");
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
@@ -69,13 +79,15 @@ public class FollowUnitTest {
 
         Follow follow = new Follow();
         follow.setFollower(currentUser);
-        follow.setFollowed(new WebsiteUser());
+        WebsiteUser followed = new WebsiteUser();
+        followed.setId(2L);
+        follow.setFollowed(followed);
         List<Follow> follows = Collections.singletonList(follow);
         Page<Follow> page = new PageImpl<>(follows);
-        when(followRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(page);
+        when(followRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
         Pageable pageable = PageRequest.of(0, 10);
-        Page<WebsiteUserDTO> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+        Page<WebsiteUser> mockPage = new PageImpl<>(Collections.singletonList(followed), pageable, 0);
         when(websiteUserRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(mockPage);
 
         Page<WebsiteUserDTO> result = followService.getFollowers(null, pageable);
@@ -95,7 +107,7 @@ public class FollowUnitTest {
         follow.setFollowed(new WebsiteUser());
         List<Follow> followed = Collections.singletonList(follow);
         Page<Follow> page = new PageImpl<>(followed);
-        when(followRepository.findAll(any(Specification.class),any(Pageable.class))).thenReturn(page);
+        when(followRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(page);
 
         Pageable pageable = PageRequest.of(0, 10);
         Page<WebsiteUserDTO> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
@@ -114,7 +126,7 @@ public class FollowUnitTest {
         WebsiteUser followedUser = new WebsiteUser();
         followedUser.setId(2L);
         FollowDTO followDTO = new FollowDTO();
-        followDTO.setFollowed(websiteUserMapper.toDto(followedUser));
+        followDTO.setFollowed(simplifiedWebsiteUserMapper.toDto(followedUser));
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));
@@ -135,7 +147,7 @@ public class FollowUnitTest {
         WebsiteUser followedUser = new WebsiteUser();
         followedUser.setId(2L);
         FollowDTO followDTO = new FollowDTO();
-        followDTO.setFollowed(websiteUserMapper.toDto(followedUser));
+        followDTO.setFollowed(simplifiedWebsiteUserMapper.toDto(followedUser));
 
         when(websiteUserService.getCurrentUser()).thenReturn(currentUser);
         when(websiteUserRepository.findById(2L)).thenReturn(Optional.of(followedUser));

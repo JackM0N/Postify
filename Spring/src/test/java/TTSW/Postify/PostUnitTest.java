@@ -57,6 +57,9 @@ public class PostUnitTest {
     @Spy
     private PostLikeMapper postLikeMapper = new PostLikeMapperImpl();
 
+    @Spy
+    private SimplifiedWebsiteUserMapper simplifiedWebsiteUserMapper = new SimplifiedWebsiteUserMapperImpl();
+
     @Mock
     private MediumRepository mediumRepository;
 
@@ -79,7 +82,7 @@ public class PostUnitTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
-        // set instance of MediumMapper inside PostMapper to actual object
+        // set Mappers inside PostMapper to actual object
         // using reflection bc @Spy or @InjectMocks fails there
         try {
             Field mediumMapperField = PostMapperImpl.class.getDeclaredField("mediumMapper");
@@ -89,6 +92,10 @@ public class PostUnitTest {
             Field postLikeMapperField = PostMapperImpl.class.getDeclaredField("postLikeMapper");
             postLikeMapperField.setAccessible(true);
             postLikeMapperField.set(postMapper, postLikeMapper);
+
+            Field simplifiedWebsiteUserMapperField = PostMapperImpl.class.getDeclaredField("simplifiedWebsiteUserMapper");
+            simplifiedWebsiteUserMapperField.setAccessible(true);
+            simplifiedWebsiteUserMapperField.set(postMapper, simplifiedWebsiteUserMapper);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             System.out.println("Reflection failed, MapperImpl probably changed methods");
             throw new RuntimeException(e);

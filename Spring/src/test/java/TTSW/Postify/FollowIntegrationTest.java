@@ -1,6 +1,7 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.FollowDTO;
+import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
 import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Notification;
@@ -59,7 +60,7 @@ public class FollowIntegrationTest {
 
     @Test
     void testCreateFollow_Success() {
-        WebsiteUserDTO followedUserDTO = new WebsiteUserDTO();
+        SimplifiedWebsiteUserDTO followedUserDTO = new SimplifiedWebsiteUserDTO();
         followedUserDTO.setId(3L);
         FollowDTO followDTO = new FollowDTO();
         followDTO.setFollowed(followedUserDTO);
