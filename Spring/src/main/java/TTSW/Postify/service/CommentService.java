@@ -60,8 +60,8 @@ public class CommentService {
             notification.setUser(comment.getParentComment().getUser());
         }
 
-        notificationRepository.save(notification);
         commentRepository.save(comment);
+        notificationRepository.save(notification);
         return commentMapper.toDto(comment);
     }
 
