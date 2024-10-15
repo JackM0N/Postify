@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
-import { formatDateTimeArray } from '../../../Util/formatDate';
 
 @Component({
   selector: 'app-followed-posts',
@@ -10,9 +9,6 @@ import { formatDateTimeArray } from '../../../Util/formatDate';
 })
 export class FollowedPostsComponent implements OnInit {
   followedPosts: PostDTO[] = [];
-  protected formatDateTimeArray = formatDateTimeArray;
-  currentPage = 0;
-  pageSize = 10;
 
   constructor(private postService: PostService) {}
 
@@ -22,14 +18,10 @@ export class FollowedPostsComponent implements OnInit {
 
   loadFollowedPosts(): void {
     this.postService.getFollowedPosts(0, 10).subscribe(data => {
-        this.followedPosts = data.content;
-        this.followedPosts.forEach(post => {
-          post.currentMediumIndex = post.currentMediumIndex ?? 0;
-          this.loadMediaForPost(post);
-        });
-      }, error => {
-        console.error('Error loading followed posts:', error);
-      });
+      this.followedPosts = data.content;
+    }, error => {
+      console.error('Error loading followed posts:', error);
+    });
   }
 
   loadMediaForPost(post: PostDTO): void {
@@ -39,19 +31,7 @@ export class FollowedPostsComponent implements OnInit {
         type: medium.type.startsWith('image') ? 'image' : 'video'
       }));
     }, error => {
-      console.error(`Error loading media for post ${post.id}:`, error);
+      console.error('Error loading media:', error);
     });
-  }
-
-  previousMedium(post: PostDTO): void {
-    if (post.media && (post.currentMediumIndex ?? 0) > 0) {
-        post.currentMediumIndex!--;
-    }
-  }
-
-  nextMedium(post: PostDTO): void {
-    if (post.media && (post.currentMediumIndex ?? 0) < (post.media.length - 1)) {
-        post.currentMediumIndex!++;
-    }
   }
 }

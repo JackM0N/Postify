@@ -1,55 +1,6 @@
-<div class="post" *ngFor="let post of posts">
-    <div class="post-header">
-      <span class="username">{{ post.user.username }}</span>
-      <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
-    </div>
-  
-    <div class="post-media">
-      <ng-container *ngIf="post.media && post.media.length > 0">
-        <ng-container *ngIf="post.media[post.currentMediumIndex ?? 0]?.type === 'image'">
-          <img [src]="post.media[post.currentMediumIndex ?? 0].url" alt="Post media" />
-        </ng-container>
-        <ng-container *ngIf="post.media[post.currentMediumIndex ?? 0]?.type === 'video'">
-          <video [src]="post.media[post.currentMediumIndex ?? 0].url" controls></video>
-        </ng-container>
-      </ng-container>
-  
-      <div class="navigation-buttons">
-        <button (click)="previousMedium(post)" [disabled]="(post.currentMediumIndex ?? 0) <= 0">Previous</button>
-        <button (click)="nextMedium(post)" [disabled]="(post.currentMediumIndex ?? 0) >= (post.media?.length || 0) - 1">Next</button>
-      </div>
-    </div>
-  
-    <div class="post-description">
-      <p>{{ post.description }}</p>
-    </div>
-  
-    <div class="post-stats">
-      <span>Comments: {{ post.commentCount }}</span>
-      <span>Likes: {{ post.likeCount }}</span>
-    </div>
-
-    <div class="post-comments">
-      <button (click)="toggleComments(post)">
-        {{ post.showComments ? 'Hide Comments' : 'Show Comments' }}
-      </button>
-    
-      <!-- Display comments only if showComments is true -->
-      <div *ngIf="post.showComments">
-        <!-- Display comments if they exist and are loaded -->
-        <div *ngIf="post.comments?.length > 0">
-          <div *ngFor="let comment of post.comments">
-            <div class="comment">
-              <span class="comment-user">{{ comment.user.username }}:</span>
-              <span class="comment-text">{{ comment.text }}</span>
-            </div>
-          </div>
-        </div>
-    
-        <!-- Message if no comments after comments are loaded -->
-        <div *ngIf="post.comments?.length === 0">
-          <p>No comments yet</p>
-        </div>
-      </div>
-    </div>
-  </div>
+<app-post-list 
+  [posts]="posts" 
+  [showComments]="true"
+  (loadCommentsForPost)="loadCommentsForPost($event)"
+  (loadMediaForPost)="loadMediaForPost(post)">
+</app-post-list>

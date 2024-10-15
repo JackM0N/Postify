@@ -1,0 +1,45 @@
+<div class="post" *ngFor="let post of posts">
+    <div class="post-header">
+      <span class="username">{{ post.user.username }}</span>
+      <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
+    </div>
+  
+    <ng-container *ngIf="post?.media?.length > 0">
+        <ng-container *ngIf="post?.media[post?.currentMediumIndex]?.type === 'image'">
+          <img [src]="post?.media[post?.currentMediumIndex]?.url" alt="Post media" />
+        </ng-container>
+        <ng-container *ngIf="post?.media[post?.currentMediumIndex]?.type === 'video'">
+          <video [src]="post?.media[post?.currentMediumIndex]?.url" controls></video>
+        </ng-container>
+      </ng-container>
+      
+      <button (click)="prevMedia(post)" [disabled]="post?.currentMediumIndex <= 0">Previous</button>
+      <button (click)="nextMedia(post)" [disabled]="post?.currentMediumIndex >= (post?.media?.length - 1)">Next</button>
+  
+    <div class="post-description">
+      <p>{{ post.description }}</p>
+    </div>
+  
+    <div class="post-stats">
+      <span>Comments: {{ post.commentCount }}</span>
+      <span>Likes: {{ post.likeCount }}</span>
+    </div>
+  
+    <div class="post-comments" *ngIf="showComments">
+      <button (click)="toggleComments(post)">Show Comments</button>
+  
+      <div *ngIf="post.comments?.length > 0">
+        <div *ngFor="let comment of post.comments">
+          <div class="comment">
+            <span class="comment-user">{{ comment.user.username }}:</span>
+            <span class="comment-text">{{ comment.text }}</span>
+          </div>
+        </div>
+      </div>
+  
+      <div *ngIf="post.comments?.length === 0 && post.showComments">
+        <p>No comments yet</p>
+      </div>
+    </div>
+  </div>
+  
