@@ -1,15 +1,14 @@
+import { SimplifiedUserDTO } from "./simplified-user.model";
+
 export interface PostDTO {
+    showComments: boolean;
+    comments: any;
     id: number;
-    user: WebsiteUserDTO;
+    user: SimplifiedUserDTO;
     description: string;
     createdAt: [];
     commentCount: number;
     likeCount: number;
     media?: { url: string; type: string }[];
     currentMediumIndex?: number;
-  }
-  
-  export interface WebsiteUserDTO {
-    id: number;
-    username: string;
   }

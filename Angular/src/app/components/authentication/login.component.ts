@@ -23,9 +23,11 @@ export class LoginComponent {
     private jwtHelper: JwtHelperService,) {}
 
   onSubmit(): void {
+    localStorage.clear();
     this.authService.login(this.loginData).subscribe(
       response => {
         localStorage.setItem('token', response.token);
+        this.authService.setLoggedIn(true);
 
         const decodedToken = this.jwtHelper.decodeToken(response.token);
         const username = decodedToken?.username;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
 import { formatDateTimeArray } from '../../../Util/formatDate';
+import { CommentService } from '../../../services/comment.service';
 
 @Component({
   selector: 'app-post',
@@ -13,7 +14,7 @@ export class PostComponent implements OnInit {
   currentMediumIndex: number = 0;
   protected formatDateTimeArray = formatDateTimeArray;
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService, private commentService: CommentService) {}
 
   ngOnInit(): void {
     this.loadPosts();
@@ -24,6 +25,8 @@ export class PostComponent implements OnInit {
         this.posts = data.content
         this.posts.forEach(post => {
           post.currentMediumIndex = post.currentMediumIndex ?? 0;
+          post.comments = [];
+          post.showComments = false;
           this.loadMediaForPost(post);
         });
       }, error => {
@@ -39,6 +42,22 @@ export class PostComponent implements OnInit {
       }));
     }, error => {
       console.error(`Error loading media for post ${post.id}:`, error);
+    });
+  }
+
+  toggleComments(post: PostDTO): void {
+    post.showComments = !post.showComments;
+    if (post.showComments && post.comments.length === 0) {
+      this.loadCommentsForPost(post);
+    }
+  }
+
+  loadCommentsForPost(post: PostDTO): void {
+    this.commentService.getComments(post.id).subscribe(data => {
+      post.comments = data.content;
+    }, error => {
+      console.error(`Error loading comments for post ${post.id}:`, error);
+      post.comments = [];
     });
   }
 

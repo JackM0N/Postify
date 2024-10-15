@@ -28,4 +28,28 @@
       <span>Comments: {{ post.commentCount }}</span>
       <span>Likes: {{ post.likeCount }}</span>
     </div>
+
+    <div class="post-comments">
+      <button (click)="toggleComments(post)">
+        {{ post.showComments ? 'Hide Comments' : 'Show Comments' }}
+      </button>
+    
+      <!-- Display comments only if showComments is true -->
+      <div *ngIf="post.showComments">
+        <!-- Display comments if they exist and are loaded -->
+        <div *ngIf="post.comments?.length > 0">
+          <div *ngFor="let comment of post.comments">
+            <div class="comment">
+              <span class="comment-user">{{ comment.user.username }}:</span>
+              <span class="comment-text">{{ comment.text }}</span>
+            </div>
+          </div>
+        </div>
+    
+        <!-- Message if no comments after comments are loaded -->
+        <div *ngIf="post.comments?.length === 0">
+          <p>No comments yet</p>
+        </div>
+      </div>
+    </div>
   </div>
