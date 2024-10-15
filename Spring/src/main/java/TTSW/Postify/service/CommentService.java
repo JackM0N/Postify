@@ -61,7 +61,9 @@ public class CommentService {
         }
 
         commentRepository.save(comment);
-        notificationRepository.save(notification);
+        if (notification.getUser() != notification.getTriggeredBy()) {
+            notificationRepository.save(notification);
+        }
         return commentMapper.toDto(comment);
     }
 

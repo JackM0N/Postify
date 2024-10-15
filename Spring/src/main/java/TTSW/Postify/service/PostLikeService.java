@@ -51,7 +51,9 @@ public class PostLikeService {
         notification.setCreatedAt(LocalDateTime.now());
         notification.setNotificationType(NotificationType.POST_LIKE);
         notification.setTriggeredBy(currentUser);
-        notificationRepository.save(notification);
+        if (notification.getUser() != notification.getTriggeredBy()) {
+            notificationRepository.save(notification);
+        }
 
         return true;
     }

@@ -117,7 +117,9 @@ public class PostService {
             notification.setUser(follow.getFollower());
             notification.setPost(post);
             notification.setNotificationType(NotificationType.POST);
-            notificationRepository.save(notification);
+            if (notification.getUser() != notification.getTriggeredBy()) {
+                notificationRepository.save(notification);
+            }
         });
 
         return postMapper.toDto(post);
