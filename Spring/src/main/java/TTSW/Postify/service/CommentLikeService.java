@@ -50,7 +50,9 @@ public class CommentLikeService {
         notification.setCreatedAt(LocalDateTime.now());
         notification.setNotificationType(NotificationType.COMMENT_LIKE);
         notification.setTriggeredBy(currentUser);
-        notificationRepository.save(notification);
+        if (notification.getUser() != notification.getTriggeredBy()) {
+            notificationRepository.save(notification);
+        }
 
         return true;
     }

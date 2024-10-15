@@ -119,7 +119,9 @@ public class FollowService {
         notification.setUser(followedUser);
         notification.setNotificationType(NotificationType.FOLLOW);
 
-        notificationRepository.save(notification);
+        if (notification.getUser() != notification.getTriggeredBy()) {
+            notificationRepository.save(notification);
+        }
         followRepository.save(follow);
 
         return followMapper.toDto(follow);
