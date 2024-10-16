@@ -39,6 +39,7 @@ public class CommentLikeUnitTest {
     private CommentLikeService commentLikeService;
 
     private WebsiteUser currentUser;
+    private WebsiteUser otherUser;
     private Comment comment;
 
     @BeforeEach
@@ -47,9 +48,12 @@ public class CommentLikeUnitTest {
         currentUser = new WebsiteUser();
         currentUser.setId(1L);
 
+        otherUser = new WebsiteUser();
+        otherUser.setId(2L);
+
         comment = new Comment();
         comment.setId(1L);
-        comment.setUser(currentUser);
+        comment.setUser(otherUser);
     }
 
     @Test

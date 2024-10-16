@@ -145,7 +145,7 @@ public class CommentUnitTest {
 
         assertNotNull(result);
         assertEquals(commentDTO.getText(), result.getText());
-        assertEquals(result.getParentCommentId(), parentComment.getId()); // TODO: brakuje ustawiania parentComment w mapperze
+        assertEquals(result.getParentCommentId(), parentComment.getId());
         verify(commentRepository, times(1)).findById(parentComment.getId());
     }
 
