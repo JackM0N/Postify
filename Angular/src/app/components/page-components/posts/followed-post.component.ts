@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
-import { CommentService } from '../../../services/comment.service';
 
 @Component({
   selector: 'app-followed-posts',
@@ -9,10 +8,9 @@ import { CommentService } from '../../../services/comment.service';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class FollowedPostsComponent implements OnInit {
-[x: string]: any;
   followedPosts: PostDTO[] = [];
 
-  constructor(private postService: PostService, private commentService: CommentService) {}
+  constructor(private postService: PostService) {}
 
   ngOnInit(): void {
     this.loadFollowedPosts();

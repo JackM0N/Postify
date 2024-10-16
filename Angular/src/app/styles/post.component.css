@@ -37,7 +37,7 @@
 }
 
 .navigation-buttons button {
-    background-color: #007bff; /* Bootstrap primary color */
+    background-color: #007bff;
     color: white;
     border: none;
     padding: 5px 10px;
@@ -46,7 +46,7 @@
 }
 
 .navigation-buttons button:disabled {
-    background-color: #ccc; /* Disabled button color */
+    background-color: #ccc;
 }
 
 .no-posts-message {
