@@ -126,7 +126,7 @@ class CommentIntegrationTest {
         assertNotNull(savedComment);
         assertEquals("New comment", savedComment.getText());
         assertNotNull(savedComment.getId());
-        assertEquals(savedComment.getParentCommentId(), janeComment.getId());
+        assertEquals(janeComment.getId(), savedComment.getParentCommentId());
 
         // notification
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
