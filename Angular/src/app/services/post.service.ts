@@ -13,6 +13,10 @@ export class PostService {
 
   constructor(private http: HttpClient) {}
 
+  getPostById(id: number): Observable<PostDTO> {
+    return this.http.get<PostDTO>(`${this.baseUrl}/id/${id}`);
+  }
+
   getPosts(filter: any, pageable: any): Observable<Page<PostDTO>> {
     return this.http.get<Page<PostDTO>>(`${this.baseUrl}/list`, { params: { ...filter, ...pageable } });
   }
@@ -23,5 +27,9 @@ export class PostService {
 
   getFollowedPosts(page: number, size: number): Observable<Page<PostDTO>> {
     return this.http.get<Page<PostDTO>>(`${this.baseUrl}/followed?page=${page}&size=${size}`);
+  }
+
+  likePost(postId: number): Observable<boolean> {
+    return this.http.post<boolean>(`${this.baseUrl}/like/${postId}`, {});
   }
 }

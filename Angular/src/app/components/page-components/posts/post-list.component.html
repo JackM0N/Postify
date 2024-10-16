@@ -25,6 +25,10 @@
     <span>Likes: {{ post.likeCount }}</span>
   </div>
 
+  <button 
+  (click)="likePost(post)" 
+  [ngClass]="{'liked': post.isLiked}">❤️</button>
+
   <div class="post-comments" *ngIf="showComments">
     <button (click)="toggleComments(post)">Show Comments</button>
 

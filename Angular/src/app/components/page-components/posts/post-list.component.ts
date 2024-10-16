@@ -55,6 +55,22 @@ export class PostListComponent {
     }
   }
 
+  likePost(post: PostDTO): void {
+    this.postService.likePost(post.id).subscribe(() => {
+        post.isLiked = !post.isLiked;
+
+        this.postService.getPostById(post.id).subscribe(updatedPost => {
+          post.likeCount = updatedPost.likeCount;
+        }, error => {
+          console.error('Error fetching updated post:', error);
+        });
+      },
+      (error) => {
+        console.error('Error liking post:', error);
+      }
+    );
+  }
+
   previousMedium(post: PostDTO): void {
     const index = post.currentMediumIndex ?? 0;
     if (post.media && index > 0) {

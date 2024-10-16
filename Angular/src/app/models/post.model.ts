@@ -11,4 +11,5 @@ export interface PostDTO {
     likeCount: number;
     media: { url: string; type: string }[];
     currentMediumIndex: number;
+    isLiked?: boolean;
   }
