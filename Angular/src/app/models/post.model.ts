@@ -9,6 +9,6 @@ export interface PostDTO {
     createdAt: [];
     commentCount: number;
     likeCount: number;
-    media?: { url: string; type: string }[];
-    currentMediumIndex?: number;
+    media: { url: string; type: string }[];
+    currentMediumIndex: number;
   }

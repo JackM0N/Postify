@@ -24,23 +24,4 @@ export class PostComponent implements OnInit {
       console.error('Error loading posts:', error);
     });
   }
-
-  loadCommentsForPost(post: PostDTO): void {
-    this.commentService.getComments(post.id).subscribe(data => {
-      post.comments = data.content;
-    }, error => {
-      console.error('Error loading comments:', error);
-    });
-  }
-
-  loadMediaForPost(post: PostDTO): void {
-    this.postService.getPostMedia(post.id).subscribe(media => {
-      post.media = media.map(medium => ({
-        url: `data:${medium.type};base64,${medium.base64Data}`,
-        type: medium.type.startsWith('image') ? 'image' : 'video'
-      }));
-    }, error => {
-      console.error('Error loading media:', error);
-    });
-  }
 }

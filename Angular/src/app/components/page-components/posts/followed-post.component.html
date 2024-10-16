@@ -1,5 +1,8 @@
 <app-post-list 
   [posts]="followedPosts" 
-  [showComments]="false"
-  (loadMediaForPost)="loadMediaForPost($event)">
+  [showComments]="false">
 </app-post-list>
+
+<div *ngIf="followedPosts?.length === 0">
+  <p>No one has posted anything or you haven't followed anyone yet</p>
+</div>

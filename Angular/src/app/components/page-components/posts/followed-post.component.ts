@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
+import { CommentService } from '../../../services/comment.service';
 
 @Component({
   selector: 'app-followed-posts',
@@ -8,9 +9,10 @@ import { PostDTO } from '../../../models/post.model';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class FollowedPostsComponent implements OnInit {
+[x: string]: any;
   followedPosts: PostDTO[] = [];
 
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService, private commentService: CommentService) {}
 
   ngOnInit(): void {
     this.loadFollowedPosts();
@@ -21,17 +23,6 @@ export class FollowedPostsComponent implements OnInit {
       this.followedPosts = data.content;
     }, error => {
       console.error('Error loading followed posts:', error);
-    });
-  }
-
-  loadMediaForPost(post: PostDTO): void {
-    this.postService.getPostMedia(post.id).subscribe(media => {
-      post.media = media.map(medium => ({
-        url: `data:${medium.type};base64,${medium.base64Data}`,
-        type: medium.type.startsWith('image') ? 'image' : 'video'
-      }));
-    }, error => {
-      console.error('Error loading media:', error);
     });
   }
 }
