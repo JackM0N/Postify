@@ -32,4 +32,8 @@ export class PostService {
   likePost(postId: number): Observable<boolean> {
     return this.http.post<boolean>(`${this.baseUrl}/like/${postId}`, {});
   }
+
+  createPost(postData: FormData): Observable<any> {
+    return this.http.post(`${this.baseUrl}/create`, postData);
+  }
 }

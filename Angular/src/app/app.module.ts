@@ -4,9 +4,10 @@ import { RegistrationComponent } from './components/authentication/registration.
 
 import { NotificationsComponent } from './components/page-components/notifications/notification.component';
 import { PostListComponent } from './components/page-components/posts/post-list.component';
+import { PostFormComponent } from './components/page-components/posts/post-form.component';
 
 import { ToastrModule } from 'ngx-toastr';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,6 +17,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
 import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -33,15 +35,19 @@ export function tokenGetter() {
     FollowedPostsComponent,
     NotificationsComponent,
     PostListComponent,
+    PostFormComponent,
   ],
   exports: [
     PostListComponent,
+    PostFormComponent,
   ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     ToastrModule.forRoot(),
     JwtModule.forRoot({
       config: {

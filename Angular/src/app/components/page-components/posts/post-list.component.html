@@ -13,8 +13,10 @@
       </ng-container>
     </ng-container>
     
-    <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
-    <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>
+    <div class="navigation-buttons">
+      <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
+      <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>
+    </div>
 
   <div class="post-description">
     <p>{{ post.description }}</p>

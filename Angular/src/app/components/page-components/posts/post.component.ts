@@ -8,6 +8,7 @@ import { PostDTO } from '../../../models/post.model';
 })
 export class PostComponent implements OnInit {
   posts: PostDTO[] = [];
+  showPostForm: boolean = false;
 
   constructor(private postService: PostService) {}
 
