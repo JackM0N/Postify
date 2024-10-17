@@ -1,0 +1,12 @@
+<form [formGroup]="postForm" (ngSubmit)="submitForm()">
+    <label for="description">Description</label>
+    <textarea formControlName="description" id="description"></textarea>
+
+    <label for="hashtags">Hashtags</label>
+    <input type="text" formControlName="hashtags" id="hashtags" placeholder="Add hashtags">
+
+    <label for="media">Upload Media</label>
+    <input type="file" (change)="onFileChange($event)" multiple />
+
+    <button type="submit" [disabled]="postForm.invalid">Create Post</button>
+</form>

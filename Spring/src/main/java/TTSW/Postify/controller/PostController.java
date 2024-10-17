@@ -20,6 +20,11 @@ public class PostController {
     private final PostService postService;
     private final PostLikeService postLikeService;
 
+    @GetMapping("/id/{postId}")
+    public ResponseEntity<PostDTO> findById(@PathVariable Long postId){
+        return ResponseEntity.ok(postService.getPost(postId));
+    }
+
     @GetMapping("/list")
     public ResponseEntity<Page<PostDTO>> getPosts(PostFilter filter, Pageable pageable) {
         return ResponseEntity.ok(postService.getPosts(filter, pageable));

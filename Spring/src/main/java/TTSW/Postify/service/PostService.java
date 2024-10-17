@@ -10,6 +10,7 @@ import TTSW.Postify.repository.FollowRepository;
 import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.repository.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,11 @@ public class PostService {
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
     private final NotificationRepository notificationRepository;
+
+    public PostDTO getPost(Long id) {
+        return postMapper.toDto(postRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new));
+    }
 
     public Page<PostDTO> getPosts(PostFilter postFilter,Pageable pageable) {
         Specification<Post> spec = Specification.where(null);

@@ -1,38 +1,8 @@
-<div *ngIf="followedPosts.length === 0" class="no-posts-message">
-    <h1>This page displays followed users and their posts</h1>
-    <p>You don't follow any creators yet</p>
-</div>
+<app-post-list 
+  [posts]="followedPosts" 
+  [showComments]="true">
+</app-post-list>
 
-<div *ngIf="followedPosts.length > 0">
-    <div class="post" *ngFor="let post of followedPosts">
-        <div class="post-header">
-        <span class="username">{{ post.user.username }}</span>
-        <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
-        </div>
-    
-        <div class="post-media">
-        <ng-container *ngIf="post.media && post.media.length > 0">
-            <ng-container *ngIf="post.media[post.currentMediumIndex ?? 0]?.type === 'image'">
-            <img [src]="post.media[post.currentMediumIndex ?? 0].url" alt="Post media" />
-            </ng-container>
-            <ng-container *ngIf="post.media[post.currentMediumIndex ?? 0]?.type === 'video'">
-            <video [src]="post.media[post.currentMediumIndex ?? 0].url" controls></video>
-            </ng-container>
-        </ng-container>
-    
-        <div class="navigation-buttons">
-            <button (click)="previousMedium(post)" [disabled]="(post.currentMediumIndex ?? 0) <= 0">Previous</button>
-            <button (click)="nextMedium(post)" [disabled]="(post.currentMediumIndex ?? 0) >= (post.media?.length || 0) - 1">Next</button>
-        </div>
-        </div>
-    
-        <div class="post-description">
-        <p>{{ post.description }}</p>
-        </div>
-    
-        <div class="post-stats">
-        <span>Comments: {{ post.commentCount }}</span>
-        <span>Likes: {{ post.likeCount }}</span>
-        </div>
-    </div>
+<div class="no-posts-message" *ngIf="followedPosts?.length === 0">
+  <h1>No one has posted anything or you haven't followed anyone yet</h1>
 </div>
