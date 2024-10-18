@@ -18,7 +18,9 @@ public interface PostMapper {
 
     @AfterMapping
     default void linkHashtags(@MappingTarget Post post) {
-        post.getHashtags().forEach(hashtag -> hashtag.setPost(post));
+        if (post != null && post.getHashtags() != null) {
+            post.getHashtags().forEach(hashtag -> hashtag.setPost(post));
+        }
     }
 
     @AfterMapping
