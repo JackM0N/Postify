@@ -22,5 +22,5 @@ public class HashtagDTO implements Serializable {
     String hashtag;
 
     @NotNull
-    PostDTO post;
+    Long postId;
 }
