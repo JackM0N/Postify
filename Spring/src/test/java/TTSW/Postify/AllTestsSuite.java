@@ -21,6 +21,8 @@ import org.junit.platform.suite.api.Suite;
         FollowIntegrationTest.class,
         CommentLikeUnitTest.class,
         CommentLikeIntegrationTest.class,
+        MessageUnitTest.class,
+        MessageIntegrationTest.class,
 })
 public class AllTestsSuite {
     // yes, this should be empty
