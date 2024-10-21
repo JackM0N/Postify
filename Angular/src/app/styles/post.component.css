@@ -122,3 +122,13 @@ color: #888;
   color: #888;
   transition: color 0.3s ease;
 }
+
+.hashtag {
+  color: blue;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.hashtag:hover {
+  text-decoration: underline;
+}

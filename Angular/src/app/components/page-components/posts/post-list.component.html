@@ -22,6 +22,12 @@
     <p>{{ post.description }}</p>
   </div>
 
+  <div class="hashtags" *ngIf="post.hashtags && post.hashtags.length > 0">
+    <span *ngFor="let hashtag of post.hashtags" class="hashtag">
+      #{{ hashtag.hashtag }}
+    </span>
+  </div>
+
   <div class="post-stats">
     <span>Comments: {{ post.commentCount }}</span>
     <span>Likes: {{ post.likeCount }}</span>

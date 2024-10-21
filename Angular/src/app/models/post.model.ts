@@ -1,3 +1,4 @@
+import { HashtagDTO } from "./hashtag.model";
 import { SimplifiedUserDTO } from "./simplified-user.model";
 
 export interface PostDTO {
@@ -6,6 +7,7 @@ export interface PostDTO {
     id: number;
     user: SimplifiedUserDTO;
     description: string;
+    hashtags?: HashtagDTO[];
     createdAt: [];
     commentCount: number;
     likeCount: number;
