@@ -3,6 +3,7 @@ import { PostDTO } from '../../../models/post.model';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
 import { formatDateTimeArray } from '../../../Util/formatDate';
+import { MediumDTO } from '../../../models/medium.model';
 
 @Component({
   selector: 'app-post-list',
@@ -12,11 +13,14 @@ import { formatDateTimeArray } from '../../../Util/formatDate';
 export class PostListComponent {
   @Input() posts: PostDTO[] = [];
   @Input() showComments: boolean = true;
+  @Input() canEdit: boolean = false;
   protected formatDateTimeArray = formatDateTimeArray;
+
+  selectedFile: File | undefined;
 
   constructor(
     private commentService: CommentService,
-    private postService: PostService
+    private postService: PostService,
   ) {}
 
   ngOnChanges(): void {
@@ -84,4 +88,56 @@ export class PostListComponent {
       post.currentMediumIndex = index + 1;
     }
   }
+
+//TODO:Add proper post editing
+
+  editPost(post: PostDTO): void {
+    console.log('Editing post:', post);
+  }
+
+  addMedium(post: PostDTO, index: number): void {
+    const mediumDTO: MediumDTO = {
+      postId: post.id,
+      mediumType: 'image',
+      file: this.selectedFile
+    };
+
+    this.postService.addMedium(post.id, index, mediumDTO).subscribe(
+      updatedPost => {
+        post.media = updatedPost.media; // Aktualizuj media w poście
+      },
+      error => {
+        console.error('Error adding medium:', error);
+      }
+    );
+  }
+
+  editMedium(post: PostDTO, index: number): void {
+    const mediumDTO: MediumDTO = {
+      postId: post.id,
+      mediumType: 'image',
+      file: this.selectedFile
+    };
+
+    this.postService.updateMedium(post.id, index, mediumDTO).subscribe(
+      updatedPost => {
+        post.media = updatedPost.media;
+      },
+      error => {
+        console.error('Error updating medium:', error);
+      }
+    );
+  }
+
+  deleteMedium(post: PostDTO, index: number): void {
+    this.postService.deleteMedium(post.id, index).subscribe(
+      () => {
+        post.media.splice(index, 1);
+      },
+      error => {
+        console.error('Error deleting medium:', error);
+      }
+    );
+  }
+
 }

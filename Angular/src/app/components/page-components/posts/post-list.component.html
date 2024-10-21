@@ -2,9 +2,15 @@
   <div class="post-header">
     <span class="username">{{ post.user.username }}</span>
     <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
+
+    <button *ngIf="canEdit" class="edit-button" (click)="editPost(post)">Edit</button>
   </div>
 
-  <ng-container *ngIf="post.media.length > 0">
+  <div class="media-container">
+
+    <button *ngIf="canEdit" (click)="addMedium(post, post.currentMediumIndex - 1)" class="add-medium-left">+</button>
+
+    <ng-container *ngIf="post.media.length > 0">
       <ng-container *ngIf="post.media[post.currentMediumIndex]?.type === 'image'">
         <img [src]="post.media[post.currentMediumIndex].url" alt="Post media" />
       </ng-container>
@@ -12,11 +18,20 @@
         <video [src]="post.media[post.currentMediumIndex].url" controls></video>
       </ng-container>
     </ng-container>
+
+    <button *ngIf="canEdit" (click)="addMedium(post, post.currentMediumIndex + 1)" class="add-medium-right">+</button>
+
+    <div class="media-actions" *ngIf="canEdit">
+      <button (click)="editMedium(post, post.currentMediumIndex)">Edit Medium</button>
+      <button (click)="deleteMedium(post, post.currentMediumIndex)">Delete Medium</button>
+    </div>
     
     <div class="navigation-buttons">
       <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
       <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>
     </div>
+
+  </div>
 
   <div class="post-description">
     <p>{{ post.description }}</p>
