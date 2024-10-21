@@ -25,30 +25,34 @@ public class HashtagService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        if (post.getUser().equals(currentUser)) {
-            Hashtag hashtag = hashtagRepository.findById(hashtagDTO.getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Hashtag not found"));
-            if (hashtag.getPost().equals(post)) {
-                hashtag.setHashtag(hashtagDTO.getHashtag());
-                hashtagRepository.save(hashtag);
-                return hashtagMapper.toDto(hashtag);
-            }
+        if (!post.getUser().equals(currentUser)) {
+            throw new BadCredentialsException("You cannot update this hashtag");
         }
-        throw new BadCredentialsException("You cannot update this hashtag");
+        Hashtag hashtag = hashtagRepository.findById(hashtagDTO.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Hashtag not found"));
+        if (!hashtag.getPost().equals(post)) {
+            throw new IllegalArgumentException("Hashtag does not belong to this post");
+        }
 
+        hashtag.setHashtag(hashtagDTO.getHashtag());
+        hashtagRepository.save(hashtag);
+
+        return hashtagMapper.toDto(hashtag);
     }
-
+    
     public void deleteHashtag(Long postId, Long hashtagId) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        if (post.getUser().equals(currentUser)) {
-            Hashtag hashtag = hashtagRepository.findById(hashtagId)
-                    .orElseThrow(() -> new EntityNotFoundException("Hashtag not found"));
-            if (hashtag.getPost().equals(post)) {
-                hashtagRepository.delete(hashtag);
-            }
+        if (!post.getUser().equals(currentUser)) {
+            throw new BadCredentialsException("You cannot delete this hashtag");
         }
-        throw new BadCredentialsException("You cannot delete this hashtag");
+        Hashtag hashtag = hashtagRepository.findById(hashtagId)
+                .orElseThrow(() -> new EntityNotFoundException("Hashtag not found"));
+        if (!hashtag.getPost().equals(post)) {
+            throw new IllegalArgumentException("Hashtag does not belong to this post");
+        }
+
+        hashtagRepository.delete(hashtag);
     }
 }
