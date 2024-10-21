@@ -82,7 +82,6 @@ public class PostIntegrationTest {
         assertEquals(1L, postsPage.getContent().get(0).getUser().getId());
     }
 
-
     @Test
     public void testCreatePost_Success() throws IOException {
         // post
