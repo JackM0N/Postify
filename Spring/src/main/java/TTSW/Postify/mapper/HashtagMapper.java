@@ -8,6 +8,7 @@ import org.mapstruct.*;
 public interface HashtagMapper {
     Hashtag toEntity(HashtagDTO hashtagDTO);
 
+    @Mapping(source = "post.id", target = "postId")
     HashtagDTO toDto(Hashtag hashtag);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

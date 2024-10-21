@@ -1,12 +1,19 @@
 <form [formGroup]="postForm" (ngSubmit)="submitForm()">
     <label for="description">Description</label>
     <textarea formControlName="description" id="description"></textarea>
-
+  
     <label for="hashtags">Hashtags</label>
-    <input type="text" formControlName="hashtags" id="hashtags" placeholder="Add hashtags">
-
+    <input type="text" [formControl]="newHashtagControl" placeholder="Add hashtag" />
+    <button type="button" (click)="addHashtag()">Add Hashtag</button>
+  
+    <div *ngFor="let hashtag of postForm.get('hashtags')?.value; let i = index">
+      <span>{{ hashtag }}</span>
+      <button type="button" (click)="removeHashtag(i)">Remove</button>
+    </div>
+  
     <label for="media">Upload Media</label>
     <input type="file" (change)="onFileChange($event)" multiple />
-
+  
     <button type="submit" [disabled]="postForm.invalid">Create Post</button>
-</form>
+  </form>
+  

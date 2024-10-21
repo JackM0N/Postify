@@ -16,10 +16,12 @@ public interface PostMapper {
     @Mapping(target = "likeCount", constant = "0L")
     Post toEntity(PostDTO postDTO);
 
-//    @AfterMapping
-//    default void linkHashtags(@MappingTarget Post post) {
-//        post.getHashtags().forEach(hashtag -> hashtag.setPost(post));
-//    }
+    @AfterMapping
+    default void linkHashtags(@MappingTarget Post post) {
+        if (post != null && post.getHashtags() != null) {
+            post.getHashtags().forEach(hashtag -> hashtag.setPost(post));
+        }
+    }
 
     @AfterMapping
     default void linkMedia(@MappingTarget Post post) {
