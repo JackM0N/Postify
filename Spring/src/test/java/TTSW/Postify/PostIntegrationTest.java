@@ -1,10 +1,12 @@
 package TTSW.Postify;
 
+import TTSW.Postify.dto.HashtagDTO;
 import TTSW.Postify.dto.MediumDTO;
 import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.mapper.PostMapper;
+import TTSW.Postify.model.Hashtag;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.Post;
 import TTSW.Postify.model.WebsiteUser;
@@ -27,11 +29,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * This class tests Post and all other things that are created directly during post creation:
+ *  - Notification (type=POST)
+ *  - Hashtag
+ */
 @SpringBootTest
 @Transactional
 @WithMockUser("john@example.com")
@@ -57,6 +65,8 @@ public class PostIntegrationTest {
 
     @Autowired
     private FollowHelper followHelper;
+    @Autowired
+    private HashtagRepository hashtagRepository;
 
     @Test
     @WithAnonymousUser
@@ -91,6 +101,17 @@ public class PostIntegrationTest {
         // create follow if it does not exist
         WebsiteUser jane = followHelper.ensureJaneIsFollowing(john);
 
+        // hashtags
+        hashtagRepository.deleteAll();
+        HashtagDTO hashtagDTO = new HashtagDTO();
+        hashtagDTO.setHashtag("hashtag1");
+        HashtagDTO hashtagDTO2 = new HashtagDTO();
+        hashtagDTO2.setHashtag("testhashtag2");
+        List<HashtagDTO> hashtagDTOList = new ArrayList<>(2);
+        hashtagDTOList.add(hashtagDTO);
+        hashtagDTOList.add(hashtagDTO2);
+        postDTO.setHashtags(hashtagDTOList);
+
         // post
         PostDTO createdPost = postService.createPost(postDTO);
 
@@ -107,6 +128,14 @@ public class PostIntegrationTest {
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
                 jane.getId(), john.getId(), NotificationType.POST,createdPost.getId()).orElseThrow();
         assertNotNull(notification);
+
+        // hashtags
+        List<Hashtag> hashtags = hashtagRepository.findAll();
+        assertEquals(2, hashtags.size());
+        for (Hashtag hashtag : hashtags) {
+            assertEquals(hashtag.getPost().getId(), createdPost.getId());
+            assertTrue(hashtag.getHashtag().contains("hashtag"));
+        }
 
         // cleanup
         Path path = Path.of(mediaDirectory + "/" + createdPost.getId());
