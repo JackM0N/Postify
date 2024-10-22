@@ -41,7 +41,8 @@ public class SecurityConfig {
                                 "/medium/edit/**", "/medium/delete/**", "/message/**",
                                 "/post/create", "/post/edit/**", "/post/delete/**", "/user/edit-profile",
                                 "/user/delete/**", "/post/like/**", "/comment/like/**", "/notification/**",
-                                "/post/followed", "/post/my-posts")
+                                "/post/followed", "/post/my-posts", "/hashtag/add/**", "/hashtag/edit/**",
+                                "/hashtag/delete/**")
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
                         .requestMatchers("/login", "/register", "/comment/post/**", "/medium/list/**",
