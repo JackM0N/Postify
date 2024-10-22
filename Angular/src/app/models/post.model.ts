@@ -11,7 +11,9 @@ export interface PostDTO {
     createdAt: [];
     commentCount: number;
     likeCount: number;
-    media: { url: string; type: string }[];
+    media: {
+      id: number | undefined; url: string; type: string 
+}[];
     currentMediumIndex: number;
     isLiked?: boolean;
   }

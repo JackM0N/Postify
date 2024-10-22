@@ -59,7 +59,9 @@ export class PostService {
     return this.http.put<PostDTO>(`${this.mediaUrl}/edit/${position}`, formData);
   }
   
-  deleteMedium(postId: number, position: number): Observable<void> {
-    return this.http.delete<void>(`${this.mediaUrl}/delete/${position}`);
+  deleteMedium(mediumDTO: MediumDTO, position: number): Observable<any> {
+    return this.http.request<any>('DELETE', `${this.mediaUrl}/delete/${position}`, {
+      body: mediumDTO,
+    });
   }
 }

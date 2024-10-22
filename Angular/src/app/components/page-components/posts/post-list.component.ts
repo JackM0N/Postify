@@ -44,6 +44,7 @@ export class PostListComponent {
   loadMediaForPost(post: PostDTO): void {
     this.postService.getPostMedia(post.id).subscribe(media => {
       post.media = media.map(medium => ({
+        id: medium.id,
         url: `data:${medium.type};base64,${medium.base64Data}`,
         type: medium.type.startsWith('image') ? 'image' : 'video'
       }));
@@ -130,7 +131,14 @@ export class PostListComponent {
   }
 
   deleteMedium(post: PostDTO, index: number): void {
-    this.postService.deleteMedium(post.id, index).subscribe(
+    const mediumDTO: MediumDTO = {
+      id: post.media[index].id,
+      postId: post.id,
+      mediumType: post.media[index].type,
+      mediumUrl: post.media[index].url
+    };
+  
+    this.postService.deleteMedium(mediumDTO, index).subscribe(
       () => {
         post.media.splice(index, 1);
       },
