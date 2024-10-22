@@ -96,38 +96,44 @@ export class PostListComponent {
     console.log('Editing post:', post);
   }
 
-  addMedium(post: PostDTO, index: number): void {
-    const mediumDTO: MediumDTO = {
-      postId: post.id,
-      mediumType: 'image',
-      file: this.selectedFile
-    };
-
-    this.postService.addMedium(post.id, index, mediumDTO).subscribe(
-      updatedPost => {
-        post.media = updatedPost.media; // Aktualizuj media w poście
-      },
-      error => {
-        console.error('Error adding medium:', error);
-      }
-    );
+  toggleAddMedium(post: PostDTO, side: string): void {
+    post.showAddMedium = !post.showAddMedium;
+    post.mediumSide = side; // Store which side the medium should be added to
   }
 
-  editMedium(post: PostDTO, index: number): void {
+  toggleEditMedium(post: PostDTO): void {
+    post.showAddMedium = !post.showAddMedium;
+    post.mediumSide = 'edit'; // Set side to 'edit' for editing existing medium
+  }
+
+  onFileSelected(event: any, post: PostDTO): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  submitAddMedium(post: PostDTO): void {
+    if (!this.selectedFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
     const mediumDTO: MediumDTO = {
+      file: this.selectedFile,
       postId: post.id,
-      mediumType: 'image',
-      file: this.selectedFile
+      mediumType: this.selectedFile.type
     };
 
-    this.postService.updateMedium(post.id, index, mediumDTO).subscribe(
-      updatedPost => {
+    if (post.mediumSide === 'edit') {
+      this.postService.updateMedium(post.id, post.currentMediumIndex, mediumDTO).subscribe(updatedPost => {
         post.media = updatedPost.media;
-      },
-      error => {
-        console.error('Error updating medium:', error);
-      }
-    );
+        post.showAddMedium = false;
+      });
+    } else {
+      const index = post.mediumSide === 'left' ? post.currentMediumIndex - 1 : post.currentMediumIndex + 1;
+      this.postService.addMedium(post.id, index, mediumDTO).subscribe(updatedPost => {
+        post.media = updatedPost.media;
+        post.showAddMedium = false;
+      });
+    }
   }
 
   deleteMedium(post: PostDTO, index: number): void {

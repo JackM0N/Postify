@@ -2,6 +2,8 @@ import { HashtagDTO } from "./hashtag.model";
 import { SimplifiedUserDTO } from "./simplified-user.model";
 
 export interface PostDTO {
+    showAddMedium: boolean;
+    mediumSide: string;
     showComments: boolean;
     comments: any;
     id: number;

@@ -8,7 +8,8 @@
 
   <div class="media-container">
 
-    <button *ngIf="canEdit" (click)="addMedium(post, post.currentMediumIndex - 1)" class="add-medium-left">+</button>
+    <!-- Add medium left button with toggle -->
+    <button *ngIf="canEdit" (click)="toggleAddMedium(post, 'left')" class="add-medium-left">+</button>
 
     <ng-container *ngIf="post.media.length > 0">
       <ng-container *ngIf="post.media[post.currentMediumIndex]?.type === 'image'">
@@ -19,13 +20,21 @@
       </ng-container>
     </ng-container>
 
-    <button *ngIf="canEdit" (click)="addMedium(post, post.currentMediumIndex + 1)" class="add-medium-right">+</button>
+    <!-- Add medium right button with toggle -->
+    <button *ngIf="canEdit" (click)="toggleAddMedium(post, 'right')" class="add-medium-right">+</button>
 
+    <!-- Input field for adding/editing media -->
+    <div *ngIf="post.showAddMedium" class="add-medium-form">
+      <input type="file" (change)="onFileSelected($event, post)" />
+      <button (click)="submitAddMedium(post)">Submit</button>
+    </div>
+
+    <!-- Edit and delete buttons -->
     <div class="media-actions" *ngIf="canEdit">
-      <button (click)="editMedium(post, post.currentMediumIndex)">Edit Medium</button>
+      <button (click)="toggleEditMedium(post)">Edit Medium</button>
       <button (click)="deleteMedium(post, post.currentMediumIndex)">Delete Medium</button>
     </div>
-    
+
     <div class="navigation-buttons">
       <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
       <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>

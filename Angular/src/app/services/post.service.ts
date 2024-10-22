@@ -47,6 +47,7 @@ export class PostService {
     const formData = new FormData();
     formData.append('file', mediumDTO.file!);
     formData.append('mediumType', mediumDTO.mediumType);
+    formData.append('postId', postId.toString())
     
     return this.http.put<PostDTO>(`${this.mediaUrl}/add/${index}`, formData);
   }
@@ -55,6 +56,7 @@ export class PostService {
     const formData = new FormData();
     formData.append('file', mediumDTO.file!);
     formData.append('mediumType', mediumDTO.mediumType);
+    formData.append('postId', postId.toString())
   
     return this.http.put<PostDTO>(`${this.mediaUrl}/edit/${position}`, formData);
   }
