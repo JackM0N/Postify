@@ -1,23 +1,21 @@
 import { AuthInterceptor } from './services/auth.intereptor';
 import { LoginComponent } from './components/authentication/login.component';
 import { RegistrationComponent } from './components/authentication/registration.component';
-
 import { NotificationsComponent } from './components/page-components/notifications/notification.component';
 import { PostListComponent } from './components/page-components/posts/post-list.component';
 import { PostFormComponent } from './components/page-components/posts/post-form.component';
-
 import { ToastrModule } from 'ngx-toastr';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
 import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -27,36 +25,43 @@ export function tokenGetter() {
   }
 }
 
-@NgModule({ declarations: [
-        AppComponent,
-        LoginComponent,
-        RegistrationComponent,
-        FollowedPostsComponent,
-        NotificationsComponent,
-        PostListComponent,
-        PostFormComponent,
-    ],
-    exports: [
-        PostListComponent,
-        PostFormComponent,
-    ],
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        AppRoutingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        ToastrModule.forRoot(),
-        JwtModule.forRoot({
-            config: {
-                tokenGetter: tokenGetter, // Defines how to retrieve the token
-                allowedDomains: ['localhost:8080'], // Defines the allowed domains for which the JWT will be sent
-                disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'], // Defines the routes where the JWT should not be sent
-            }
-        })], providers: [
-        JwtHelperService,
-        provideClientHydration(),
-        provideAnimationsAsync(),
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi())
-    ] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    RegistrationComponent,
+    FollowedPostsComponent,
+    NotificationsComponent,
+    PostListComponent,
+    PostFormComponent,
+    MyPostsComponent,
+  ],
+  exports: [
+    PostListComponent,
+    PostFormComponent,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ToastrModule.forRoot(),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter,  // Defines how to retrieve the token
+        allowedDomains: ['localhost:8080'],  // Defines the allowed domains for which the JWT will be sent
+        disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'],  // Defines the routes where the JWT should not be sent
+      }
+    })
+  ],
+  providers: [
+    JwtHelperService,
+    provideClientHydration(),
+    provideAnimationsAsync(),
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    provideHttpClient(withInterceptorsFromDi())
+  ],
+  bootstrap: [AppComponent]
+})
 export class AppModule { }

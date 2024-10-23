@@ -74,6 +74,15 @@ public class PostService {
         return postRepository.findAll(spec, pageable).map(postMapper::toDto);
     }
 
+    public Page<PostDTO> getMyPosts(PostFilter postFilter, Pageable pageable) {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        Specification<Post> spec = (root, query, builder) -> root.get("user").get("id").in(currentUser.getId());
+
+        spec = getPostSpecification(postFilter, spec);
+
+        return postRepository.findAll(spec, pageable).map(postMapper::toDto);
+    }
+
     public PostDTO createPost(PostDTO postDTO) throws IOException {
         if (postDTO.getMedia() == null || postDTO.getMedia().isEmpty()) {
             throw new RuntimeException("Post must contain at least one piece of media (photo or video)");
