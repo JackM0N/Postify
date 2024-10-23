@@ -70,7 +70,6 @@ export class PostFormComponent {
       formData.append(`media[${index}].mediumType`, medium.mediumType);
     });
 
-
     //TODO: Add finding the newly made post
     this.http.post('http://localhost:8080/post/create', formData).subscribe({
       next: (response) => {
