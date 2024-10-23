@@ -17,10 +17,10 @@
       }
 
       @if (post.media.length > 0) {
-        @if (post.media[post.currentMediumIndex]?.type === 'image') {
+        @if (post.media[post.currentMediumIndex].type === 'image') {
           <img [src]="post.media[post.currentMediumIndex].url" alt="Post media" />
         }
-        @if (post.media[post.currentMediumIndex]?.type === 'video') {
+        @if (post.media[post.currentMediumIndex].type === 'video') {
           <video [src]="post.media[post.currentMediumIndex].url" controls></video>
         }
       }

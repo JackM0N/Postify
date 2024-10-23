@@ -31,11 +31,11 @@ export class RegistrationComponent {
     }
 
     const registrationRequest = { 
-        username: this.registrationData.username,
-        email: this.registrationData.email,
-        password: this.registrationData.password,
-        fullName: this.registrationData.fullName,
-        bio: this.registrationData.bio
+      username: this.registrationData.username,
+      email: this.registrationData.email,
+      password: this.registrationData.password,
+      fullName: this.registrationData.fullName,
+      bio: this.registrationData.bio
     };
 
     this.authService.register(registrationRequest).subscribe(
@@ -54,7 +54,7 @@ export class RegistrationComponent {
     if (this.registrationData.password !== this.registrationData.confirmPassword) {
       alert("Passwords do not match");
       return;
-      }
-      this.register();
+    }
+    this.register();
   }
 }
