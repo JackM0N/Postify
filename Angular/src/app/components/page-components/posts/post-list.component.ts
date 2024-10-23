@@ -3,6 +3,7 @@ import { PostDTO } from '../../../models/post.model';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
 import { formatDateTimeArray } from '../../../Util/formatDate';
+import { MediumDTO } from '../../../models/medium.model';
 
 @Component({
   selector: 'app-post-list',
@@ -12,11 +13,14 @@ import { formatDateTimeArray } from '../../../Util/formatDate';
 export class PostListComponent {
   @Input() posts: PostDTO[] = [];
   @Input() showComments: boolean = true;
+  @Input() canEdit: boolean = false;
   protected formatDateTimeArray = formatDateTimeArray;
+
+  selectedFile: File | undefined;
 
   constructor(
     private commentService: CommentService,
-    private postService: PostService
+    private postService: PostService,
   ) {}
 
   ngOnChanges(): void {
@@ -40,6 +44,7 @@ export class PostListComponent {
   loadMediaForPost(post: PostDTO): void {
     this.postService.getPostMedia(post.id).subscribe(media => {
       post.media = media.map(medium => ({
+        id: medium.id,
         url: `data:${medium.type};base64,${medium.base64Data}`,
         type: medium.type.startsWith('image') ? 'image' : 'video'
       }));
@@ -84,4 +89,69 @@ export class PostListComponent {
       post.currentMediumIndex = index + 1;
     }
   }
+
+//TODO:Add proper post editing
+
+  editPost(post: PostDTO): void {
+    console.log('Editing post:', post);
+  }
+
+  toggleAddMedium(post: PostDTO, side: string): void {
+    post.showAddMedium = !post.showAddMedium;
+    post.mediumSide = side; // Store which side the medium should be added to
+  }
+
+  toggleEditMedium(post: PostDTO): void {
+    post.showAddMedium = !post.showAddMedium;
+    post.mediumSide = 'edit'; // Set side to 'edit' for editing existing medium
+  }
+
+  onFileSelected(event: any, post: PostDTO): void {
+    this.selectedFile = event.target.files[0];
+  }
+
+  submitAddMedium(post: PostDTO): void {
+    if (!this.selectedFile) {
+      alert("Please select a file to upload.");
+      return;
+    }
+
+    const mediumDTO: MediumDTO = {
+      file: this.selectedFile,
+      postId: post.id,
+      mediumType: this.selectedFile.type
+    };
+
+    if (post.mediumSide === 'edit') {
+      this.postService.updateMedium(post.id, post.currentMediumIndex, mediumDTO).subscribe(updatedPost => {
+        post.media = updatedPost.media;
+        post.showAddMedium = false;
+      });
+    } else {
+      const index = post.mediumSide === 'left' ? post.currentMediumIndex - 1 : post.currentMediumIndex + 1;
+      this.postService.addMedium(post.id, index, mediumDTO).subscribe(updatedPost => {
+        post.media = updatedPost.media;
+        post.showAddMedium = false;
+      });
+    }
+  }
+
+  deleteMedium(post: PostDTO, index: number): void {
+    const mediumDTO: MediumDTO = {
+      id: post.media[index].id,
+      postId: post.id,
+      mediumType: post.media[index].type,
+      mediumUrl: post.media[index].url
+    };
+  
+    this.postService.deleteMedium(mediumDTO, index).subscribe(
+      () => {
+        post.media.splice(index, 1);
+      },
+      error => {
+        console.error('Error deleting medium:', error);
+      }
+    );
+  }
+
 }

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { PostDTO } from '../models/post.model';
 import { Page } from '../models/page.model';
+import { MediumDTO } from '../models/medium.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +22,8 @@ export class PostService {
     return this.http.get<Page<PostDTO>>(`${this.baseUrl}/list`, { params: { ...filter, ...pageable } });
   }
 
-  getPostMedia(postId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.mediaUrl}/list/${postId}`);
+  getMyPosts(filter: any, pageable: any): Observable<Page<PostDTO>> {
+    return this.http.get<Page<PostDTO>>(`${this.baseUrl}/my-posts`, { params: { ...filter, ...pageable } });
   }
 
   getFollowedPosts(page: number, size: number): Observable<Page<PostDTO>> {
@@ -35,5 +36,34 @@ export class PostService {
 
   createPost(postData: FormData): Observable<any> {
     return this.http.post(`${this.baseUrl}/create`, postData);
+  }
+
+
+  getPostMedia(postId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.mediaUrl}/list/${postId}`);
+  }
+
+  addMedium(postId: number, index: number, mediumDTO: MediumDTO): Observable<PostDTO> {
+    const formData = new FormData();
+    formData.append('file', mediumDTO.file!);
+    formData.append('mediumType', mediumDTO.mediumType);
+    formData.append('postId', postId.toString())
+    
+    return this.http.put<PostDTO>(`${this.mediaUrl}/add/${index}`, formData);
+  }
+  
+  updateMedium(postId: number, position: number, mediumDTO: MediumDTO): Observable<PostDTO> {
+    const formData = new FormData();
+    formData.append('file', mediumDTO.file!);
+    formData.append('mediumType', mediumDTO.mediumType);
+    formData.append('postId', postId.toString())
+  
+    return this.http.put<PostDTO>(`${this.mediaUrl}/edit/${position}`, formData);
+  }
+  
+  deleteMedium(mediumDTO: MediumDTO, position: number): Observable<any> {
+    return this.http.request<any>('DELETE', `${this.mediaUrl}/delete/${position}`, {
+      body: mediumDTO,
+    });
   }
 }

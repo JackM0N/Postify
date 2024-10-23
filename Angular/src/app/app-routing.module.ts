@@ -5,13 +5,18 @@ import { LoginComponent } from './components/authentication/login.component';
 import { RegistrationComponent } from './components/authentication/registration.component';
 import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
 import { NotificationsComponent } from './components/page-components/notifications/notification.component';
+import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 
 const routes: Routes = [
-  { path: 'posts', component: PostComponent },
   { path: 'login', component: LoginComponent},
-  { path: 'register', component: RegistrationComponent},  
+  { path: 'register', component: RegistrationComponent},
+
+  { path: 'posts', component: PostComponent },
   { path: 'followed-posts', component: FollowedPostsComponent},
+  { path: 'my-posts', component: MyPostsComponent},
+
   { path: 'notifications', component: NotificationsComponent},
+  
   { path: '', redirectTo: '/posts', pathMatch: 'full' },
   { path: '**', redirectTo: '/posts', pathMatch: 'full' },
   { path: 'register', redirectTo: '/login', pathMatch: 'full'}

@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.*;
 public class HashtagController {
     private final HashtagService hashtagService;
 
+    @PostMapping("/add/{postId}")
+    public ResponseEntity<HashtagDTO> addHashtag(@PathVariable Long postId, @RequestBody HashtagDTO hashtagDTO) {
+        return ResponseEntity.ok(hashtagService.addHashtag(postId, hashtagDTO));
+    }
+
     @PutMapping("/edit/{postId}")
     public ResponseEntity<HashtagDTO> updateHashtag(@PathVariable Long postId, @RequestBody HashtagDTO hashtagDTO) {
         return ResponseEntity.ok(hashtagService.updateHashtag(postId, hashtagDTO));

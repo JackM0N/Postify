@@ -20,6 +20,20 @@ public class HashtagService {
     private final PostRepository postRepository;
     private final WebsiteUserService websiteUserService;
 
+    public HashtagDTO addHashtag(Long postId, HashtagDTO hashtagDTO) {
+        WebsiteUser currentUser = websiteUserService.getCurrentUser();
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        if (!post.getUser().equals(currentUser)) {
+            throw new BadCredentialsException("You cannot update this hashtag");
+        }
+
+        Hashtag hashtag = hashtagMapper.toEntity(hashtagDTO);
+        hashtag.setPost(post);
+        hashtagRepository.save(hashtag);
+        return hashtagMapper.toDto(hashtag);
+    }
+
     //For individual hashtag updating and deletion
     public HashtagDTO updateHashtag(Long postId, HashtagDTO hashtagDTO) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();

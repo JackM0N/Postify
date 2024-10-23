@@ -18,6 +18,7 @@ import { FormsModule } from '@angular/forms';
 import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
 import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -36,6 +37,7 @@ export function tokenGetter() {
     NotificationsComponent,
     PostListComponent,
     PostFormComponent,
+    MyPostsComponent,
   ],
   exports: [
     PostListComponent,
