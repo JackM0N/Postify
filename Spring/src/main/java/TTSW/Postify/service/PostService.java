@@ -20,13 +20,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -83,6 +81,7 @@ public class PostService {
         return postRepository.findAll(spec, pageable).map(postMapper::toDto);
     }
 
+    @Transactional
     public PostDTO createPost(PostDTO postDTO) throws IOException {
         if (postDTO.getMedia() == null || postDTO.getMedia().isEmpty()) {
             throw new RuntimeException("Post must contain at least one piece of media (photo or video)");
@@ -107,13 +106,7 @@ public class PostService {
                 String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
                 String filename = "post_" + post.getId() + "_media_" + index + "." + extension;
 
-                Path filePath = Paths.get(baseDir, filename);
-                Files.copy(file.getInputStream(), filePath);
-
-                Medium medium = new Medium();
-                medium.setPost(post);
-                medium.setMediumType(mediumDTO.getMediumType());
-                medium.setMediumUrl(baseDir + "/" + filename);
+                Medium medium = MediumService.createNewMedium(mediumDTO, post, file, baseDir, filename);
 
                 media.add(medium);
                 mediumRepository.save(medium);
