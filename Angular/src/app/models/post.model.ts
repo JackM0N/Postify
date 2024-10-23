@@ -13,7 +13,7 @@ export interface PostDTO {
   createdAt: [];
   commentCount: number;
   likeCount: number;
-  media: { id: number | undefined; url: string; type: string } [];
+  media: { id: number | undefined; mediumUrl: string; mediumType: string } [];
   currentMediumIndex: number;
   isLiked?: boolean;
 }

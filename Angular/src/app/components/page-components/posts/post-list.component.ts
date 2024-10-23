@@ -20,7 +20,7 @@ export class PostListComponent {
 
   constructor(
     private commentService: CommentService,
-    private postService: PostService,
+    private postService: PostService
   ) {}
 
   ngOnChanges(): void {
@@ -42,12 +42,15 @@ export class PostListComponent {
   }
 
   loadMediaForPost(post: PostDTO): void {
+    post.media = [];
     this.postService.getPostMedia(post.id).subscribe(media => {
-      post.media = media.map(medium => ({
-        id: medium.id,
-        url: `data:${medium.type};base64,${medium.base64Data}`,
-        type: medium.type.startsWith('image') ? 'image' : 'video'
-      }));
+      if (media) {
+        post.media = media.map(medium => ({
+          id: medium.id,
+          mediumUrl: `data:${medium.type};base64,${medium.base64Data}`,
+          mediumType: medium.type.startsWith('image') ? 'image' : 'video'
+        }));
+      }
     }, error => {
       console.error('Error loading media:', error);
     });
@@ -124,14 +127,12 @@ export class PostListComponent {
 
     if (post.mediumSide === 'edit') {
       this.postService.updateMedium(post.id, post.currentMediumIndex, mediumDTO).subscribe(updatedPost => {
-        post.media = updatedPost.media;
-        post.showAddMedium = false;
+        this.loadMediaForPost(updatedPost);
       });
     } else {
       const index = post.mediumSide === 'left' ? post.currentMediumIndex - 1 : post.currentMediumIndex + 1;
       this.postService.addMedium(post.id, index, mediumDTO).subscribe(updatedPost => {
-        post.media = updatedPost.media;
-        post.showAddMedium = false;
+        this.loadMediaForPost(post);
       });
     }
   }
@@ -140,8 +141,8 @@ export class PostListComponent {
     const mediumDTO: MediumDTO = {
       id: post.media[index].id,
       postId: post.id,
-      mediumType: post.media[index].type,
-      mediumUrl: post.media[index].url
+      mediumType: post.media[index].mediumType,
+      mediumUrl: post.media[index].mediumUrl
     };
   
     this.postService.deleteMedium(mediumDTO, index).subscribe(

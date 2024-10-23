@@ -1,5 +1,5 @@
 
-@for (post of posts; track post) {
+@for (post of posts; track post.id) {
   <div class="post">
     <div class="post-header">
       <span class="username">{{ post.user.username }}</span>
@@ -17,11 +17,11 @@
       }
 
       @if (post.media.length > 0) {
-        @if (post.media[post.currentMediumIndex].type === 'image') {
-          <img [src]="post.media[post.currentMediumIndex].url" alt="Post media" />
+        @if (post.media[post.currentMediumIndex].mediumType.includes('image')) {
+          <img [src]="post.media[post.currentMediumIndex].mediumUrl" alt="Post media" />
         }
-        @if (post.media[post.currentMediumIndex].type === 'video') {
-          <video [src]="post.media[post.currentMediumIndex].url" controls></video>
+        @else if (post.media[post.currentMediumIndex].mediumType === 'video') {
+          <video [src]="post.media[post.currentMediumIndex].mediumUrl" controls></video>
         }
       }
 
@@ -58,7 +58,7 @@
 
     @if (post.hashtags && post.hashtags.length > 0) {
       <div class="hashtags">
-        @for (hashtag of post.hashtags; track hashtag) {
+        @for (hashtag of post.hashtags; track hashtag.id) {
           <span class="hashtag">
             #{{ hashtag.hashtag }}
           </span>
@@ -82,16 +82,14 @@
         <button (click)="toggleComments(post)">Show Comments</button>
 
         @if (post.comments?.length > 0) {
-          <div>
-            @for (comment of post.comments; track comment) {
-              <div>
-                <div class="comment">
-                  <span class="comment-user">{{ comment.user.username }}:</span>
-                  <span class="comment-text">{{ comment.text }}</span>
-                </div>
+          @for (comment of post.comments; track comment.id) {
+            <div>
+              <div class="comment">
+                <span class="comment-user">{{ comment.user.username }}:</span>
+                <span class="comment-text">{{ comment.text }}</span>
               </div>
-            }
-          </div>
+            </div>
+          }
         }
 
         @if (post.comments?.length === 0 && post.showComments) {
