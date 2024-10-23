@@ -138,7 +138,8 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         if(currentUser.equals(post.getUser())) {
-            post = postMapper.partialUpdate(postDTO, post);
+            postMapper.partialUpdate(postDTO, post);
+            postMapper.updateHashtags(postDTO, post);
             postRepository.save(post);
             return postMapper.toDto(post);
         }else {
