@@ -12,7 +12,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { JwtModule, JwtHelperService } from '@auth0/angular-jwt';
@@ -27,42 +27,36 @@ export function tokenGetter() {
   }
 }
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    RegistrationComponent,
-    FollowedPostsComponent,
-    NotificationsComponent,
-    PostListComponent,
-    PostFormComponent,
-  ],
-  exports: [
-    PostListComponent,
-    PostFormComponent,
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ToastrModule.forRoot(),
-    JwtModule.forRoot({
-      config: {
-        tokenGetter: tokenGetter,  // Defines how to retrieve the token
-        allowedDomains: ['localhost:8080'],  // Defines the allowed domains for which the JWT will be sent
-        disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'],  // Defines the routes where the JWT should not be sent
-      }
-    })
-  ],
-  providers: [
-    JwtHelperService,
-    provideClientHydration(),
-    provideAnimationsAsync(),
-    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
-  ],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        RegistrationComponent,
+        FollowedPostsComponent,
+        NotificationsComponent,
+        PostListComponent,
+        PostFormComponent,
+    ],
+    exports: [
+        PostListComponent,
+        PostFormComponent,
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ToastrModule.forRoot(),
+        JwtModule.forRoot({
+            config: {
+                tokenGetter: tokenGetter, // Defines how to retrieve the token
+                allowedDomains: ['localhost:8080'], // Defines the allowed domains for which the JWT will be sent
+                disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'], // Defines the routes where the JWT should not be sent
+            }
+        })], providers: [
+        JwtHelperService,
+        provideClientHydration(),
+        provideAnimationsAsync(),
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AppModule { }
