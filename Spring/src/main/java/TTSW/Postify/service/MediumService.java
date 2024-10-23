@@ -150,13 +150,16 @@ public class MediumService {
     public void deleteMedium(MediumDTO mediumDTO, int position) throws IOException {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
+        List<Medium> media = post.getMedia();
+        if (media.size() == 1){
+            throw new RuntimeException("Post has to contain at least one medium");
+        }
         if (authorizationService.canModifyEntity(post)) {
             Medium deleteMedium = post.getMedia().get(position);
             Files.deleteIfExists(Path.of(deleteMedium.getMediumUrl()));
-            post.getMedia().remove(position);
+            media.remove(position);
             mediumRepository.delete(deleteMedium);
 
-            List<Medium> media = post.getMedia();
             String baseDir = mediaDirectory + post.getId();
             for (int i = position; i < media.size(); i++) {
                 Medium medium = media.get(i);
