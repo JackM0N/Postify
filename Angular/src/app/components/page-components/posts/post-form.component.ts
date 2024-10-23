@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { PostDTO } from '../../../models/post.model';
 
 @Component({
   selector: 'app-post-form',
@@ -8,8 +9,9 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['../../../styles/post-form.component.css']
 })
 export class PostFormComponent {
+  @Input() post: PostDTO | null = null;
   postForm: FormGroup;
-  newHashtagControl: FormControl = new FormControl(''); // Use FormControl for hashtag input
+  newHashtagControl: FormControl = new FormControl('');
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.postForm = this.fb.group({
@@ -19,6 +21,15 @@ export class PostFormComponent {
     });
   }
 
+  ngOnInit(): void {
+    if (this.post) {
+      this.postForm.patchValue({
+        description: this.post.description,
+        hashtags: this.post.hashtags ? this.post.hashtags.map(h => h.hashtag) : []
+      });
+    }
+  }
+  
   addHashtag() {
     const currentHashtags = this.postForm.get('hashtags')?.value || [];
     const newHashtag = this.newHashtagControl.value.trim();
@@ -36,8 +47,6 @@ export class PostFormComponent {
     const currentHashtags = this.postForm.get('hashtags')?.value || [];
     currentHashtags.splice(index, 1);
     this.postForm.get('hashtags')?.setValue(currentHashtags);
-
-    console.log('Hashtags after removing:', currentHashtags);  // Debug log
   }
 
   onFileChange(event: any) {
@@ -56,27 +65,36 @@ export class PostFormComponent {
 
   submitForm() {
     const formData = new FormData();
-
+    
     formData.append('description', this.postForm.get('description')?.value);
-
+  
     const hashtagsArray = this.postForm.get('hashtags')?.value || [];
     hashtagsArray.forEach((hashtag: string, index: number) => {
       formData.append(`hashtags[${index}].hashtag`, hashtag);
     });
-
-    const mediaArray = this.postForm.get('media')?.value || [];
-    mediaArray.forEach((medium: any, index: number) => {
-      formData.append(`media[${index}].file`, medium.file);
-      formData.append(`media[${index}].mediumType`, medium.mediumType);
-    });
-
-    //TODO: Add finding the newly made post
-    this.http.post('http://localhost:8080/post/create', formData).subscribe({
-      next: (response) => {
-        console.log('Post created successfully!', response),
-        window.location.reload();
-      },
-      error: (error) => console.error('Error creating post', error)
-    });
+  
+    if (this.post) {
+      this.http.put(`http://localhost:8080/post/edit/${this.post.id}`, formData).subscribe({
+        next: (response) => {
+          console.log('Post updated successfully!', response);
+          window.location.reload();
+        },
+        error: (error) => console.error('Error updating post', error)
+      });
+    } else {
+      const mediaArray = this.postForm.get('media')?.value || [];
+      mediaArray.forEach((medium: any, index: number) => {
+        formData.append(`media[${index}].file`, medium.file);
+        formData.append(`media[${index}].mediumType`, medium.mediumType);
+      });
+  
+      this.http.post('http://localhost:8080/post/create', formData).subscribe({
+        next: (response) => {
+          console.log('Post created successfully!', response);
+          window.location.reload();
+        },
+        error: (error) => console.error('Error creating post', error)
+      });
+    }
   }
 }
