@@ -220,11 +220,11 @@ ALTER TABLE message
 --changeset Stanislaw:10 labels:media
 INSERT INTO medium (POST_ID, MEDIUM_URL, MEDIUM_TYPE)
 VALUES (1, '../Media/posts/1/post_1_media_0.png', 'image/png'),
-       (1, '../Media/posts/2/post_2_media_0.png', 'image/png'),
-       (1, '../Media/posts/2/post_2_media_1.png', 'image/png'),
-       (1, '../Media/posts/3/post_3_media_0.png', 'image/png'),
-       (1, '../Media/posts/4/post_4_media_0.png', 'image/png'),
-       (1, '../Media/posts/5/post_5_media_0.png', 'image/png');
+       (2, '../Media/posts/2/post_2_media_0.png', 'image/png'),
+       (2, '../Media/posts/2/post_2_media_1.png', 'image/png'),
+       (3, '../Media/posts/3/post_3_media_0.png', 'image/png'),
+       (4, '../Media/posts/4/post_4_media_0.png', 'image/png'),
+       (5, '../Media/posts/5/post_5_media_0.png', 'image/png');
 
 
 --changeset Stanislaw:11 labels:additionalComments
