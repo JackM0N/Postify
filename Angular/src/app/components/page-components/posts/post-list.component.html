@@ -73,5 +73,8 @@
       <p>No comments yet</p>
     </div>
   </div>
+  <ng-container *ngIf="editingPost && editingPost.id === post.id">
+    <app-post-form [post]="editingPost" (cancel)="cancelEdit()"></app-post-form>
+  </ng-container>
 </div>
   
