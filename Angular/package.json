@@ -22,7 +22,7 @@
     "@angular/platform-browser-dynamic": "^18.2.8",
     "@angular/platform-server": "^18.2.8",
     "@angular/router": "^18.2.8",
-    "@angular/ssr": "^17.3.8",
+    "@angular/ssr": "^18.2.9",
     "@auth0/angular-jwt": "^5.2.0",
     "angular-toaster": "^1.5.2",
     "express": "^4.18.2",
