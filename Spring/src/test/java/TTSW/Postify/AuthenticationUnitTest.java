@@ -11,12 +11,11 @@ import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.AuthenticationService;
 import TTSW.Postify.security.JWTService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 public class AuthenticationUnitTest {
 
     @Mock
@@ -52,11 +52,6 @@ public class AuthenticationUnitTest {
 
     @InjectMocks
     private AuthenticationService authenticationService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testRegister_Success() {
