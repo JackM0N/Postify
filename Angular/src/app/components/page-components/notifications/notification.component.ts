@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NotificationService } from '../../../services/notification.service';
 import { NotificationDTO } from '../../../models/notification.model';
-import { formatDateTime } from '../../../Util/formatDate';
+import { formatDateTime } from '../../../util/formatDate';
 
 @Component({
   selector: 'app-notifications',

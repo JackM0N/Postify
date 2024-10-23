@@ -1,33 +1,67 @@
+
 <div class="register">
-    <h2>Register</h2>
-    <form (ngSubmit)="onSubmit()">
-        <div>
-          <label>Username:</label>
-          <input type="text" [(ngModel)]="registrationData.username" name="username" required />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" [(ngModel)]="registrationData.email" name="email" required />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" [(ngModel)]="registrationData.password" name="password" required />
-        </div>
-        <div>
-          <label>Confirm Password:</label>
-          <input type="password" [(ngModel)]="registrationData.confirmPassword" name="confirmPassword" required />
-          <div *ngIf="registrationData.password !== registrationData.confirmPassword">
-            <p style="color: red;">Passwords do not match</p>
-          </div>
-        </div>
-        <div>
-          <label>Full Name (optional):</label>
-          <input type="text" [(ngModel)]="registrationData.fullName" name="fullName" />
-        </div>
-        <div>
-          <label>Bio (optional):</label>
-          <textarea [(ngModel)]="registrationData.bio" name="bio"></textarea>
-        </div>
-        <button type="submit">Register</button>
-    </form>
+  <h2>Register</h2>
+  
+  <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
+    <div>
+      <label>Username:</label>
+      <input type="text" formControlName="username" required />
+
+      @if (registrationForm.get('username')?.touched && registrationForm.get('username')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a username.
+        </mat-error>
+      }
+    </div>
+
+    <div>
+      <label>Email:</label>
+      <input type="email" formControlName="email" required />
+
+      @if (registrationForm.get('email')?.touched && registrationForm.get('email')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide an email.
+        </mat-error>
+      }
+    </div>
+
+    <div>
+      <label>Password:</label>
+      <input type="password" formControlName="password" required />
+
+      @if (registrationForm.get('password')?.touched && registrationForm.get('password')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a password.
+        </mat-error>
+      }
+    </div>
+
+    <div>
+      <label>Confirm Password:</label>
+      <input type="password" formControlName="confirmPassword" required />
+
+      @if (registrationForm.get('confirmPassword')?.touched && registrationForm.get('confirmPassword')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please confirm your password.
+        </mat-error>
+      }
+      @else if (this.registrationForm.hasError('passwordMismatch')) {
+        <mat-error class="text-red-600 font-bold">
+          Passwords do not match
+        </mat-error>
+      }
+    </div>
+
+    <div>
+      <label>Full Name (optional):</label>
+      <input type="text" formControlName="fullName" />
+    </div>
+
+    <div>
+      <label>Bio (optional):</label>
+      <textarea formControlName="bio"></textarea>
+    </div>
+
+    <button type="submit" [disabled]="!registrationForm.valid">Register</button>
+  </form>
 </div>

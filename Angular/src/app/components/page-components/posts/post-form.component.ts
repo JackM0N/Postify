@@ -19,7 +19,6 @@ export class PostFormComponent {
     });
   }
 
-
   addHashtag() {
     const currentHashtags = this.postForm.get('hashtags')?.value || [];
     const newHashtag = this.newHashtagControl.value.trim();
@@ -70,7 +69,6 @@ export class PostFormComponent {
       formData.append(`media[${index}].file`, medium.file);
       formData.append(`media[${index}].mediumType`, medium.mediumType);
     });
-
 
     //TODO: Add finding the newly made post
     this.http.post('http://localhost:8080/post/create', formData).subscribe({

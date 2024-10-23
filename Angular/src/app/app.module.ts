@@ -49,7 +49,7 @@ export function tokenGetter() {
     ToastrModule.forRoot(),
     JwtModule.forRoot({
       config: {
-        tokenGetter: tokenGetter,  // Defines how to retrieve the token
+        tokenGetter: tokenGetter,
         allowedDomains: ['localhost:8080'],  // Defines the allowed domains for which the JWT will be sent
         disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'],  // Defines the routes where the JWT should not be sent
       }
