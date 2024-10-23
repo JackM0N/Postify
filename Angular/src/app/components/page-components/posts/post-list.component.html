@@ -1,81 +1,105 @@
-<div class="post" *ngFor="let post of posts">
-  <div class="post-header">
-    <span class="username">{{ post.user.username }}</span>
-    <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
 
-    <button *ngIf="canEdit" class="edit-button" (click)="editPost(post)">Edit</button>
-  </div>
-
-  <div class="media-container">
-
-    <!-- Add medium left button with toggle -->
-    <button *ngIf="canEdit" (click)="toggleAddMedium(post, 'left')" class="add-medium-left">+</button>
-
-    <ng-container *ngIf="post.media.length > 0">
-      <ng-container *ngIf="post.media[post.currentMediumIndex]?.type === 'image'">
-        <img [src]="post.media[post.currentMediumIndex].url" alt="Post media" />
-      </ng-container>
-      <ng-container *ngIf="post.media[post.currentMediumIndex]?.type === 'video'">
-        <video [src]="post.media[post.currentMediumIndex].url" controls></video>
-      </ng-container>
-    </ng-container>
-
-    <!-- Add medium right button with toggle -->
-    <button *ngIf="canEdit" (click)="toggleAddMedium(post, 'right')" class="add-medium-right">+</button>
-
-    <!-- Input field for adding/editing media -->
-    <div *ngIf="post.showAddMedium" class="add-medium-form">
-      <input type="file" (change)="onFileSelected($event, post)" />
-      <button (click)="submitAddMedium(post)">Submit</button>
+@for (post of posts; track post) {
+  <div class="post">
+    <div class="post-header">
+      <span class="username">{{ post.user.username }}</span>
+      <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
+      
+      @if (canEdit) {
+        <button class="edit-button" (click)="editPost(post)">Edit</button>
+      }
     </div>
 
-    <!-- Edit and delete buttons -->
-    <div class="media-actions" *ngIf="canEdit">
-      <button (click)="toggleEditMedium(post)">Edit Medium</button>
-      <button (click)="deleteMedium(post, post.currentMediumIndex)">Delete Medium</button>
-    </div>
+    <div class="media-container">
+      <!-- Add medium left button with toggle -->
+      @if (canEdit) {
+        <button (click)="toggleAddMedium(post, 'left')" class="add-medium-left">+</button>
+      }
 
-    <div class="navigation-buttons">
-      <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
-      <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>
-    </div>
+      @if (post.media.length > 0) {
+        @if (post.media[post.currentMediumIndex]?.type === 'image') {
+          <img [src]="post.media[post.currentMediumIndex].url" alt="Post media" />
+        }
+        @if (post.media[post.currentMediumIndex]?.type === 'video') {
+          <video [src]="post.media[post.currentMediumIndex].url" controls></video>
+        }
+      }
 
-  </div>
+      <!-- Add medium right button with toggle -->
+      @if (canEdit) {
+        <button (click)="toggleAddMedium(post, 'right')" class="add-medium-right">+</button>
+      }
 
-  <div class="post-description">
-    <p>{{ post.description }}</p>
-  </div>
-
-  <div class="hashtags" *ngIf="post.hashtags && post.hashtags.length > 0">
-    <span *ngFor="let hashtag of post.hashtags" class="hashtag">
-      #{{ hashtag.hashtag }}
-    </span>
-  </div>
-
-  <div class="post-stats">
-    <span>Comments: {{ post.commentCount }}</span>
-    <span>Likes: {{ post.likeCount }}</span>
-  </div>
-
-  <button class="like-button"
-  (click)="likePost(post)" 
-  [ngClass]="{'liked': post.isLiked}">❤️</button>
-
-  <div class="post-comments" *ngIf="showComments">
-    <button (click)="toggleComments(post)">Show Comments</button>
-
-    <div *ngIf="post.comments?.length > 0">
-      <div *ngFor="let comment of post.comments">
-        <div class="comment">
-          <span class="comment-user">{{ comment.user.username }}:</span>
-          <span class="comment-text">{{ comment.text }}</span>
+      <!-- Input field for adding/editing media -->
+      @if (post.showAddMedium) {
+        <div class="add-medium-form">
+          <input type="file" (change)="onFileSelected($event, post)" />
+          <button (click)="submitAddMedium(post)">Submit</button>
         </div>
+      }
+
+      <!-- Edit and delete buttons -->
+      @if (canEdit) {
+        <div class="media-actions">
+          <button (click)="toggleEditMedium(post)">Edit Medium</button>
+          <button (click)="deleteMedium(post, post.currentMediumIndex)">Delete Medium</button>
+        </div>
+      }
+
+      <div class="navigation-buttons">
+        <button (click)="previousMedium(post)" [disabled]="post.currentMediumIndex <= 0">Previous</button>
+        <button (click)="nextMedium(post)" [disabled]="post.currentMediumIndex >= (post.media.length - 1)">Next</button>
       </div>
     </div>
 
-    <div *ngIf="post.comments?.length === 0 && post.showComments">
-      <p>No comments yet</p>
+    <div class="post-description">
+      <p>{{ post.description }}</p>
     </div>
+
+    @if (post.hashtags && post.hashtags.length > 0) {
+      <div class="hashtags">
+        @for (hashtag of post.hashtags; track hashtag) {
+          <span class="hashtag">
+            #{{ hashtag.hashtag }}
+          </span>
+        }
+      </div>
+    }
+
+    <div class="post-stats">
+      <span>Comments: {{ post.commentCount }}</span>
+      <span>Likes: {{ post.likeCount }}</span>
+    </div>
+
+    <button class="like-button"
+      (click)="likePost(post)"
+      [ngClass]="{'liked': post.isLiked}">
+      ❤️
+    </button>
+
+    @if (showComments) {
+      <div class="post-comments">
+        <button (click)="toggleComments(post)">Show Comments</button>
+
+        @if (post.comments?.length > 0) {
+          <div>
+            @for (comment of post.comments; track comment) {
+              <div>
+                <div class="comment">
+                  <span class="comment-user">{{ comment.user.username }}:</span>
+                  <span class="comment-text">{{ comment.text }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (post.comments?.length === 0 && post.showComments) {
+          <div>
+            <p>No comments yet</p>
+          </div>
+        }
+      </div>
+    }
   </div>
-</div>
-  
+}

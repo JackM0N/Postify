@@ -22,7 +22,7 @@ export class RegistrationComponent {
     private authService: AuthService,
     private router: Router,
     private toastr: ToastrService,
-) {}
+  ) {}
 
   register(): void {
     if (this.registrationData.password !== this.registrationData.confirmPassword) {
@@ -52,9 +52,9 @@ export class RegistrationComponent {
 
   onSubmit() {
     if (this.registrationData.password !== this.registrationData.confirmPassword) {
-        alert("Passwords do not match");
-        return;
-        }
-        this.register();
-    }
+      alert("Passwords do not match");
+      return;
+      }
+      this.register();
+  }
 }

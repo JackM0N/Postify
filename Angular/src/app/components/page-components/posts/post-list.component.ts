@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { PostDTO } from '../../../models/post.model';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
-import { formatDateTimeArray } from '../../../Util/formatDate';
+import { formatDateTimeArray } from '../../../util/formatDate';
 import { MediumDTO } from '../../../models/medium.model';
 
 @Component({
@@ -90,7 +90,7 @@ export class PostListComponent {
     }
   }
 
-//TODO:Add proper post editing
+  //TODO:Add proper post editing
 
   editPost(post: PostDTO): void {
     console.log('Editing post:', post);
@@ -153,5 +153,4 @@ export class PostListComponent {
       }
     );
   }
-
 }

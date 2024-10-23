@@ -1,8 +1,11 @@
-<app-post-list 
-  [posts]="followedPosts" 
+
+<app-post-list
+  [posts]="followedPosts"
   [showComments]="true">
 </app-post-list>
 
-<div class="no-posts-message" *ngIf="followedPosts?.length === 0">
-  <h1>No one has posted anything or you haven't followed anyone yet</h1>
-</div>
+@if (followedPosts.length === 0) {
+  <div class="no-posts-message">
+    <h1>No one has posted anything or you haven't followed anyone yet</h1>
+  </div>
+}

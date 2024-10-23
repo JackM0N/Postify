@@ -20,7 +20,8 @@ export class LoginComponent {
     private authService: AuthService, 
     private router: Router,
     private toastr: ToastrService,
-    private jwtHelper: JwtHelperService,) {}
+    private jwtHelper: JwtHelperService
+  ) {}
 
   onSubmit(): void {
     localStorage.clear();

@@ -1,4 +1,5 @@
+
 export interface HashtagDTO{
-    id: number;
-    hashtag: string;
+  id: number;
+  hashtag: string;
 }

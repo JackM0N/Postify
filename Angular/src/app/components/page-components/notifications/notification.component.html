@@ -1,13 +1,19 @@
-<div class="notification" *ngFor="let notification of notifications">
-  <div class="notification-header">
+
+@for (notification of notifications; track notification) {
+  <div class="notification">
+    <div class="notification-header">
       <span class="notification-title">{{ notification.triggeredBy }} <p>Later add title</p></span>
       <span class="notification-time">{{ formatDateTime(notification.createdAt) }}</span>
-  </div>
-  <div class="notification-message">
+    </div>
+    
+    <div class="notification-message">
       {{ notification.notificationType }} <p>Later add message</p>
+    </div>
   </div>
-</div>
+}
 
-<div *ngIf="notifications.length === 0" class="no-posts-message">
-  You don't have any notifications yet.
-</div>
+@if (notifications.length === 0) {
+  <div class="no-posts-message">
+    You don't have any notifications yet.
+  </div>
+}
