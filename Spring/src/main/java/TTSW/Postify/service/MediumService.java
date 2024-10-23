@@ -151,9 +151,26 @@ public class MediumService {
         Post post = postRepository.findById(mediumDTO.getPostId())
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         if (authorizationService.canModifyEntity(post)) {
-            Medium medium = post.getMedia().get(position);
-            Files.deleteIfExists(Path.of(medium.getMediumUrl()));
+            Medium deleteMedium = post.getMedia().get(position);
+            Files.deleteIfExists(Path.of(deleteMedium.getMediumUrl()));
             post.getMedia().remove(position);
+            mediumRepository.delete(deleteMedium);
+
+            List<Medium> media = post.getMedia();
+            String baseDir = mediaDirectory + post.getId();
+            for (int i = position; i < media.size(); i++) {
+                Medium medium = media.get(i);
+                String extension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
+                String newFilename = getFileName(post.getId(), i, extension);
+                Path oldFilePath = Paths.get(medium.getMediumUrl());
+                Path newFilePath = Paths.get(baseDir, newFilename);
+
+                Files.move(oldFilePath, newFilePath, StandardCopyOption.REPLACE_EXISTING);
+
+                medium.setMediumUrl(baseDir + "/" + newFilename);
+            }
+            post.getMedia().remove(media.size() - 1);
+            mediumRepository.saveAll(media);
             postRepository.save(post);
         } else {
             throw new BadCredentialsException("You do not have permission to delete this medium");
