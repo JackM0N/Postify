@@ -13,10 +13,9 @@ import TTSW.Postify.service.AuthorizationService;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.WebsiteUserService;
 import jakarta.persistence.EntityNotFoundException;
-import org.aspectj.util.Reflection;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest
 public class MediumUnitTest {
 
     @Mock
@@ -52,11 +52,6 @@ public class MediumUnitTest {
 
     @InjectMocks
     private MediumService mediumService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     void testGetMediaForPost_Success() throws IOException {

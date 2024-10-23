@@ -23,6 +23,8 @@ import org.junit.platform.suite.api.Suite;
         CommentLikeIntegrationTest.class,
         MessageUnitTest.class,
         MessageIntegrationTest.class,
+        HashtagUnitTest.class,
+        HashtagIntegrationTest.class,
 })
 public class AllTestsSuite {
     // yes, this should be empty
