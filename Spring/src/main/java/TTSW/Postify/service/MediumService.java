@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -55,30 +56,39 @@ public class MediumService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
 
         if (currentUser.equals(post.getUser())) {
+            if (index < 0) {
+                index = 0;
+            }else if (index > media.size()) {
+                index = media.size() - 1;
+            }
+
             MultipartFile file = mediumDTO.getFile();
             String extension = getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-            String filename = getFileName(post.getId(), index, extension);
 
             String baseDir = mediaDirectory + post.getId();
 
-            Medium newMedium = new Medium();
-            newMedium.setPost(post);
-            newMedium.setMediumType(mediumDTO.getMediumType());
-            newMedium.setMediumUrl(baseDir + "/" + filename);
+            // Rename all media from the last index to the target index
+            for (int i = media.size() - 1; i >= index; i--) {
+                Medium medium = media.get(i);
+                String newExtension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
+                String newFilename = getFileName(post.getId(), i + 1, newExtension); // Shift index by 1
+                Path oldFilePath = Paths.get(medium.getMediumUrl());
+                Path newFilePath = Paths.get(baseDir, newFilename);
 
-            Path filePath = Paths.get(baseDir, filename);
-            Files.copy(file.getInputStream(), filePath);
+                // Rename the file
+                if (Files.exists(newFilePath)) {
+                    Files.move(oldFilePath, newFilePath, StandardCopyOption.REPLACE_EXISTING);
+                } else {
+                    Files.move(oldFilePath, newFilePath);
+                }
+                medium.setMediumUrl(baseDir + "/" + newFilename);
+            }
 
+            // Add the new medium at the target index
+            String newFileName = getFileName(post.getId(), index, extension); // File for the new medium
+            Medium newMedium = createNewMedium(mediumDTO, post, file, baseDir, newFileName);
             media.add(index, newMedium);
             mediumRepository.save(newMedium);
-
-            int i = 0;
-            for (Medium medium : media) {
-                String newExtension = getFileExtension(Objects.requireNonNull(medium.getMediumUrl()));
-                String newFilename = getFileName(post.getId(), i, newExtension);
-                medium.setMediumUrl(baseDir + "/" + newFilename);
-                i++;
-            }
 
             mediumRepository.saveAll(media);
             post.setMedia(media);
@@ -87,6 +97,18 @@ public class MediumService {
         } else {
             throw new BadCredentialsException("You dont have permission to add medium to this post");
         }
+    }
+
+    static Medium createNewMedium(MediumDTO mediumDTO, Post post, MultipartFile file, String baseDir, String newFileName) throws IOException {
+        Path newMediumPath = Paths.get(baseDir, newFileName);
+        Files.copy(file.getInputStream(), newMediumPath);
+
+        Medium newMedium = new Medium();
+        newMedium.setPost(post);
+        newMedium.setMediumType(mediumDTO.getMediumType());
+        newMedium.setMediumUrl(baseDir + "/" + newFileName);
+
+        return newMedium;
     }
 
     private String getFileExtension(String filename) {
