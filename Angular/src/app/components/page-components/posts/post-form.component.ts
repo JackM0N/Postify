@@ -29,7 +29,7 @@ export class PostFormComponent {
       });
     }
   }
-
+  
   addHashtag() {
     const currentHashtags = this.postForm.get('hashtags')?.value || [];
     const newHashtag = this.newHashtagControl.value.trim();

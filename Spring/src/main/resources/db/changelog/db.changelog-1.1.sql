@@ -216,3 +216,28 @@ ALTER TABLE notification
 ALTER TABLE message
     ADD CONSTRAINT check_self_message CHECK (sender_id != receiver_id);
 
+
+--changeset Stanislaw:10 labels:media
+INSERT INTO medium (POST_ID, MEDIUM_URL, MEDIUM_TYPE)
+VALUES (1, '../Media/posts/1/post_1_media_0.png', 'image/png'),
+       (2, '../Media/posts/2/post_2_media_0.png', 'image/png'),
+       (2, '../Media/posts/2/post_2_media_1.png', 'image/png'),
+       (3, '../Media/posts/3/post_3_media_0.png', 'image/png'),
+       (4, '../Media/posts/4/post_4_media_0.png', 'image/png'),
+       (5, '../Media/posts/5/post_5_media_0.png', 'image/png');
+
+
+--changeset Stanislaw:11 labels:additionalComments
+INSERT INTO comment (user_id, post_id, text)
+VALUES ((SELECT user_id FROM website_user WHERE username = 'john_doe'),
+        (SELECT post_id FROM post WHERE description LIKE 'Coffee is life%'), 'Smacznej kawusi');
+
+INSERT INTO comment (user_id, post_id, parent_comment_id, text)
+VALUES (5, 2, (SELECT comment_id FROM comment c WHERE c.post_id = 2 AND c.user_id = 1), 'What?');
+
+INSERT INTO comment (user_id, post_id, parent_comment_id, text)
+VALUES (1,
+        2,
+        (SELECT comment_id FROM comment c WHERE c.post_id = 2 AND c.user_id = 5 and c.parent_comment_id IS NOT NULL),
+        'May your coffee taste good');
+

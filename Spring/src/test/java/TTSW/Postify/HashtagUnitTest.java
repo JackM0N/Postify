@@ -105,8 +105,6 @@ public class HashtagUnitTest {
         verify(hashtagRepository, never()).save(any(Hashtag.class));
     }
 
-    /* ================== Tests for deleteHashtag ================== */
-
     @Test
     void testDeleteHashtag_Success() {
         when(postRepository.findById(postId)).thenReturn(Optional.of(post));
