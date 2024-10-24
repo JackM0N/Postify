@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastrService } from 'ngx-toastr';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -27,7 +28,7 @@ export class LoginComponent {
     localStorage.clear();
     this.authService.login(this.loginData).subscribe(
       response => {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem(environment.tokenKey, response.token);
         this.authService.setLoggedIn(true);
 
         const decodedToken = this.jwtHelper.decodeToken(response.token);

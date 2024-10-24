@@ -23,7 +23,7 @@ export class AuthService {
   }
 
   checkToken(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(environment.tokenKey);
     return !!token && !new JwtHelperService().isTokenExpired(token);
   }
 
@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem(environment.tokenKey);
     this.setLoggedIn(false);
   }
 }
