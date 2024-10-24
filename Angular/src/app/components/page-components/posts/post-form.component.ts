@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { PostDTO } from '../../../models/post.model';
+import { PostService } from '../../../services/post.service';
 
 @Component({
   selector: 'app-post-form',
@@ -13,7 +13,10 @@ export class PostFormComponent {
   postForm: FormGroup;
   newHashtagControl: FormControl = new FormControl('');
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder,
+    private postService: PostService
+  ) {
     this.postForm = this.fb.group({
       description: [''],
       hashtags: [[]],
@@ -74,7 +77,7 @@ export class PostFormComponent {
     });
   
     if (this.post) {
-      this.http.put(`http://localhost:8080/post/edit/${this.post.id}`, formData).subscribe({
+      this.postService.editPost(this.post.id, formData).subscribe({
         next: (response) => {
           console.log('Post updated successfully!', response);
           window.location.reload();
@@ -88,7 +91,7 @@ export class PostFormComponent {
         formData.append(`media[${index}].mediumType`, medium.mediumType);
       });
   
-      this.http.post('http://localhost:8080/post/create', formData).subscribe({
+      this.postService.addPost(formData).subscribe({
         next: (response) => {
           console.log('Post created successfully!', response);
           window.location.reload();
