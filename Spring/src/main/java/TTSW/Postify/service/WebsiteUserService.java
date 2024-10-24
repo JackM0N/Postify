@@ -89,6 +89,14 @@ public class WebsiteUserService {
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
+    public WebsiteUserDTO getCurrentUserProfile(){
+        WebsiteUser currentUser = getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("Sorry, something went wrong");
+        }
+        return websiteUserMapper.toDto(currentUser);
+    }
+
     public WebsiteUserDTO editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
         websiteUser = websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
