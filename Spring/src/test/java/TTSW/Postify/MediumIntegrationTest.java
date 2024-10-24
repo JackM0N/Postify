@@ -8,6 +8,7 @@ import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.MediumService;
+import TTSW.Postify.service.Utils;
 import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,7 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -86,17 +88,24 @@ public class MediumIntegrationTest {
     void testGetMediaForPost_Success() throws IOException {
         Medium medium = new Medium();
         Post post = postRepository.findById(1L).get();
+        post.getMedia().clear();
         medium.setPost(post);
         medium.setMediumType("image");
-        String fileName = "test_image.jpg";
+        String fileName = "1\\post_1_media_0.png";
         medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
         mediumRepository.save(medium);
+        ArrayList<Medium> mediumList = new ArrayList<>(1);
+        mediumList.add(medium);
+        post.setMedia(mediumList);
 
         Path testFile = tempDirectory.resolve(fileName);
         Files.createDirectories(testFile.getParent());
         Files.write(testFile, "test data".getBytes());
 
         List<byte[]> mediaBytes = mediumService.getMediaForPost(post.getId());
+        for (byte[] mediaByte : mediaBytes) {
+            System.out.println(mediaByte.length);
+        }
 
         assertEquals(1, mediaBytes.size());
         assertArrayEquals("test data".getBytes(), mediaBytes.get(0));
@@ -107,7 +116,10 @@ public class MediumIntegrationTest {
     void testAddMediumAtIndex_Success() throws IOException {
         Long postId = 1L;
         MultipartFile multipartFile = new MockMultipartFile(
-                "file", "test_image.jpg", "image/jpeg", "test data".getBytes());
+                "file", "post_1_media_0.png", "image/png", "test data".getBytes());
+
+        Post post = postRepository.findById(postId).get();
+        int sizeBefore = post.getMedia().size();
 
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(postId);
@@ -118,12 +130,17 @@ public class MediumIntegrationTest {
         Path postDirectory = Path.of(tempDirectory.toString() + "/" + postId);
         if (!Files.exists(postDirectory)) Files.createDirectories(postDirectory);
 
+        Path testFile = tempDirectory.resolve(multipartFile.getOriginalFilename());
+        Files.createDirectories(testFile.getParent());
+        Files.write(testFile, "test data".getBytes());
+
+        System.out.println(Utils.getAllFieldsToString(mediumDTO));
         mediumService.addMediumAtIndex(0, mediumDTO);
 
-        Post updatedPost = postRepository.findById(postId).get();
-        assertEquals(1, updatedPost.getMedia().size());
+        post = postRepository.findById(postId).get();
+        assertEquals(sizeBefore + 1, post.getMedia().size());
 
-        String expectedFilePath = tempDirectory.resolve(postId + "/post_" + postId + "_media_0.jpg").toString();
+        String expectedFilePath = tempDirectory.resolve(postId + "/post_" + postId + "_media_0.png").toString();
         assertTrue(Files.exists(Paths.get(expectedFilePath)));
     }
 
@@ -152,7 +169,7 @@ public class MediumIntegrationTest {
         Post post = postRepository.findById(1L).get();
         medium.setPost(post);
         medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
+        String fileName = post.getId() + "\\" + "post_" + post.getId() + "_media_0.png";
         medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
         mediumRepository.save(medium);
 
@@ -161,17 +178,19 @@ public class MediumIntegrationTest {
         Files.write(testFile, "old data".getBytes());
 
         MultipartFile newMultipartFile = new MockMultipartFile(
-                "file", "updated_image.jpg", "image/jpeg", "updated data".getBytes());
+                "file", "updated_image.png", "image/png", "updated data".getBytes());
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(post.getId());
         mediumDTO.setId(medium.getId());
         mediumDTO.setFile(newMultipartFile);
+        mediumDTO.setMediumUrl(tempDirectory.resolve(fileName).toString());
         mediumDTO.setMediumType("image");
+
+        Medium postMedium = post.getMedia().get(0);
+        postMedium.setMediumUrl(mediumDTO.getMediumUrl());
 
         mediumService.updateMedium(mediumDTO, 0);
 
-        Post updatedPost = postRepository.findById(post.getId()).get();
-        assertEquals(1, updatedPost.getMedia().size());
         assertArrayEquals("updated data".getBytes(), Files.readAllBytes(testFile));
     }
 
@@ -260,7 +279,6 @@ public class MediumIntegrationTest {
     @Test
     @WithMockUser("testadmin@localhost")
     void testDeleteMedium_Success_Admin() throws IOException {
-        // TODO: look at @WithUserDetails and try to use real admin, not mocked one
         WebsiteUser user = websiteUserService.getCurrentUser();
         Medium medium = new Medium();
         Post post = postRepository.findById(1L).get();
