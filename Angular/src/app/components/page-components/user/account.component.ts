@@ -4,25 +4,25 @@ import { WebsiteUserService } from '../../../services/website-user.service';
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './profile.component.html',
+  templateUrl: './account.component.html',
   styleUrls: ['../../../styles/profile.component.css']
 })
-export class ProfileComponent implements OnInit {
-  profile: WebsiteUserDTO | null = null;
+export class AccountComponent implements OnInit {
+  account: WebsiteUserDTO | null = null;
 
   constructor(private websiteUserService: WebsiteUserService) {}
 
   ngOnInit(): void {
-    this.loadUserProfile();
+    this.loadUserAccount();
   }
 
-  loadUserProfile(): void {
-    this.websiteUserService.getMyProfile().subscribe(
+  loadUserAccount(): void {
+    this.websiteUserService.getAccount().subscribe(
       (data) => {
-        this.profile = data;
+        this.account = data;
       },
       (error) => {
-        console.error('Failed to load profile:', error);
+        console.error('Failed to load account info:', error);
       }
     );
   }

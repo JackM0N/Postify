@@ -1,0 +1,19 @@
+@if(account){
+  <div class="profile-container">
+    <div class="profile-header">
+      <img [src]="account.profilePictureUrl" alt="{{ account.username }}'s profile picture" class="profile-picture">
+      <div class="profile-info">
+        <h2>{{ account.fullName }}</h2>
+        <p class="username">{{ account.username }}</p>
+        <p class="email">{{ account.email }}</p>
+        <p class="bio">{{ account.bio }}</p>
+        <p class="join-date">Joined: {{ account.joinDate | date:'longDate' }}</p>
+      </div>
+    </div>
+  </div>
+}
+@else {
+  <div *ngIf="!account" class="loading-message">
+    <p>Loading profile...</p>
+  </div>
+}

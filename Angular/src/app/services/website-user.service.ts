@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WebsiteUserDTO } from '../models/website-user.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
     export class WebsiteUserService {
-    private profileUrl = '/user/my-profile'; // API endpoint
+    private baseUrl = environment.apiUrl + '/user';
   
     constructor(private http: HttpClient) {}
   
-    getMyProfile(): Observable<WebsiteUserDTO> {
-      return this.http.get<WebsiteUserDTO>(this.profileUrl);
+    getAccount(): Observable<WebsiteUserDTO> {
+      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
     }
 }

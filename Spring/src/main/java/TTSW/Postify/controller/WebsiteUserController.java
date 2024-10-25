@@ -26,7 +26,7 @@ public class WebsiteUserController {
         return ResponseEntity.ok(websiteUserDTO);
     }
 
-    @GetMapping("/my-profile")
+    @GetMapping("/account")
     private ResponseEntity<WebsiteUserDTO> getMyProfile() {
         return ResponseEntity.ok(websiteUserService.getCurrentUserProfile());
     }
