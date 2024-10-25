@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private loginUrl = 'http://localhost:8080/login';
-  private registerUrl = 'http://localhost:8080/register';
+  private loginUrl = environment.apiUrl + '/login';
+  private registerUrl = environment.apiUrl + '/register';
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.checkToken());
 
   constructor(private http: HttpClient) {}
@@ -22,7 +23,7 @@ export class AuthService {
   }
 
   checkToken(): boolean {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(environment.tokenKey);
     return !!token && !new JwtHelperService().isTokenExpired(token);
   }
 
@@ -35,7 +36,7 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    localStorage.removeItem(environment.tokenKey);
     this.setLoggedIn(false);
   }
 }

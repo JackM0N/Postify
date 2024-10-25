@@ -17,10 +17,11 @@ import { FollowedPostsComponent } from './components/page-components/posts/follo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 import { ProfileComponent } from './components/page-components/user/profile.component';
+import { environment } from '../environments/environment';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
-    return localStorage.getItem('token');
+    return localStorage.getItem(environment.tokenKey);
   } else {
     return null;
   }
@@ -52,8 +53,8 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
-        allowedDomains: ['localhost:8080'],  // Defines the allowed domains for which the JWT will be sent
-        disallowedRoutes: ['localhost:8080/login', 'localhost:8080/register'],  // Defines the routes where the JWT should not be sent
+        allowedDomains: [environment.apiUrl],  // Defines the allowed domains for which the JWT will be sent
+        disallowedRoutes: [environment.apiUrl + '/login', environment.apiUrl + '/register'],  // Defines the routes where the JWT should not be sent
       }
     })
   ],
@@ -66,4 +67,4 @@ export function tokenGetter() {
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
