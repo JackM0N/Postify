@@ -7,10 +7,11 @@
         <p class="username">{{ account.username }}</p>
         <p class="email">{{ account.email }}</p>
         <p class="bio">{{ account.bio }}</p>
-        <p class="join-date">Joined: {{ account.joinDate | date:'longDate' }}</p>
+        <p class="join-date">Joined: {{ formatDateTimeArray(account.joinDate) }}</p>
       </div>
     </div>
   </div>
+  <app-my-posts/>
 }
 @else {
   <div *ngIf="!account" class="loading-message">

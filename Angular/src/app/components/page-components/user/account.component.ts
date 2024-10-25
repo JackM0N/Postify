@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WebsiteUserDTO } from '../../../models/website-user.model';
 import { WebsiteUserService } from '../../../services/website-user.service';
+import { formatDateTimeArray } from '../../../util/formatDate';
 
 @Component({
   selector: 'app-profile',
@@ -9,6 +10,7 @@ import { WebsiteUserService } from '../../../services/website-user.service';
 })
 export class AccountComponent implements OnInit {
   account: WebsiteUserDTO | null = null;
+  protected formatDateTimeArray = formatDateTimeArray;
 
   constructor(private websiteUserService: WebsiteUserService) {}
 

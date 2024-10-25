@@ -1,3 +1,5 @@
+import { Role } from "./role.enum";
+
 export interface WebsiteUserDTO {
     id: number;
     username: string;
@@ -5,5 +7,6 @@ export interface WebsiteUserDTO {
     fullName: string;
     bio: string;
     profilePictureUrl: string;
-    joinDate: string;
+    roles: Role[];
+    joinDate: number[];
   }
