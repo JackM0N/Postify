@@ -21,13 +21,13 @@ export class NotificationsComponent implements OnInit {
   }
 
   loadNotifications(): void {
-    this.notificationService.getNotifications(this.page, this.size).subscribe(
-      (data) => {
+    this.notificationService.getNotifications(this.page, this.size).subscribe({
+      next: data => {
         this.notifications = data.content;
       },
-      (error) => {
+      error: error => {
         console.error('Error fetching notifications:', error);
       }
-    );
+    });
   }
 }

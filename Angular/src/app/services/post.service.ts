@@ -4,13 +4,14 @@ import { Observable } from 'rxjs';
 import { PostDTO } from '../models/post.model';
 import { Page } from '../models/page.model';
 import { MediumDTO } from '../models/medium.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostService {
-  private baseUrl = 'http://localhost:8080/post';
-  private mediaUrl = 'http://localhost:8080/medium';
+  private baseUrl = environment.apiUrl + '/post';
+  private mediaUrl = environment.apiUrl + '/medium';
 
   constructor(private http: HttpClient) {}
 
@@ -38,7 +39,6 @@ export class PostService {
     return this.http.post(`${this.baseUrl}/create`, postData);
   }
 
-
   getPostMedia(postId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.mediaUrl}/list/${postId}`);
   }
@@ -50,6 +50,14 @@ export class PostService {
     formData.append('postId', postId.toString())
     
     return this.http.put<PostDTO>(`${this.mediaUrl}/add/${index}`, formData);
+  }
+
+  editPost(postId: number, formData: any): Observable<PostDTO> {
+    return this.http.put<PostDTO>(`${this.baseUrl}/edit/${postId}`, formData);
+  }
+
+  addPost(formData: any): Observable<PostDTO> {
+    return this.http.post<PostDTO>(`${this.baseUrl}/create`, formData);
   }
   
   updateMedium(postId: number, position: number, mediumDTO: MediumDTO): Observable<PostDTO> {

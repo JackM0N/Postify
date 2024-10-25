@@ -17,10 +17,13 @@ export class FollowedPostsComponent implements OnInit {
   }
 
   loadFollowedPosts(): void {
-    this.postService.getFollowedPosts(0, 10).subscribe(data => {
-      this.followedPosts = data.content;
-    }, error => {
-      console.error('Error loading followed posts:', error);
+    this.postService.getFollowedPosts(0, 10).subscribe({
+      next: data => {
+        this.followedPosts = data.content;
+      },
+      error: error => {
+        console.error('Error loading followed posts:', error);
+      }
     });
   }
 }

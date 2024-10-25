@@ -34,26 +34,32 @@ export class PostListComponent {
 
   loadCommentsForPost(post: PostDTO): void {
     if (post.showComments && post.comments.length === 0) {
-      this.commentService.getComments(post.id).subscribe(data => {
-        post.comments = data.content;
-      }, error => {
-        console.error('Error loading comments:', error);
+      this.commentService.getComments(post.id).subscribe({
+        next: data => {
+          post.comments = data.content;
+        },
+        error: error => {
+          console.error('Error loading comments:', error);
+        }
       });
     }
   }
 
   loadMediaForPost(post: PostDTO): void {
     post.media = [];
-    this.postService.getPostMedia(post.id).subscribe(media => {
-      if (media) {
-        post.media = media.map(medium => ({
-          id: medium.id,
-          mediumUrl: `data:${medium.type};base64,${medium.base64Data}`,
-          mediumType: medium.type.startsWith('image') ? 'image' : 'video'
-        }));
+    this.postService.getPostMedia(post.id).subscribe({
+      next: media => {
+        if (media) {
+          post.media = media.map(medium => ({
+            id: medium.id,
+            mediumUrl: `data:${medium.type};base64,${medium.base64Data}`,
+            mediumType: medium.type.startsWith('image') ? 'image' : 'video'
+          }));
+        }
+      },
+      error: error => {
+        console.error('Error loading media:', error);
       }
-    }, error => {
-      console.error('Error loading media:', error);
     });
   }
 
@@ -65,19 +71,23 @@ export class PostListComponent {
   }
 
   likePost(post: PostDTO): void {
-    this.postService.likePost(post.id).subscribe(() => {
+    this.postService.likePost(post.id).subscribe({
+      next: () => {
         post.isLiked = !post.isLiked;
 
-        this.postService.getPostById(post.id).subscribe(updatedPost => {
-          post.likeCount = updatedPost.likeCount;
-        }, error => {
-          console.error('Error fetching updated post:', error);
+        this.postService.getPostById(post.id).subscribe({
+          next: updatedPost => {
+            post.likeCount = updatedPost.likeCount;
+          },
+          error: error => {
+            console.error('Error fetching updated post:', error);
+          }
         });
       },
-      (error) => {
+      error: (error) => {
         console.error('Error liking post:', error);
       }
-    );
+    });
   }
 
   previousMedium(post: PostDTO): void {
@@ -148,13 +158,13 @@ export class PostListComponent {
       mediumUrl: post.media[index].mediumUrl
     };
   
-    this.postService.deleteMedium(mediumDTO, index).subscribe(
-      () => {
+    this.postService.deleteMedium(mediumDTO, index).subscribe({
+      next: () => {
         post.media.splice(index, 1);
       },
-      error => {
+      error: error => {
         console.error('Error deleting medium:', error);
       }
-    );
+    });
   }
 }

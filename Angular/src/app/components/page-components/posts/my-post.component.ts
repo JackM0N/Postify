@@ -18,10 +18,13 @@ export class MyPostsComponent implements OnInit {
   }
 
   loadMyPosts(): void {
-    this.postService.getMyPosts(0, 10).subscribe(data => {
-      this.posts = data.content;
-    }, error => {
-      console.error('Error loading posts:', error);
+    this.postService.getMyPosts(0, 10).subscribe({
+      next: data => {
+        this.posts = data.content;
+      },
+      error: error => {
+        console.error('Error loading posts:', error);
+      }
     });
   }
 }
