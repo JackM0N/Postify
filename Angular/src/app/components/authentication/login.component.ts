@@ -26,8 +26,9 @@ export class LoginComponent {
 
   onSubmit(): void {
     localStorage.clear();
-    this.authService.login(this.loginData).subscribe(
-      response => {
+
+    this.authService.login(this.loginData).subscribe({
+      next: response => {
         localStorage.setItem(environment.tokenKey, response.token);
         this.authService.setLoggedIn(true);
 
@@ -37,10 +38,10 @@ export class LoginComponent {
         this.toastr.success(`Login was successful!\nWelcome back ${username}!`);
         this.router.navigate(['/']);
       },
-      error => {
+      error: error => {
         this.toastr.error('Invalid email or password');
         console.error('Login error:', error);
       }
-    );
+    });
   }
 }
