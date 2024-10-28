@@ -15,11 +15,13 @@
       </ul>
       
       <div class="auth-links">
-        @if (!isLoggedIn) {
-          <a routerLink="/login">Login</a>
-          <a routerLink="/register">Register</a>
+        @if (isLoggedIn) {
           <a routerLink="/account">{{ username }}</a>
           <a (click)="logout()">Logout</a>
+        }
+        @else {
+          <a routerLink="/login">Login</a>
+          <a routerLink="/register">Register</a>
         }
       </div>
     </nav>
