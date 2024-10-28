@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-my-posts',
@@ -11,7 +12,10 @@ export class MyPostsComponent implements OnInit {
   posts: PostDTO[] = [];
   showPostForm: boolean = false;
 
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadMyPosts();
@@ -23,6 +27,7 @@ export class MyPostsComponent implements OnInit {
         this.posts = data.content;
       },
       error: error => {
+        this.toastr.error('Error loading posts');
         console.error('Error loading posts:', error);
       }
     });

@@ -11,11 +11,10 @@ import { environment } from '../../../environments/environment';
   styleUrls: ['../../styles/login.component.css']
 })
 export class LoginComponent {
-  loginData = {
+  protected loginData = {
     email: '',
     password: ''
   };
-  errorMessage: string | null = null;
 
   constructor(
     private authService: AuthService, 

@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { PostDTO } from '../../../models/post.model';
 import { PostService } from '../../../services/post.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-post-form',
@@ -9,13 +10,14 @@ import { PostService } from '../../../services/post.service';
   styleUrls: ['../../../styles/post-form.component.css']
 })
 export class PostFormComponent {
-  @Input() post: PostDTO | null = null;
-  postForm: FormGroup;
-  newHashtagControl: FormControl = new FormControl('');
+  @Input() public post: PostDTO | null = null;
+  protected postForm: FormGroup;
+  public newHashtagControl: FormControl = new FormControl('');
 
   constructor(
     private fb: FormBuilder,
-    private postService: PostService
+    private postService: PostService,
+    private toastr: ToastrService
   ) {
     this.postForm = this.fb.group({
       description: [''],
@@ -79,10 +81,13 @@ export class PostFormComponent {
     if (this.post) {
       this.postService.editPost(this.post.id, formData).subscribe({
         next: (response) => {
-          console.log('Post updated successfully!', response);
+          this.toastr.success('Post updated successfully!');
           window.location.reload();
         },
-        error: (error) => console.error('Error updating post', error)
+        error: (error) => {
+          this.toastr.error('Error updating post');
+          console.error('Error updating post', error);
+        }
       });
     } else {
       const mediaArray = this.postForm.get('media')?.value || [];
@@ -93,7 +98,7 @@ export class PostFormComponent {
   
       this.postService.addPost(formData).subscribe({
         next: (response) => {
-          console.log('Post created successfully!', response);
+          this.toastr.success('Post created successfully!');
           window.location.reload();
         },
         error: (error) => console.error('Error creating post', error)

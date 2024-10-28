@@ -4,6 +4,7 @@ import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
 import { MediumDTO } from '../../../models/medium.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-post-list',
@@ -11,9 +12,9 @@ import { MediumDTO } from '../../../models/medium.model';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class PostListComponent {
-  @Input() posts: PostDTO[] = [];
-  @Input() showComments: boolean = true;
-  @Input() canEdit: boolean = false;
+  @Input() public posts: PostDTO[] = [];
+  @Input() public showComments: boolean = true;
+  @Input() public canEdit: boolean = false;
   protected formatDateTimeArray = formatDateTimeArray;
 
   selectedFile: File | undefined;
@@ -21,7 +22,8 @@ export class PostListComponent {
 
   constructor(
     private commentService: CommentService,
-    private postService: PostService
+    private postService: PostService,
+    private toastr: ToastrService
   ) {}
 
   ngOnChanges(): void {
@@ -39,6 +41,7 @@ export class PostListComponent {
           post.comments = data.content;
         },
         error: error => {
+          this.toastr.error('Error loading comments');
           console.error('Error loading comments:', error);
         }
       });
@@ -58,6 +61,7 @@ export class PostListComponent {
         }
       },
       error: error => {
+        this.toastr.error('Error loading media');
         console.error('Error loading media:', error);
       }
     });
@@ -80,11 +84,13 @@ export class PostListComponent {
             post.likeCount = updatedPost.likeCount;
           },
           error: error => {
+            this.toastr.error('Error fetching updated post');
             console.error('Error fetching updated post:', error);
           }
         });
       },
       error: (error) => {
+        this.toastr.error('Error liking post');
         console.error('Error liking post:', error);
       }
     });
@@ -163,6 +169,7 @@ export class PostListComponent {
         post.media.splice(index, 1);
       },
       error: error => {
+        this.toastr.error('Error deleting medium');
         console.error('Error deleting medium:', error);
       }
     });
