@@ -10,6 +10,7 @@ import { WebsiteUserService } from '../../../services/website-user.service';
 })
 export class EditAccountComponent implements OnInit {
   editAccountForm: FormGroup;
+  selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -44,6 +45,13 @@ export class EditAccountComponent implements OnInit {
     );
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
+
   onSubmit(): void {
     if (this.editAccountForm.valid) {
       const { password, confirmPassword, ...rest } = this.editAccountForm.value;
@@ -57,7 +65,16 @@ export class EditAccountComponent implements OnInit {
         ...(password ? { password } : {})
       };
 
-      this.websiteUserService.updateAccount(updatedAccount).subscribe(
+      const formData = new FormData();
+      Object.keys(updatedAccount).forEach(key => {
+        formData.append(key, updatedAccount[key]);
+      });
+
+      if (this.selectedFile) {
+        formData.append('profilePicture', this.selectedFile);
+      }
+
+      this.websiteUserService.updateAccount(formData).subscribe(
         (response) => {
           this.router.navigate(['/account']);
         },

@@ -102,9 +102,11 @@ public class WebsiteUserService {
     public WebsiteUserDTO editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
         websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
-        websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
+        if (websiteUserDTO.getPassword() != null) {
+            websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
+        }
         if (websiteUserDTO.getProfilePicture() != null) {
-
+            //TODO: Add deletion of old pfp
             if (!Files.exists(Paths.get(mediaDirectory))) {
                 File dirFile = new File(mediaDirectory);
                 dirFile.mkdirs();

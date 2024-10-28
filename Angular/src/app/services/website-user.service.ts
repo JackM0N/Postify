@@ -16,16 +16,7 @@ import { environment } from '../../environments/environment';
       return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
     }
 
-    updateAccount(accountData: Partial<WebsiteUserDTO>): Observable<WebsiteUserDTO> {
-      const formData = new FormData();
-
-      Object.keys(accountData).forEach(key => {
-        const value = accountData[key as keyof WebsiteUserDTO];
-        if (value !== null && value !== undefined) {
-          formData.append(key, value as string | Blob);
-        }
-      });
-
-      return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, formData);
+    updateAccount(accountData: FormData): Observable<WebsiteUserDTO> {
+      return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, accountData);
     }
 }
