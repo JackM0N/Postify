@@ -57,11 +57,8 @@ export class EditAccountComponent implements OnInit {
         ...(password ? { password } : {})
       };
 
-      console.log('Submitting updated account:', updatedAccount); // Debugging line
-
       this.websiteUserService.updateAccount(updatedAccount).subscribe(
         (response) => {
-          console.log('Update response:', response); // Debugging line
           this.router.navigate(['/account']);
         },
         (error) => {

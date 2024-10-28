@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,7 @@ public class WebsiteUserService {
     private final WebsiteUserRepository websiteUserRepository;
     private final IAuthenticationFacade authenticationFacade;
     private final WebsiteUserMapper websiteUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${directory.media.profilePictures}")
     private String mediaDirectory = "../Media/profilePictures/";
@@ -99,7 +101,8 @@ public class WebsiteUserService {
 
     public WebsiteUserDTO editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
-        websiteUser = websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
+        websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
+        websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
         if (websiteUserDTO.getProfilePicture() != null) {
 
             if (!Files.exists(Paths.get(mediaDirectory))) {
@@ -113,7 +116,7 @@ public class WebsiteUserService {
             Files.copy(file.getInputStream(), filePath);
             websiteUser.setProfilePictureUrl(filePath.toString());
         }
-        websiteUser = websiteUserRepository.save(websiteUser);
+        websiteUserRepository.save(websiteUser);
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
