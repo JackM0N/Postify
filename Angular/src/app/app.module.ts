@@ -58,7 +58,6 @@ export function tokenGetter() {
   ],
   providers: [
     JwtHelperService,
-    provideClientHydration(),
     provideAnimationsAsync(),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     provideHttpClient(withInterceptorsFromDi())
