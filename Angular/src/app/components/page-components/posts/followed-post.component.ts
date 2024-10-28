@@ -9,7 +9,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class FollowedPostsComponent implements OnInit {
-  followedPosts: PostDTO[] = [];
+  protected followedPosts: PostDTO[] = [];
 
   constructor(
     private postService: PostService,

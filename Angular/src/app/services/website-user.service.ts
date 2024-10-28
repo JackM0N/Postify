@@ -5,18 +5,18 @@ import { WebsiteUserDTO } from '../models/website-user.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
-    export class WebsiteUserService {
-    private baseUrl = environment.apiUrl + '/user';
-  
-    constructor(private http: HttpClient) {}
-  
-    getAccount(): Observable<WebsiteUserDTO> {
-      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
-    }
+  export class WebsiteUserService {
+  private baseUrl = environment.apiUrl + '/user';
 
-    updateAccount(accountData: FormData): Observable<WebsiteUserDTO> {
-      return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, accountData);
-    }
+  constructor(private http: HttpClient) {}
+
+  getAccount(): Observable<WebsiteUserDTO> {
+    return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
+  }
+
+  updateAccount(accountData: FormData): Observable<WebsiteUserDTO> {
+    return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, accountData);
+  }
 }

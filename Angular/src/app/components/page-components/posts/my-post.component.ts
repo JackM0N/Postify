@@ -9,8 +9,8 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['../../../styles/post.component.css']
 })
 export class MyPostsComponent implements OnInit {
-  posts: PostDTO[] = [];
-  showPostForm: boolean = false;
+  protected posts: PostDTO[] = [];
+  protected showPostForm: boolean = false;
 
   constructor(
     private postService: PostService,

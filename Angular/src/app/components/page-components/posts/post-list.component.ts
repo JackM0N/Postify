@@ -17,8 +17,8 @@ export class PostListComponent {
   @Input() public canEdit: boolean = false;
   protected formatDateTimeArray = formatDateTimeArray;
 
-  selectedFile: File | undefined;
-  editingPost: PostDTO | null = null;
+  private selectedFile: File | undefined;
+  protected editingPost: PostDTO | null = null;
 
   constructor(
     private commentService: CommentService,

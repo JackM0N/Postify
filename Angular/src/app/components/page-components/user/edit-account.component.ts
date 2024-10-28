@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebsiteUserService } from '../../../services/website-user.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-edit-account',
@@ -9,13 +10,14 @@ import { WebsiteUserService } from '../../../services/website-user.service';
   styleUrls: ['../../../styles/edit-account.component.css']
 })
 export class EditAccountComponent implements OnInit {
-  editAccountForm: FormGroup;
-  selectedFile: File | null = null;
+  protected editAccountForm: FormGroup;
+  private selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private websiteUserService: WebsiteUserService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.editAccountForm = this.fb.group({
       fullName: ['', Validators.required],
@@ -31,18 +33,19 @@ export class EditAccountComponent implements OnInit {
   }
 
   loadAccountDetails(): void {
-    this.websiteUserService.getAccount().subscribe(
-      (data) => {
+    this.websiteUserService.getAccount().subscribe({
+      next: response => {
         this.editAccountForm.patchValue({
-          fullName: data.fullName,
-          email: data.email,
-          bio: data.bio
+          fullName: response.fullName,
+          email: response.email,
+          bio: response.bio
         });
       },
-      (error) => {
+      error: error => {
+        this.toastr.error('Failed to load account details');
         console.error('Failed to load account details:', error);
       }
-    );
+    });
   }
 
   onFileSelected(event: Event): void {
@@ -74,14 +77,16 @@ export class EditAccountComponent implements OnInit {
         formData.append('profilePicture', this.selectedFile);
       }
 
-      this.websiteUserService.updateAccount(formData).subscribe(
-        (response) => {
+      this.websiteUserService.updateAccount(formData).subscribe({
+        next: response => {
+          this.toastr.success('Account updated successfully!');
           this.router.navigate(['/account']);
         },
-        (error) => {
+        error: error => {
+          this.toastr.error('Failed to update account');
           console.error('Failed to update account:', error);
         }
-      );
+      });
     }
   }
 }
