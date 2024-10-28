@@ -1,16 +1,28 @@
 
 <div class="login-form">
-  <form (ngSubmit)="onSubmit()">
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
     <div>
       <label for="username">Email:</label>
-      <input type="text" id="username" [(ngModel)]="loginData.email" name="username" required>
+      <input type="text" id="username" formControlName="email" name="username" required>
+
+      @if (loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide an email.
+        </mat-error>
+      }
     </div>
 
     <div>
       <label for="password">Password:</label>
-      <input type="password" id="password" [(ngModel)]="loginData.password" name="password" required>
+      <input type="password" id="password" formControlName="password" name="password" required>
+
+      @if (loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a password.
+        </mat-error>
+      }
     </div>
     
-    <button type="submit">Login</button>
+    <button type="submit" [disabled]="!loginForm.valid">Login</button>
   </form>
 </div>

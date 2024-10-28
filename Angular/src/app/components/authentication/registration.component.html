@@ -2,7 +2,7 @@
 <div class="register">
   <h2>Register</h2>
   
-  <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
     <div>
       <label>Username:</label>
       <input type="text" formControlName="username" required />
