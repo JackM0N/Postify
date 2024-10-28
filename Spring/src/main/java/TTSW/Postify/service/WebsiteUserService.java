@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +33,7 @@ public class WebsiteUserService {
     private final WebsiteUserRepository websiteUserRepository;
     private final IAuthenticationFacade authenticationFacade;
     private final WebsiteUserMapper websiteUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${directory.media.profilePictures}")
     private String mediaDirectory = "../Media/profilePictures/";
@@ -89,11 +91,22 @@ public class WebsiteUserService {
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
+    public WebsiteUserDTO getCurrentUserProfile(){
+        WebsiteUser currentUser = getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("Sorry, something went wrong");
+        }
+        return websiteUserMapper.toDto(currentUser);
+    }
+
     public WebsiteUserDTO editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
-        websiteUser = websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
+        websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
+        if (websiteUserDTO.getPassword() != null) {
+            websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
+        }
         if (websiteUserDTO.getProfilePicture() != null) {
-
+            //TODO: Add deletion of old pfp
             if (!Files.exists(Paths.get(mediaDirectory))) {
                 File dirFile = new File(mediaDirectory);
                 dirFile.mkdirs();
@@ -105,7 +118,7 @@ public class WebsiteUserService {
             Files.copy(file.getInputStream(), filePath);
             websiteUser.setProfilePictureUrl(filePath.toString());
         }
-        websiteUser = websiteUserRepository.save(websiteUser);
+        websiteUserRepository.save(websiteUser);
         return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
     }
 
