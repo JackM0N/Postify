@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WebsiteUserDTO } from '../../../models/website-user.model';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -12,7 +13,7 @@ export class AccountComponent implements OnInit {
   account: WebsiteUserDTO | null = null;
   protected formatDateTimeArray = formatDateTimeArray;
 
-  constructor(private websiteUserService: WebsiteUserService) {}
+  constructor(private websiteUserService: WebsiteUserService, private router:Router) {}
 
   ngOnInit(): void {
     this.loadUserAccount();
@@ -27,5 +28,9 @@ export class AccountComponent implements OnInit {
         console.error('Failed to load account info:', error);
       }
     );
+  }
+
+  navigateToEdit(): void {
+    this.router.navigate(['/account/edit']);
   }
 }

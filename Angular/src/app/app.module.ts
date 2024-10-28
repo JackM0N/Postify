@@ -17,6 +17,7 @@ import { FollowedPostsComponent } from './components/page-components/posts/follo
 import { ReactiveFormsModule } from '@angular/forms';
 import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 import { AccountComponent } from './components/page-components/user/account.component';
+import { EditAccountComponent } from './components/page-components/user/edit-account.component';
 import { environment } from '../environments/environment';
 
 export function tokenGetter() {
@@ -38,6 +39,7 @@ export function tokenGetter() {
     PostFormComponent,
     MyPostsComponent,
     AccountComponent,
+    EditAccountComponent,
   ],
   exports: [
     PostListComponent,

@@ -15,4 +15,8 @@ import { environment } from '../../environments/environment';
     getAccount(): Observable<WebsiteUserDTO> {
       return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
     }
+
+    updateAccount(accountData: Partial<WebsiteUserDTO>): Observable<WebsiteUserDTO> {
+      return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, accountData);
+    }
 }

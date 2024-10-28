@@ -10,6 +10,7 @@
         <p class="join-date">Joined: {{ formatDateTimeArray(account.joinDate) }}</p>
         <p class="roles">Roles: {{ account.roles }}</p>
       </div>
+      <button class="edit-button" (click)="navigateToEdit()">Edit</button>
     </div>
   </div>
   <app-my-posts/>
