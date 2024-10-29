@@ -6,10 +6,14 @@ import { RegistrationComponent } from './components/authentication/registration.
 import { FollowedPostsComponent } from './components/page-components/posts/followed-post.component';
 import { NotificationsComponent } from './components/page-components/notifications/notification.component';
 import { MyPostsComponent } from './components/page-components/posts/my-post.component';
+import { AccountComponent } from './components/page-components/user/account.component';
+import { EditAccountComponent } from './components/page-components/user/edit-account.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegistrationComponent},
+  { path: 'account', component: AccountComponent},
+  { path: 'account/edit', component: EditAccountComponent},
 
   { path: 'posts', component: PostComponent },
   { path: 'followed-posts', component: FollowedPostsComponent},

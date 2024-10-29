@@ -26,6 +26,11 @@ public class WebsiteUserController {
         return ResponseEntity.ok(websiteUserDTO);
     }
 
+    @GetMapping("/account")
+    private ResponseEntity<WebsiteUserDTO> getMyProfile() {
+        return ResponseEntity.ok(websiteUserService.getCurrentUserProfile());
+    }
+
     @GetMapping("/list")
     private ResponseEntity<Page<WebsiteUserDTO>> getAllUsers(WebsiteUserFilter websiteUserFilter, Pageable pageable) {
         return ResponseEntity.ok(websiteUserService.getWebsiteUsers(websiteUserFilter, pageable));
