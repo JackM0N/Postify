@@ -3,6 +3,7 @@ import { WebsiteUserDTO } from '../../../models/website-user.model';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
 import { Router } from '@angular/router';
+import { MediumBase64DTO } from '../../../models/medium-base64.model';
 
 @Component({
   selector: 'app-profile',
@@ -12,6 +13,7 @@ import { Router } from '@angular/router';
 export class AccountComponent implements OnInit {
   account: WebsiteUserDTO | null = null;
   protected formatDateTimeArray = formatDateTimeArray;
+  profilePictureUrl: string | null = null;
 
   constructor(private websiteUserService: WebsiteUserService, private router:Router) {}
 
@@ -23,6 +25,7 @@ export class AccountComponent implements OnInit {
     this.websiteUserService.getAccount().subscribe(
       (data) => {
         this.account = data;
+        this.loadProfilePicture(data.id);
       },
       (error) => {
         console.error('Failed to load account info:', error);
@@ -30,6 +33,22 @@ export class AccountComponent implements OnInit {
     );
   }
 
+  loadProfilePicture(userId: number): void {
+    this.websiteUserService.getProfilePicture(userId).subscribe({
+      next: (response: MediumBase64DTO) => {
+        if (response && response.data && response.mediaType) {
+          this.profilePictureUrl = `data:${response.mediaType};base64,${response.data}`;
+          console.log("Profile picture URL:", this.profilePictureUrl);
+        } else {
+          console.warn("Profile picture data is missing:", response);
+        }
+      },
+      error: error => {
+        console.error('Failed to load profile picture:', error);
+      }
+    });
+  }
+  
   navigateToEdit(): void {
     this.router.navigate(['/account/edit']);
   }

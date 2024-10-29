@@ -102,6 +102,13 @@ public class WebsiteUserService {
         return websiteUserMapper.toDto(currentUser);
     }
 
+    public byte[] getUserProfilePicture(Long id) throws IOException {
+        WebsiteUser websiteUser = websiteUserRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Path path = Paths.get(websiteUser.getProfilePictureUrl());
+        return Files.readAllBytes(path);
+    }
+
     public AuthenticationResponse editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
         websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
