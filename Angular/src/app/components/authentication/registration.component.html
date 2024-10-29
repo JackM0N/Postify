@@ -23,6 +23,12 @@
           Please provide an email.
         </mat-error>
       }
+
+      @if (registrationForm.get('email')?.touched && registrationForm.get('email')?.hasError('email')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a valid email.
+        </mat-error>
+      }
     </div>
 
     <div>
