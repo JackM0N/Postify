@@ -6,7 +6,7 @@
       <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
       
       @if (canEdit) {
-        <button class="edit-button" (click)="editPost(post)">Edit</button>
+        <button class="edit-button" (click)="openEditPostFormDialog(post)">Edit</button>
       }
     </div>
 
@@ -99,7 +99,4 @@
       </div>
     }
   </div>
-  <ng-container *ngIf="editingPost && editingPost.id === post.id">
-    <app-post-form [post]="editingPost" (cancel)="cancelEdit()"></app-post-form>
-  </ng-container>
 }

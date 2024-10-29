@@ -5,6 +5,8 @@ import { PostService } from '../../../services/post.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
 import { MediumDTO } from '../../../models/medium.model';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
+import { PostFormDialogComponent } from './post-form-dialog.component';
 
 @Component({
   selector: 'app-post-list',
@@ -18,12 +20,12 @@ export class PostListComponent {
   protected formatDateTimeArray = formatDateTimeArray;
 
   private selectedFile: File | undefined;
-  protected editingPost: PostDTO | null = null;
 
   constructor(
     private commentService: CommentService,
     private postService: PostService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    protected dialog: MatDialog
   ) {}
 
   ngOnChanges(): void {
@@ -110,14 +112,6 @@ export class PostListComponent {
     }
   }
 
-  editPost(post: PostDTO): void {
-    this.editingPost = post;
-  }
-
-  cancelEdit(): void {
-    this.editingPost = null;
-  }
-
   toggleAddMedium(post: PostDTO, side: string): void {
     post.showAddMedium = !post.showAddMedium;
     post.mediumSide = side; // Store which side the medium should be added to
@@ -172,6 +166,19 @@ export class PostListComponent {
         this.toastr.error('Error deleting medium');
         console.error('Error deleting medium:', error);
       }
+    });
+  }
+
+  openEditPostFormDialog(post: PostDTO) {
+    const dialogRef = this.dialog.open(PostFormDialogComponent, {
+      data: {
+        editing: true,
+        post: post
+      }
+    });
+
+    dialogRef.componentInstance.postUpdated.subscribe(() => {
+      window.location.reload();
     });
   }
 }

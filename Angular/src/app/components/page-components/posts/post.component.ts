@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
 import { ToastrService } from 'ngx-toastr';
+import { PostFormDialogComponent } from './post-form-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-post',
@@ -13,7 +15,8 @@ export class PostComponent implements OnInit {
 
   constructor(
     private postService: PostService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    protected dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -29,6 +32,18 @@ export class PostComponent implements OnInit {
         this.toastr.error('Error loading posts');
         console.error('Error loading posts:', error);
       }
+    });
+  }
+
+  openPostFormDialog(): void {
+    const dialogRef = this.dialog.open(PostFormDialogComponent, {
+      data: {
+        editing: false
+      }
+    });
+
+    dialogRef.componentInstance.postUpdated.subscribe(() => {
+      this.loadPosts();
     });
   }
 }
