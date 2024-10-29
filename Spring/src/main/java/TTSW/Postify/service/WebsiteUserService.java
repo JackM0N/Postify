@@ -109,12 +109,13 @@ public class WebsiteUserService {
             websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
         }
         if (websiteUserDTO.getProfilePicture() != null) {
-            //TODO: Add deletion of old pfp
+
             if (!Files.exists(Paths.get(mediaDirectory))) {
                 File dirFile = new File(mediaDirectory);
                 dirFile.mkdirs();
             }
 
+            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
             MultipartFile file = websiteUserDTO.getProfilePicture();
             String filename = "pfp_" + websiteUser.getUsername() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(mediaDirectory, filename);
