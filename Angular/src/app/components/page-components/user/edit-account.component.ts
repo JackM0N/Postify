@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebsiteUserService } from '../../../services/website-user.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit-account',
@@ -76,6 +77,7 @@ export class EditAccountComponent implements OnInit {
 
       this.websiteUserService.updateAccount(formData).subscribe(
         (response) => {
+          localStorage.setItem(environment.tokenKey, response.token);
           this.router.navigate(['/account']);
         },
         (error) => {

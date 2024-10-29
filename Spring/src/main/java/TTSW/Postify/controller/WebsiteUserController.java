@@ -2,6 +2,7 @@ package TTSW.Postify.controller;
 
 import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.filter.WebsiteUserFilter;
+import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.service.WebsiteUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class WebsiteUserController {
     }
 
     @PutMapping("/edit-profile")
-    private ResponseEntity<WebsiteUserDTO> editProfile(@ModelAttribute WebsiteUserDTO websiteUserDTO) throws IOException {
+    private ResponseEntity<AuthenticationResponse> editProfile(@ModelAttribute WebsiteUserDTO websiteUserDTO) throws IOException {
         return ResponseEntity.ok(websiteUserService.editWebsiteUser(websiteUserDTO));
     }
 

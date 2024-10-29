@@ -16,7 +16,7 @@ import { environment } from '../../environments/environment';
       return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
     }
 
-    updateAccount(accountData: FormData): Observable<WebsiteUserDTO> {
-      return this.http.put<WebsiteUserDTO>(`${this.baseUrl}/edit-profile`, accountData);
+    updateAccount(accountData: FormData): Observable<{ token: string }> {
+      return this.http.put<{ token: string }>(`${this.baseUrl}/edit-profile`, accountData);
     }
 }
