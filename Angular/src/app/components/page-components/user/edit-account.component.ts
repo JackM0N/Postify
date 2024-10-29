@@ -20,11 +20,11 @@ export class EditAccountComponent implements OnInit {
     private toastr: ToastrService
   ) {
     this.editAccountForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      bio: [''],
-      password: [''],
-      confirmPassword: ['']
+      fullName: [undefined, Validators.required],
+      email: [undefined, [Validators.required, Validators.email]],
+      bio: [undefined],
+      password: [undefined],
+      confirmPassword: [undefined]
     });
   }
 
