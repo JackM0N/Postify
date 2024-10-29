@@ -1,0 +1,4 @@
+directory:
+  media:
+    posts: ../Tests/Media/posts/
+    profilePictures: ../Tests/Media/profilePictures/
