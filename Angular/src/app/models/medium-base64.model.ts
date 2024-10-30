@@ -1,4 +1,4 @@
 export interface MediumBase64DTO {
-  data: string;
-  mediaType: string;
+  base64Data: string;
+  type: string;
 }
