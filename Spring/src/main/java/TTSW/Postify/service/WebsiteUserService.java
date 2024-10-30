@@ -122,7 +122,11 @@ public class WebsiteUserService {
                 dirFile.mkdirs();
             }
 
-            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
+
+
+            if (websiteUserDTO.getProfilePicture().toString().contains("..")) {
+                Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
+            }
             MultipartFile file = websiteUserDTO.getProfilePicture();
             String filename = "pfp_" + websiteUser.getUsername() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(mediaDirectory, filename);
