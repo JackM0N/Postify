@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit-account',
@@ -77,16 +78,15 @@ export class EditAccountComponent implements OnInit {
         formData.append('profilePicture', this.selectedFile);
       }
 
-      this.websiteUserService.updateAccount(formData).subscribe({
-        next: response => {
-          this.toastr.success('Account updated successfully!');
+      this.websiteUserService.updateAccount(formData).subscribe(
+        (response) => {
+          localStorage.setItem(environment.tokenKey, response.token);
           this.router.navigate(['/account']);
         },
-        error: error => {
-          this.toastr.error('Failed to update account');
+        (error) => {
           console.error('Failed to update account:', error);
         }
-      });
+      );
     }
   }
 }
