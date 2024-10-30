@@ -1,31 +1,51 @@
+
 <div class="edit-account-container">
-    <h2>Edit Account</h2>
-    <form [formGroup]="editAccountForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="fullName">Full Name</label>
-            <input id="fullName" type="text" formControlName="fullName" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input id="email" type="email" formControlName="email" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="bio">Bio</label>
-            <textarea id="bio" formControlName="bio" class="form-control"></textarea>
-        </div>
-        <div class="form-group">
-            <label for="password">New Password</label>
-            <input id="password" type="password" formControlName="password" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="confirmPassword">Confirm New Password</label>
-            <input id="confirmPassword" type="password" formControlName="confirmPassword" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label for="profilePicture">Profile Picture</label>
-            <input id="profilePicture" type="file" (change)="onFileSelected($event)" class="form-control" />
-          </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
-</div>
+  <h2>Edit Account</h2>
   
+  <form [formGroup]="editAccountForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="fullName">Full Name*</label>
+      <input id="fullName" type="text" formControlName="fullName" class="form-control" />
+
+      @if (editAccountForm.get('fullName')?.touched && editAccountForm.get('fullName')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a full name.
+        </mat-error>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email*</label>
+      <input id="email" type="email" formControlName="email" class="form-control" />
+
+      @if (editAccountForm.get('email')?.touched && editAccountForm.get('email')?.hasError('required')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide an email.
+        </mat-error>
+      }
+
+      @if (editAccountForm.get('email')?.touched && editAccountForm.get('email')?.hasError('email')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a valid email.
+        </mat-error>
+      }
+    </div>
+
+    <div class="form-group">
+      <label for="bio">Bio</label>
+      <textarea id="bio" formControlName="bio" class="form-control"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="password">New Password</label>
+      <input id="password" type="password" formControlName="password" class="form-control" />
+    </div>
+
+    <div class="form-group">
+      <label for="confirmPassword">Confirm New Password</label>
+      <input id="confirmPassword" type="password" formControlName="confirmPassword" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="!editAccountForm.valid">Save Changes</button>
+  </form>
+</div>

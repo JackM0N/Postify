@@ -2,7 +2,7 @@
 <div class="register">
   <h2>Register</h2>
   
-  <form (ngSubmit)="onSubmit()" [formGroup]="registrationForm">
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
     <div>
       <label>Username:</label>
       <input type="text" formControlName="username" required />
@@ -21,6 +21,12 @@
       @if (registrationForm.get('email')?.touched && registrationForm.get('email')?.hasError('required')) {
         <mat-error class="text-red-600 font-bold">
           Please provide an email.
+        </mat-error>
+      }
+
+      @if (registrationForm.get('email')?.touched && registrationForm.get('email')?.hasError('email')) {
+        <mat-error class="text-red-600 font-bold">
+          Please provide a valid email.
         </mat-error>
       }
     </div>

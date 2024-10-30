@@ -36,8 +36,10 @@ export class AccountComponent implements OnInit {
   loadProfilePicture(userId: number): void {
     this.websiteUserService.getProfilePicture(userId).subscribe({
       next: (response: MediumBase64DTO) => {
+        console.log(typeof(response))
         if (response && response.base64Data && response.type) {
           this.profilePictureUrl = `data:${response.type};base64,${response.base64Data}`;
+          console.log("Profile picture URL:", this.profilePictureUrl);
         } else {
           console.warn("Profile picture data is missing:", response);
         }

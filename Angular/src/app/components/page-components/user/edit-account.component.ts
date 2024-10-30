@@ -11,20 +11,21 @@ import { environment } from '../../../../environments/environment';
   styleUrls: ['../../../styles/edit-account.component.css']
 })
 export class EditAccountComponent implements OnInit {
-  editAccountForm: FormGroup;
-  selectedFile: File | null = null;
+  protected editAccountForm: FormGroup;
+  private selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private websiteUserService: WebsiteUserService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.editAccountForm = this.fb.group({
-      fullName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      bio: [''],
-      password: [''],
-      confirmPassword: ['']
+      fullName: [undefined, Validators.required],
+      email: [undefined, [Validators.required, Validators.email]],
+      bio: [undefined],
+      password: [undefined],
+      confirmPassword: [undefined]
     });
   }
 
@@ -33,18 +34,19 @@ export class EditAccountComponent implements OnInit {
   }
 
   loadAccountDetails(): void {
-    this.websiteUserService.getAccount().subscribe(
-      (data) => {
+    this.websiteUserService.getAccount().subscribe({
+      next: response => {
         this.editAccountForm.patchValue({
-          fullName: data.fullName,
-          email: data.email,
-          bio: data.bio
+          fullName: response.fullName,
+          email: response.email,
+          bio: response.bio
         });
       },
-      (error) => {
+      error: error => {
+        this.toastr.error('Failed to load account details');
         console.error('Failed to load account details:', error);
       }
-    );
+    });
   }
 
   onFileSelected(event: Event): void {
