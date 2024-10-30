@@ -6,7 +6,7 @@
       <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
       
       @if (canEdit) {
-        <button class="edit-button" (click)="openEditPostFormDialog(post)">Edit</button>
+        <button class="edit-button" (click)="editPost(post)">Edit</button>
       }
     </div>
 
@@ -77,26 +77,29 @@
 
     @if (showComments) {
       <div class="post-comments">
-        <button (click)="toggleComments(post)">{{post.showComments ? 'Hide Comments' : 'Show Comments'}}</button>
+        <button (click)="toggleComments(post)">Show Comments</button>
 
-        @if (post.showComments) {
-          @if (post.comments?.length > 0 && post.showComments) {
-            @for (comment of post.comments; track comment.id) {
-              <div>
-                <div class="comment">
-                  <span class="comment-user">{{ comment.user.username }}:</span>
-                  <span class="comment-text">{{ comment.text }}</span>
-                </div>
-              </div>
-            }
-          }
-          @else if (post.comments?.length === 0 && post.showComments) {
+        @if (post.comments?.length > 0) {
+          @for (comment of post.comments; track comment.id) {
             <div>
-              <p>No comments yet</p>
+              <div class="comment">
+                <span class="comment-user">{{ comment.user.username }}:</span>
+                <span class="comment-text">{{ comment.text }}</span>
+              </div>
             </div>
           }
+        }
+
+        @if (post.comments?.length === 0 && post.showComments) {
+          <div>
+            <p>No comments yet</p>
+          </div>
         }
       </div>
     }
   </div>
+  <ng-container *ngIf="editingPost && editingPost.id === post.id">
+    <app-post-form [post]="editingPost" (cancel)="cancelEdit()"></app-post-form>
+  </ng-container>
 }
+

@@ -3,8 +3,6 @@ import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 import { environment } from '../environments/environment';
-import { MatDialog } from '@angular/material/dialog';
-import { PopupDialogComponent } from './components/popup.component';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +17,7 @@ export class AppComponent implements OnInit{
   constructor(
     private jwtHelper: JwtHelperService, 
     private router: Router,
-    private authService: AuthService,
-    protected dialog: MatDialog
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -40,21 +37,6 @@ export class AppComponent implements OnInit{
       const decodedToken = this.jwtHelper.decodeToken(token);
       this.username = decodedToken?.username || null;
     }
-  }
-
-  openLogoutConfirmation(): void {
-    const dialogRef = this.dialog.open(PopupDialogComponent, {
-      data: {
-        dialogTitle: 'Potwierdzenie wylogowania',
-        dialogContent: 'Czy na pewno chcesz się wylogować?'
-      }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === true) {
-        this.logout();
-      }
-    });
   }
 
   logout(): void {

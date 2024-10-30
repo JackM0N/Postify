@@ -4,9 +4,6 @@ import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
 import { MediumDTO } from '../../../models/medium.model';
-import { ToastrService } from 'ngx-toastr';
-import { MatDialog } from '@angular/material/dialog';
-import { PostFormDialogComponent } from './post-form-dialog.component';
 
 @Component({
   selector: 'app-post-list',
@@ -14,18 +11,17 @@ import { PostFormDialogComponent } from './post-form-dialog.component';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class PostListComponent {
-  @Input() public posts: PostDTO[] = [];
-  @Input() public showComments: boolean = true;
-  @Input() public canEdit: boolean = false;
+  @Input() posts: PostDTO[] = [];
+  @Input() showComments: boolean = true;
+  @Input() canEdit: boolean = false;
   protected formatDateTimeArray = formatDateTimeArray;
 
-  private selectedFile: File | undefined;
+  selectedFile: File | undefined;
+  editingPost: PostDTO | null = null;
 
   constructor(
     private commentService: CommentService,
-    private postService: PostService,
-    private toastr: ToastrService,
-    protected dialog: MatDialog
+    private postService: PostService
   ) {}
 
   ngOnChanges(): void {
@@ -43,7 +39,6 @@ export class PostListComponent {
           post.comments = data.content;
         },
         error: error => {
-          this.toastr.error('Error loading comments');
           console.error('Error loading comments:', error);
         }
       });
@@ -63,7 +58,6 @@ export class PostListComponent {
         }
       },
       error: error => {
-        this.toastr.error('Error loading media');
         console.error('Error loading media:', error);
       }
     });
@@ -86,13 +80,11 @@ export class PostListComponent {
             post.likeCount = updatedPost.likeCount;
           },
           error: error => {
-            this.toastr.error('Error fetching updated post');
             console.error('Error fetching updated post:', error);
           }
         });
       },
       error: (error) => {
-        this.toastr.error('Error liking post');
         console.error('Error liking post:', error);
       }
     });
@@ -110,6 +102,14 @@ export class PostListComponent {
     if (post.media && index < (post.media.length - 1)) {
       post.currentMediumIndex = index + 1;
     }
+  }
+
+  editPost(post: PostDTO): void {
+    this.editingPost = post;
+  }
+
+  cancelEdit(): void {
+    this.editingPost = null;
   }
 
   toggleAddMedium(post: PostDTO, side: string): void {
@@ -163,22 +163,8 @@ export class PostListComponent {
         post.media.splice(index, 1);
       },
       error: error => {
-        this.toastr.error('Error deleting medium');
         console.error('Error deleting medium:', error);
       }
-    });
-  }
-
-  openEditPostFormDialog(post: PostDTO) {
-    const dialogRef = this.dialog.open(PostFormDialogComponent, {
-      data: {
-        editing: true,
-        post: post
-      }
-    });
-
-    dialogRef.componentInstance.postUpdated.subscribe(() => {
-      window.location.reload();
     });
   }
 }

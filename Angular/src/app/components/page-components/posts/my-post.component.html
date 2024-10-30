@@ -1,5 +1,6 @@
 
-<button (click)="openPostFormDialog()">Create a new post</button>
+<button (click)="showPostForm = !showPostForm">Create new post</button>
+<app-post-form *ngIf="showPostForm"></app-post-form>
 
 <app-post-list
   [posts]="posts" 

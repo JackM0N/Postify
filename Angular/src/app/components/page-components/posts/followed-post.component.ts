@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-followed-posts',
@@ -9,12 +8,9 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class FollowedPostsComponent implements OnInit {
-  protected followedPosts: PostDTO[] = [];
+  followedPosts: PostDTO[] = [];
 
-  constructor(
-    private postService: PostService,
-    private toastr: ToastrService
-  ) {}
+  constructor(private postService: PostService) {}
 
   ngOnInit(): void {
     this.loadFollowedPosts();
@@ -26,7 +22,6 @@ export class FollowedPostsComponent implements OnInit {
         this.followedPosts = data.content;
       },
       error: error => {
-        this.toastr.error('Error loading followed posts');
         console.error('Error loading followed posts:', error);
       }
     });

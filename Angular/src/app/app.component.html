@@ -17,7 +17,7 @@
       <div class="auth-links">
         @if (isLoggedIn) {
           <a routerLink="/account">{{ username }}</a>
-          <a class="cursor-pointer" (click)="openLogoutConfirmation()">Logout</a>
+          <a (click)="logout()">Logout</a>
         }
         @else {
           <a routerLink="/login">Login</a>

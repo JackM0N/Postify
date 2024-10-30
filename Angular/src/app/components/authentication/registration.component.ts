@@ -21,7 +21,7 @@ export class RegistrationComponent {
   ) {
     this.registrationForm = this.formBuilder.group({
       username: [undefined, Validators.required],
-      email: [undefined, [Validators.required, Validators.email]],
+      email: [undefined, Validators.required],
       password: [undefined, Validators.required],
       confirmPassword: [undefined, Validators.required],
       fullName: [undefined],

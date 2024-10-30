@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { WebsiteUserService } from '../../../services/website-user.service';
-import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-edit-account',
@@ -10,21 +10,20 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['../../../styles/edit-account.component.css']
 })
 export class EditAccountComponent implements OnInit {
-  protected editAccountForm: FormGroup;
-  private selectedFile: File | null = null;
+  editAccountForm: FormGroup;
+  selectedFile: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private websiteUserService: WebsiteUserService,
-    private router: Router,
-    private toastr: ToastrService
+    private router: Router
   ) {
     this.editAccountForm = this.fb.group({
-      fullName: [undefined, Validators.required],
-      email: [undefined, [Validators.required, Validators.email]],
-      bio: [undefined],
-      password: [undefined],
-      confirmPassword: [undefined]
+      fullName: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      bio: [''],
+      password: [''],
+      confirmPassword: ['']
     });
   }
 
@@ -33,19 +32,18 @@ export class EditAccountComponent implements OnInit {
   }
 
   loadAccountDetails(): void {
-    this.websiteUserService.getAccount().subscribe({
-      next: response => {
+    this.websiteUserService.getAccount().subscribe(
+      (data) => {
         this.editAccountForm.patchValue({
-          fullName: response.fullName,
-          email: response.email,
-          bio: response.bio
+          fullName: data.fullName,
+          email: data.email,
+          bio: data.bio
         });
       },
-      error: error => {
-        this.toastr.error('Failed to load account details');
+      (error) => {
         console.error('Failed to load account details:', error);
       }
-    });
+    );
   }
 
   onFileSelected(event: Event): void {
@@ -77,16 +75,15 @@ export class EditAccountComponent implements OnInit {
         formData.append('profilePicture', this.selectedFile);
       }
 
-      this.websiteUserService.updateAccount(formData).subscribe({
-        next: response => {
-          this.toastr.success('Account updated successfully!');
+      this.websiteUserService.updateAccount(formData).subscribe(
+        (response) => {
+          localStorage.setItem(environment.tokenKey, response.token);
           this.router.navigate(['/account']);
         },
-        error: error => {
-          this.toastr.error('Failed to update account');
+        (error) => {
           console.error('Failed to update account:', error);
         }
-      });
+      );
     }
   }
 }

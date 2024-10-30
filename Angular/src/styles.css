@@ -3,10 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-button:disabled:hover {
-  cursor: not-allowed !important;
-}
-
 /* position */
 .toast-center-center {
   top: 50%;

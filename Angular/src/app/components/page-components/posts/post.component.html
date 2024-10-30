@@ -1,6 +1,8 @@
 
-<button (click)="openPostFormDialog()">Create a new post</button>
-
+<button (click)="showPostForm = !showPostForm">Create new post</button>
+@if (showPostForm) {
+  <app-post-form></app-post-form>
+}
 <app-post-list
   [posts]="posts"
   [showComments]="true">

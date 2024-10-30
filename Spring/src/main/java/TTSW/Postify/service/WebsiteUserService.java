@@ -6,7 +6,9 @@ import TTSW.Postify.filter.WebsiteUserFilter;
 import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.model.WebsiteUser;
 import TTSW.Postify.repository.WebsiteUserRepository;
+import TTSW.Postify.security.AuthenticationResponse;
 import TTSW.Postify.security.IAuthenticationFacade;
+import TTSW.Postify.security.JWTService;
 import jakarta.persistence.criteria.Join;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -34,6 +36,7 @@ public class WebsiteUserService {
     private final IAuthenticationFacade authenticationFacade;
     private final WebsiteUserMapper websiteUserMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
 
     @Value("${directory.media.profilePictures}")
     private String mediaDirectory = "../Media/profilePictures/";
@@ -99,19 +102,27 @@ public class WebsiteUserService {
         return websiteUserMapper.toDto(currentUser);
     }
 
-    public WebsiteUserDTO editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
+    public byte[] getUserProfilePicture(Long id) throws IOException {
+        WebsiteUser websiteUser = websiteUserRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Path path = Paths.get(websiteUser.getProfilePictureUrl());
+        return Files.readAllBytes(path);
+    }
+
+    public AuthenticationResponse editWebsiteUser(WebsiteUserDTO websiteUserDTO) throws IOException {
         WebsiteUser websiteUser = getCurrentUser();
         websiteUserMapper.partialUpdate(websiteUserDTO, websiteUser);
         if (websiteUserDTO.getPassword() != null) {
             websiteUser.setPassword(passwordEncoder.encode(websiteUserDTO.getPassword()));
         }
         if (websiteUserDTO.getProfilePicture() != null) {
-            //TODO: Add deletion of old pfp
+
             if (!Files.exists(Paths.get(mediaDirectory))) {
                 File dirFile = new File(mediaDirectory);
                 dirFile.mkdirs();
             }
 
+            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
             MultipartFile file = websiteUserDTO.getProfilePicture();
             String filename = "pfp_" + websiteUser.getUsername() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(mediaDirectory, filename);
@@ -119,7 +130,8 @@ public class WebsiteUserService {
             websiteUser.setProfilePictureUrl(filePath.toString());
         }
         websiteUserRepository.save(websiteUser);
-        return websiteUserMapper.toDtoWithoutSensitiveInfo(websiteUser);
+        String token = jwtService.generateToken(websiteUser);
+        return new AuthenticationResponse(token);
     }
 
     public void deleteWebsiteUser(Long id) throws IOException {
