@@ -1,0 +1,35 @@
+
+<div class="popup-overlay">
+  <div class="popup" [style]="style" [ngClass]="ngClass">
+    <h2 id="popup-header" class="text-lg font-bold">
+      {{dialogTitle}}
+    </h2>
+
+    @if (dialogContent) {
+      <p>
+        {{dialogContent}}
+      </p>
+    }
+
+    <ng-content></ng-content>
+
+    <div class="button-container mt-2">
+      @if (showCancelButton) {
+        <button class="popup-close-button" (click)="onCancel()">
+          {{cancelButtonLabel}}
+        </button>
+      }
+
+      @if (showConfirmButton) {
+        <button
+          class="popup-confirm-button"
+          [ngClass]="confirmButtonNgClass"
+          (click)="onConfirm()"
+          [disabled]="confirmButtonDisabled"
+          [class.disabled-button]="confirmButtonDisabled">
+          {{confirmButtonLabel}}
+        </button>
+      }
+    </div>
+  </div>
+</div>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NotificationService } from '../../../services/notification.service';
 import { NotificationDTO } from '../../../models/notification.model';
 import { formatDateTime } from '../../../util/formatDate';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-notifications',
@@ -9,12 +10,15 @@ import { formatDateTime } from '../../../util/formatDate';
   styleUrls: ['../../../styles/notification.component.css']
 })
 export class NotificationsComponent implements OnInit {
-  notifications: NotificationDTO[] = [];
+  protected notifications: NotificationDTO[] = [];
   protected formatDateTime = formatDateTime;
-  page = 0;
-  size = 10;
+  private page = 0;
+  private size = 10;
 
-  constructor(private notificationService: NotificationService) {}
+  constructor(
+    private notificationService: NotificationService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -26,6 +30,7 @@ export class NotificationsComponent implements OnInit {
         this.notifications = data.content;
       },
       error: error => {
+        this.toastr.error('Error fetching notifications');
         console.error('Error fetching notifications:', error);
       }
     });

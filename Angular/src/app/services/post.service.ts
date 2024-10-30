@@ -52,11 +52,11 @@ export class PostService {
     return this.http.put<PostDTO>(`${this.mediaUrl}/add/${index}`, formData);
   }
 
-  editPost(postId: number, formData: any): Observable<PostDTO> {
+  editPost(postId: number, formData: FormData): Observable<PostDTO> {
     return this.http.put<PostDTO>(`${this.baseUrl}/edit/${postId}`, formData);
   }
 
-  addPost(formData: any): Observable<PostDTO> {
+  addPost(formData: FormData): Observable<PostDTO> {
     return this.http.post<PostDTO>(`${this.baseUrl}/create`, formData);
   }
   
