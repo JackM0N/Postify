@@ -9,6 +9,7 @@ import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.PostService;
+import TTSW.Postify.service.Utils;
 import TTSW.Postify.service.WebsiteUserService;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.AfterAll;
@@ -35,13 +36,14 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(properties = "spring.cache.type=none")
 @Transactional
 @WithMockUser("john@example.com")
 public class MediumIntegrationTest {
@@ -143,14 +145,16 @@ public class MediumIntegrationTest {
     @Test
     @WithAnonymousUser
     void testGetMediaForPost_Success() throws IOException {
+        int originalSize = postDTO.getMedia().size();
         List<byte[]> mediaBytes = mediumService.getMediaForPost(postDTO.getId());
 
-        assertEquals(2, mediaBytes.size());
+        assertEquals(originalSize, mediaBytes.size());
     }
 
     @Test
     @WithMockUser("john@example.com")
     void testAddMediumAtIndex_Success() throws IOException {
+        int originalSize = postDTO.getMedia().size();
         MultipartFile additionalMedium = new MockMultipartFile(
                 "newMedium", "newMedium.jpg", "image/jpg", "test data".getBytes());
         MediumDTO additionalMediumDTO = new MediumDTO();
@@ -161,7 +165,7 @@ public class MediumIntegrationTest {
         postDTO = mediumService.addMediumAtIndex(1, additionalMediumDTO);
 
         List<MediumDTO> media = postDTO.getMedia();
-        assertEquals(3, media.size());
+        assertEquals(originalSize + 1, media.size());
         // media 1 and 2 was png, inserted was jpg
         assertTrue(media.get(0).getMediumUrl().contains("png")); // medium 1
         assertTrue(media.get(1).getMediumUrl().contains("jpg")); // inserted medium
@@ -184,17 +188,20 @@ public class MediumIntegrationTest {
     @Test
     @WithMockUser("john@example.com")
     void testUpdateMedium_Success() throws IOException {
+        int mediumPosition = 0;
+        byte[] file = "updated data".getBytes();
         MultipartFile updatedMedium = new MockMultipartFile(
-                "newMedium", "newMedium.gif", "image/gif", "test data".getBytes());
+                "newMedium", "newMedium.gif", "image/gif", file);
         MediumDTO updatedMediumDTO = new MediumDTO();
         updatedMediumDTO.setFile(updatedMedium);
         updatedMediumDTO.setMediumType("image");
         updatedMediumDTO.setPostId(postDTO.getId());
 
-        postDTO = mediumService.updateMedium(updatedMediumDTO, 0);
-        // System.out.println(Utils.getAllFieldsToString(postDTO.getMedia(), true));
+        mediumService.updateMedium(updatedMediumDTO, mediumPosition);
 
-        assertTrue(postDTO.getMedia().get(0).getMediumUrl().contains("gif"));
+        List<byte[]> media = mediumService.getMediaForPost(postDTO.getId());
+        assertArrayEquals(media.get(mediumPosition), file);
+        assertTrue(postDTO.getMedia().get(mediumPosition).getMediumUrl().contains("gif"));
     }
 
     @Test
@@ -228,13 +235,13 @@ public class MediumIntegrationTest {
     void testDeleteMedium_Success() throws IOException {
         int mediumPosition = 1;
         Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
         MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
-        mediumDTO.setPostId(postDTO.getId()); // TODO: mediumDTO should contain postId, probably
 
         mediumService.deleteMedium(mediumDTO, mediumPosition);
 
         post = postRepository.findById(postDTO.getId()).get();
-        assertEquals(1, post.getMedia().size()); // TODO: right now it deletes whole list
+        assertEquals(originalSize - 1, post.getMedia().size());
     }
 
 //    @Test
