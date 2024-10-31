@@ -1,9 +1,9 @@
-// followed-users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FollowedUsersService } from '../../../services/followers.service';
 import { SimplifiedUserDTO } from '../../../models/simplified-user.model';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { MediumBase64DTO } from '../../../models/medium-base64.model';
+import { Page } from '../../../models/page.model'; // Ensure this import is correct
 
 @Component({
   selector: 'app-followed-users',
@@ -14,7 +14,7 @@ export class FollowedUsersComponent implements OnInit {
   users: SimplifiedUserDTO[] = [];
 
   constructor(
-    private followedUsersService: FollowedUsersService, 
+    private followedUsersService: FollowedUsersService,
     private websiteUserService: WebsiteUserService
   ) {}
 
@@ -23,8 +23,8 @@ export class FollowedUsersComponent implements OnInit {
   }
 
   loadFollowedUsers(): void {
-    this.followedUsersService.getFollowedUsers('', 0, 10).subscribe((users) => {
-      users.forEach((user) => {
+    this.followedUsersService.getFollowedUsers('', 0, 10).subscribe((page: Page<SimplifiedUserDTO>) => {
+      page.content.forEach((user: SimplifiedUserDTO) => {
         this.loadProfilePicture(user);
       });
     });

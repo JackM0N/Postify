@@ -1,8 +1,8 @@
 <div class="followed-users-container">
   <div *ngFor="let user of users" class="user-card">
     <img
-      *ngIf="user.profilePictureBase64"
-      [src]="'data:' + user.profilePictureType + ';base64,' + user.profilePictureBase64"
+      *ngIf="user.profilePicture"
+      [src]="user.profilePicture"
       alt="Profile Picture"
       class="profile-picture"
     />
