@@ -137,9 +137,22 @@ public class MediumService {
                 throw new EntityNotFoundException("File not found");
             }
 
-            Path filePath = Paths.get(medium.getMediumUrl());
-            Files.deleteIfExists(filePath);
-            Files.copy(mediumDTO.getFile().getInputStream(), filePath);
+            String oldExtension = getFileExtension(medium.getMediumUrl());
+            String newExtension = getFileExtension(Objects.requireNonNull(mediumDTO.getFile().getOriginalFilename()));
+
+            if (!oldExtension.equalsIgnoreCase(newExtension)) {
+                String newFileName = getFileName(post.getId(), position, newExtension);
+                Path newFilePath = Paths.get(mediaDirectory, newFileName);
+
+                Files.deleteIfExists(Paths.get(medium.getMediumUrl()));
+                Files.copy(mediumDTO.getFile().getInputStream(), newFilePath);
+
+                medium.setMediumUrl(newFilePath.toString());
+            } else {
+                Path filePath = Paths.get(medium.getMediumUrl());
+                Files.deleteIfExists(filePath);
+                Files.copy(mediumDTO.getFile().getInputStream(), filePath);
+            }
             mediumRepository.save(medium);
             return postMapper.toDto(post);
         } else {
