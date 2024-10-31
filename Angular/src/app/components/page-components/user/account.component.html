@@ -1,4 +1,5 @@
-@if(account){
+
+@if (account) {
   <div class="profile-container">
     <div class="profile-header">
       <img [src]="profilePictureUrl" alt="{{ account.username }}'s profile picture" class="profile-picture">
@@ -15,8 +16,8 @@
   </div>
   <app-my-posts/>
 }
-@else {
-  <div *ngIf="!account" class="loading-message">
+@else if (!account) {
+  <div class="loading-message">
     <p>Loading profile...</p>
   </div>
 }

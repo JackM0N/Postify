@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { ToastrService } from 'ngx-toastr';
 import { environment } from '../../../../environments/environment';
+import { passwordMatchValidator } from '../../../validators/passwordMatchValidator';
 
 @Component({
   selector: 'app-edit-account',
@@ -26,7 +27,7 @@ export class EditAccountComponent implements OnInit {
       bio: [undefined],
       password: [undefined],
       confirmPassword: [undefined]
-    });
+    }, { validators: passwordMatchValidator });
   }
 
   ngOnInit(): void {
@@ -78,15 +79,16 @@ export class EditAccountComponent implements OnInit {
         formData.append('profilePicture', this.selectedFile);
       }
 
-      this.websiteUserService.updateAccount(formData).subscribe(
-        (response) => {
+      this.websiteUserService.updateAccount(formData).subscribe({
+        next: response => {
           localStorage.setItem(environment.tokenKey, response.token);
           this.router.navigate(['/account']);
         },
-        (error) => {
+        error: error => {
+          this.toastr.error('Failed to update account');
           console.error('Failed to update account:', error);
         }
-      );
+      });
     }
   }
 }
