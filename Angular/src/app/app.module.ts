@@ -3,10 +3,10 @@ import { LoginComponent } from './components/authentication/login.component';
 import { RegistrationComponent } from './components/authentication/registration.component';
 import { NotificationsComponent } from './components/page-components/notifications/notification.component';
 import { PostListComponent } from './components/page-components/posts/post-list.component';
-import { PostFormComponent } from './components/page-components/posts/post-form.component';
+import { PostFormDialogComponent } from './components/page-components/posts/post-form-dialog.component';
 import { ToastrModule } from 'ngx-toastr';
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
-import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -19,6 +19,7 @@ import { MyPostsComponent } from './components/page-components/posts/my-post.com
 import { AccountComponent } from './components/page-components/user/account.component';
 import { EditAccountComponent } from './components/page-components/user/edit-account.component';
 import { environment } from '../environments/environment';
+import { PopupDialogComponent } from './components/popup.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -36,14 +37,14 @@ export function tokenGetter() {
     FollowedPostsComponent,
     NotificationsComponent,
     PostListComponent,
-    PostFormComponent,
+    PostFormDialogComponent,
     MyPostsComponent,
     AccountComponent,
     EditAccountComponent,
+    PopupDialogComponent
   ],
   exports: [
     PostListComponent,
-    PostFormComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
@@ -62,7 +63,6 @@ export function tokenGetter() {
   ],
   providers: [
     JwtHelperService,
-    provideClientHydration(),
     provideAnimationsAsync(),
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     provideHttpClient(withInterceptorsFromDi())

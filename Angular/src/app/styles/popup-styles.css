@@ -1,0 +1,8 @@
+
+.popupSuccess {
+  border: 4px solid rgba(3, 201, 3, 0.8);
+}
+
+.popupError {
+  border: 4px solid rgba(255, 0, 30, 0.8);
+}
