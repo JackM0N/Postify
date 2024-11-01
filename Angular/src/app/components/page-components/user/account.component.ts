@@ -44,8 +44,6 @@ export class AccountComponent implements OnInit {
       next: (response: MediumBase64DTO) => {
         if (response && response.base64Data && response.type) {
           this.profilePictureUrl = `data:${response.type};base64,${response.base64Data}`;
-        } else {
-          console.warn("Profile picture data is missing:", response);
         }
       },
       error: error => {
