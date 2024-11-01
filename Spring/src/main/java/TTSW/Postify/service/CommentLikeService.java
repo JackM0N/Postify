@@ -10,7 +10,6 @@ import TTSW.Postify.repository.CommentRepository;
 import TTSW.Postify.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 
 @Service
@@ -29,11 +28,12 @@ public class CommentLikeService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        if(likeExists != null){
+        if (likeExists != null){
             commentLikeRepository.delete(likeExists);
             Notification existingNotification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndCommentId(
                     comment.getUser().getId(), currentUser.getId(), NotificationType.COMMENT_LIKE, commentId
             ).orElse(null);
+
             if (existingNotification != null && !existingNotification.getIsRead()) {
                 notificationRepository.delete(existingNotification);
             }

@@ -14,12 +14,10 @@ import TTSW.Postify.repository.WebsiteUserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +138,7 @@ public class FollowService {
         Specification<Notification> specification = getNotificationSpecification(followedUsername, currentUser);
 
         List<Notification> notificationsToDelete = notificationRepository.findAll(specification);
-        if(!notificationsToDelete.isEmpty()) {
+        if (!notificationsToDelete.isEmpty()) {
             notificationRepository.deleteAll(notificationsToDelete);
         }
     }

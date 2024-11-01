@@ -11,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.Base64;
 
@@ -62,5 +61,4 @@ public class WebsiteUserController {
         websiteUserService.deleteWebsiteUser(id);
         return ResponseEntity.ok().build();
     }
-
 }

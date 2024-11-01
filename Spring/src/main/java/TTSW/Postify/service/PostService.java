@@ -22,7 +22,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -137,12 +136,12 @@ public class PostService {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
-        if(currentUser.equals(post.getUser())) {
+        if (currentUser.equals(post.getUser())) {
             postMapper.partialUpdate(postDTO, post);
             postMapper.updateHashtags(postDTO, post);
             postRepository.save(post);
             return postMapper.toDto(post);
-        }else {
+        } else {
             throw new BadCredentialsException("You do not have permission to update this post");
         }
     }
@@ -153,7 +152,7 @@ public class PostService {
         if (authorizationService.canModifyEntity(post)) {
             post.setDeletedAt(LocalDateTime.now());
             postRepository.save(post);
-        }else {
+        } else {
             throw new BadCredentialsException("You do not have permission to update this post");
         }
     }

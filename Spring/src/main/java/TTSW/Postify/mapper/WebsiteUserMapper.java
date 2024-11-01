@@ -5,7 +5,6 @@ import TTSW.Postify.enums.Role;
 import TTSW.Postify.model.UserRole;
 import TTSW.Postify.model.WebsiteUser;
 import org.mapstruct.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

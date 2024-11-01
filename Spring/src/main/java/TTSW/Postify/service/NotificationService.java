@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
 @Service
@@ -47,7 +46,7 @@ public class NotificationService {
                 .orElseThrow(() -> new EntityNotFoundException("Notification not found"));
         if (notification.getUser().equals(currentUser)) {
             notificationRepository.deleteById(notificationId);
-        }else {
+        } else {
             throw new BadCredentialsException("You are not allowed to delete this notification");
         }
     }
