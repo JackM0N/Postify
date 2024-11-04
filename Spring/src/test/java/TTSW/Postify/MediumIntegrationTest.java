@@ -5,11 +5,9 @@ import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
 import TTSW.Postify.mapper.SimplifiedWebsiteUserMapperImpl;
 import TTSW.Postify.model.Post;
-import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
 import TTSW.Postify.service.MediumService;
 import TTSW.Postify.service.PostService;
-import TTSW.Postify.service.Utils;
 import TTSW.Postify.service.WebsiteUserService;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.AfterAll;
@@ -36,14 +34,13 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@SpringBootTest(properties = "spring.cache.type=none")
+@SpringBootTest
 @Transactional
 @WithMockUser("john@example.com")
 public class MediumIntegrationTest {
@@ -60,10 +57,10 @@ public class MediumIntegrationTest {
     @Autowired
     private PostService postService;
 
-    private static Path mediaDirectory;
-
     @Autowired
     private SimplifiedWebsiteUserMapperImpl simplifiedWebsiteUserMapperImpl;
+
+    private static Path mediaDirectory;
 
     private PostDTO postDTO;
 
@@ -244,51 +241,29 @@ public class MediumIntegrationTest {
         assertEquals(originalSize - 1, post.getMedia().size());
     }
 
-//    @Test
-//    @WithMockUser("testadmin@localhost")
-//    void testDeleteMedium_Success_Admin() throws IOException {
-//        WebsiteUser user = websiteUserService.getCurrentUser();
-//        Medium medium = new Medium();
-//        Post post = postRepository.findById(1L).get();
-//        medium.setPost(post);
-//        medium.setMediumType("image");
-//        String fileName = "post_" + post.getId() + "_media_0.jpg";
-//        medium.setMediumUrl(mediaDirectory.resolve(fileName).toString());
-//        mediumRepository.save(medium);
-//
-//        Path testFile = mediaDirectory.resolve(fileName);
-//        Files.write(testFile, "test data".getBytes());
-//
-//        MediumDTO mediumDTO = new MediumDTO();
-//        mediumDTO.setPostId(post.getId());
-//        mediumDTO.setId(medium.getId());
-//
-//        mediumService.deleteMedium(mediumDTO, 0);
-//
-//        Post updatedPost = postRepository.findById(post.getId()).get();
-//        assertEquals(0, updatedPost.getMedia().size());
-//        // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
-//    }
-//
-//    @Test
-//    @WithMockUser("jane@example.com")
-//    void testDeleteMedium_NotAuthor() throws IOException {
-//        // Prepare existing media
-//        Medium medium = new Medium();
-//        Post post = postRepository.findById(1L).get();
-//        medium.setPost(post);
-//        medium.setMediumType("image");
-//        String fileName = "post_" + post.getId() + "_media_0.jpg";
-//        medium.setMediumUrl(mediaDirectory.resolve(fileName).toString());
-//        mediumRepository.save(medium);
-//
-//        Path testFile = mediaDirectory.resolve(fileName);
-//        Files.write(testFile, "test data".getBytes());
-//
-//        MediumDTO mediumDTO = new MediumDTO();
-//        mediumDTO.setPostId(post.getId());
-//        mediumDTO.setId(medium.getId());
-//
-//        assertThrows((BadCredentialsException.class), () -> mediumService.deleteMedium(mediumDTO, 0));
-//    }
+    @Test
+    @WithMockUser("testadmin@localhost")
+    void testDeleteMedium_Success_Admin() throws IOException {
+        int mediumPosition = 1;
+        Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
+        MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
+
+        mediumService.deleteMedium(mediumDTO, mediumPosition);
+
+        post = postRepository.findById(postDTO.getId()).get();
+        assertEquals(originalSize - 1, post.getMedia().size());
+    }
+
+    @Test
+    @WithMockUser("jane@example.com")
+    void testDeleteMedium_NotAuthor() {
+        int mediumPosition = 1;
+        Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
+        MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
+
+        assertThrows((BadCredentialsException.class), () -> mediumService.deleteMedium(mediumDTO, 0));
+        assertEquals(originalSize, post.getMedia().size());
+    }
 }
