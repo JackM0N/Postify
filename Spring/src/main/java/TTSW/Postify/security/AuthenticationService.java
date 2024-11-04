@@ -45,10 +45,10 @@ public class AuthenticationService {
         String email = request.getEmail();
 
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        email,
-                        request.getPassword()
-                )
+            new UsernamePasswordAuthenticationToken(
+                email,
+                request.getPassword()
+            )
         );
 
         user = websiteUserRepository.findByEmail(email)
@@ -58,4 +58,3 @@ public class AuthenticationService {
         return new AuthenticationResponse(token);
     }
 }
-

@@ -5,12 +5,10 @@ import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.service.PostLikeService;
 import TTSW.Postify.service.PostService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 
 @RestController
@@ -65,5 +63,4 @@ public class PostController {
     public ResponseEntity<Boolean> likePost(@PathVariable Long id) {
         return ResponseEntity.ok(postLikeService.likePost(id));
     }
-
 }

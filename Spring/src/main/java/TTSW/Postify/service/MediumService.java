@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +57,7 @@ public class MediumService {
         if (currentUser.equals(post.getUser())) {
             if (index < 0) {
                 index = 0;
-            }else if (index > media.size()) {
+            } else if (index > media.size()) {
                 index = media.size() - 1;
             }
 

@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -67,5 +66,4 @@ public class Post implements HasAuthor {
     @ColumnDefault("0")
     @Column(name = "comment_count", nullable = false)
     private Long commentCount;
-
 }

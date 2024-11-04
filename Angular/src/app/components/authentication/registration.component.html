@@ -51,7 +51,7 @@
           Please confirm your password.
         </mat-error>
       }
-      @else if (this.registrationForm.hasError('passwordMismatch')) {
+      @else if (registrationForm.get('confirmPassword')?.touched && this.registrationForm.hasError('passwordMismatch')) {
         <mat-error class="text-red-600 font-bold">
           Passwords do not match
         </mat-error>
