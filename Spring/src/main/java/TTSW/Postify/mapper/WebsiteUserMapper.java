@@ -18,7 +18,6 @@ public interface WebsiteUserMapper {
     @Mapping(target = "roles", source = "userRoles")
     WebsiteUserDTO toDto(WebsiteUser websiteUser);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "profilePicture", ignore = true)

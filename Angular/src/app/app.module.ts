@@ -21,6 +21,7 @@ import { EditAccountComponent } from './components/page-components/user/edit-acc
 import { environment } from '../environments/environment';
 import { PopupDialogComponent } from './components/popup.component';
 import { FollowedUsersComponent } from './components/page-components/followers/followed.component';
+import { ProfileComponent } from './components/page-components/user/profile.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -44,6 +45,7 @@ export function tokenGetter() {
     EditAccountComponent,
     PopupDialogComponent,
     FollowedUsersComponent,
+    ProfileComponent,
   ],
   exports: [
     PostListComponent,
