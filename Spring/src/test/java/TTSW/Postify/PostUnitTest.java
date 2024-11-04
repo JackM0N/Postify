@@ -17,7 +17,6 @@ import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -73,9 +72,6 @@ public class PostUnitTest {
 
     @Mock
     private FollowRepository followRepository;
-
-    @Value("${directory.media.posts}")
-    private String mediaDirectory = "../Media/posts/";
 
     @Mock
     private Pageable pageable;

@@ -40,7 +40,6 @@ public class PostLikeUnitTest {
     private PostLikeService postLikeService;
 
     private WebsiteUser currentUser;
-    private WebsiteUser otherUser;
     private Post post;
 
     @BeforeEach
@@ -49,7 +48,7 @@ public class PostLikeUnitTest {
         currentUser.setId(1L);
         currentUser.setUsername("john_doe");
 
-        otherUser = new WebsiteUser();
+        WebsiteUser otherUser = new WebsiteUser();
         otherUser.setId(2L);
         otherUser.setUsername("jane_smith");
 
