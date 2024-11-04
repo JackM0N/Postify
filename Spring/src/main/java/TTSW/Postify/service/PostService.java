@@ -6,10 +6,7 @@ import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.mapper.PostMapper;
 import TTSW.Postify.model.*;
-import TTSW.Postify.repository.FollowRepository;
-import TTSW.Postify.repository.MediumRepository;
-import TTSW.Postify.repository.NotificationRepository;
-import TTSW.Postify.repository.PostRepository;
+import TTSW.Postify.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
@@ -36,6 +33,7 @@ public class PostService {
     private final WebsiteUserService websiteUserService;
     private final AuthorizationService authorizationService;
     private final FollowRepository followRepository;
+    private final WebsiteUserRepository websiteUserRepository;
 
     @Value("${directory.media.posts}")
     private String mediaDirectory = "../Media/posts/";
@@ -74,6 +72,16 @@ public class PostService {
     public Page<PostDTO> getMyPosts(PostFilter postFilter, Pageable pageable) {
         WebsiteUser currentUser = websiteUserService.getCurrentUser();
         Specification<Post> spec = (root, query, builder) -> root.get("user").get("id").in(currentUser.getId());
+
+        spec = getPostSpecification(postFilter, spec);
+
+        return postRepository.findAll(spec, pageable).map(postMapper::toDto);
+    }
+
+    public Page<PostDTO> getUserPosts(Long id, PostFilter postFilter, Pageable pageable) {
+        WebsiteUser websiteUser = websiteUserRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+        Specification<Post> spec = (root, query, builder) -> root.get("user").get("id").in(websiteUser.getId());
 
         spec = getPostSpecification(postFilter, spec);
 

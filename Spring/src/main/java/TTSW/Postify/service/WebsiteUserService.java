@@ -104,13 +104,14 @@ public class WebsiteUserService {
     public byte[] getUserProfilePicture(Long id) throws IOException {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Path path;
-        try {
-            path = Paths.get(websiteUser.getProfilePictureUrl());
-        } catch (Exception e) {
-            return null;
+      
+        Path path = null;
+        if (websiteUser.getProfilePictureUrl() == null) {
+             path = Paths.get(mediaDirectory + "default.jpg");
+        } else {
+             path = Paths.get(websiteUser.getProfilePictureUrl());
         }
+      
         return Files.readAllBytes(path);
     }
 
@@ -127,7 +128,11 @@ public class WebsiteUserService {
                 dirFile.mkdirs();
             }
 
-            Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
+
+
+            if (websiteUserDTO.getProfilePicture().toString().contains("..")) {
+                Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
+            }
             MultipartFile file = websiteUserDTO.getProfilePicture();
             String filename = "pfp_" + websiteUser.getUsername() + "_" + file.getOriginalFilename();
             Path filePath = Paths.get(mediaDirectory, filename);

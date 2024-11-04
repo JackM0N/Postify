@@ -20,6 +20,9 @@ import { AccountComponent } from './components/page-components/user/account.comp
 import { EditAccountComponent } from './components/page-components/user/edit-account.component';
 import { environment } from '../environments/environment';
 import { PopupDialogComponent } from './components/popup.component';
+import { FollowedUsersComponent } from './components/page-components/followers/followed.component';
+import { ProfileComponent } from './components/page-components/user/profile.component';
+import { UserPostsComponent } from './components/page-components/posts/user-post.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -41,7 +44,10 @@ export function tokenGetter() {
     MyPostsComponent,
     AccountComponent,
     EditAccountComponent,
-    PopupDialogComponent
+    PopupDialogComponent,
+    FollowedUsersComponent,
+    ProfileComponent,
+    UserPostsComponent,
   ],
   exports: [
     PostListComponent,
