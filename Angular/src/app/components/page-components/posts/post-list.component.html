@@ -2,7 +2,9 @@
 @for (post of posts; track post.id) {
   <div class="post">
     <div class="post-header">
-      <span class="username">{{ post.user.username }}</span>
+      <span class="username">
+        <a [routerLink]="['/profile', post.user.username]">{{ post.user.username }}</a>
+      </span>
       <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
       
       @if (canEdit) {

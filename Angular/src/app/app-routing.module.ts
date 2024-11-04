@@ -8,12 +8,14 @@ import { NotificationsComponent } from './components/page-components/notificatio
 import { MyPostsComponent } from './components/page-components/posts/my-post.component';
 import { AccountComponent } from './components/page-components/user/account.component';
 import { EditAccountComponent } from './components/page-components/user/edit-account.component';
+import { ProfileComponent } from './components/page-components/user/profile.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent},
   { path: 'register', component: RegistrationComponent},
   { path: 'account', component: AccountComponent},
   { path: 'account/edit', component: EditAccountComponent},
+  { path: 'profile/:username', component: ProfileComponent },
 
   { path: 'posts', component: PostComponent },
   { path: 'followed-posts', component: FollowedPostsComponent},

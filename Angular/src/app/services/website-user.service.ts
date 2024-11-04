@@ -21,6 +21,10 @@ import { MediumBase64DTO } from '../models/medium-base64.model';
       return this.http.put<{ token: string }>(`${this.baseUrl}/edit-profile`, accountData);
     }
 
+    getUserProfile(username: string): Observable<WebsiteUserDTO> {
+      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/profile/${username}`);
+    }
+
     getProfilePicture(userId: number): Observable<MediumBase64DTO>{
       return this.http.get<MediumBase64DTO>(`${this.baseUrl}/pfp/${userId}`)
     }
