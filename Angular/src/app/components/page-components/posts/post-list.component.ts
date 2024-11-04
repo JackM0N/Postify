@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { PostDTO } from '../../../models/post.model';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
@@ -13,10 +13,10 @@ import { PostFormDialogComponent } from './post-form-dialog.component';
   templateUrl: './post-list.component.html',
   styleUrls: ['../../../styles/post.component.css'],
 })
-export class PostListComponent {
+export class PostListComponent implements OnChanges {
   @Input() public posts: PostDTO[] = [];
-  @Input() public showComments: boolean = true;
-  @Input() public canEdit: boolean = false;
+  @Input() public showComments = true;
+  @Input() public canEdit = false;
   protected formatDateTimeArray = formatDateTimeArray;
 
   private selectedFile: File | undefined;

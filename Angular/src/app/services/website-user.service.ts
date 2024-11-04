@@ -14,7 +14,7 @@ import { MediumBase64DTO } from '../models/medium-base64.model';
     constructor(private http: HttpClient) {}
   
     getAccount(): Observable<WebsiteUserDTO> {
-      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
+      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as const});
     }
 
     updateAccount(accountData: FormData): Observable<{ token: string }> {

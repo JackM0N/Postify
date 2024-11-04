@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../services/post.service';
 import { PostDTO } from '../../../models/post.model';
 import { ToastrService } from 'ngx-toastr';

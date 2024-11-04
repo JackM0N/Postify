@@ -10,20 +10,20 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   ]
 })
 export class PopupDialogComponent implements OnInit {
-  @Input() dialogTitle: string = '';
-  @Input() dialogContent: string = '';
-  @Input() style: string = '';
-  @Input() ngClass: string = '';
+  @Input() dialogTitle = '';
+  @Input() dialogContent = '';
+  @Input() style = '';
+  @Input() ngClass = '';
 
-  @Input() showCancelButton: boolean = true;
-  @Input() cancelButtonLabel: string = 'Anuluj';
-  @Input() cancelButtonNgClass: string = '';
+  @Input() showCancelButton = true;
+  @Input() cancelButtonLabel = 'Anuluj';
+  @Input() cancelButtonNgClass = '';
   @Output() cancelEvent = new EventEmitter<void>();
 
-  @Input() showConfirmButton: boolean = true;
-  @Input() confirmButtonLabel: string = 'Potwierdź';
-  @Input() confirmButtonNgClass: string = '';
-  @Input() confirmButtonDisabled: boolean = false;
+  @Input() showConfirmButton = true;
+  @Input() confirmButtonLabel = 'Potwierdź';
+  @Input() confirmButtonNgClass = '';
+  @Input() confirmButtonDisabled = false;
   @Output() confirmEvent = new EventEmitter<void>();
 
   constructor(
