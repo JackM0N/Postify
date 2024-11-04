@@ -198,6 +198,7 @@ public class MediumIntegrationTest {
 
         List<byte[]> media = mediumService.getMediaForPost(postDTO.getId());
         assertArrayEquals(media.get(mediumPosition), file);
+        postDTO = postService.getPost(postDTO.getId());
         assertTrue(postDTO.getMedia().get(mediumPosition).getMediumUrl().contains("gif"));
     }
 
