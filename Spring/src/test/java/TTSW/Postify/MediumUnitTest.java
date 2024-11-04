@@ -169,6 +169,7 @@ public class MediumUnitTest {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(postMapper.toDto(post)).thenReturn(new PostDTO());
         when(file.getInputStream()).thenReturn(mock(InputStream.class));
+        when(file.getOriginalFilename()).thenReturn("media.jpg");
 
         try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
             filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
