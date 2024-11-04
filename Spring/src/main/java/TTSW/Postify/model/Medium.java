@@ -30,5 +30,4 @@ public class Medium {
     @NotNull
     @Column(name = "medium_type", nullable = false, length = 50)
     private String mediumType;
-
 }

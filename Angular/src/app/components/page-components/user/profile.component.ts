@@ -1,42 +1,46 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { WebsiteUserDTO } from '../../../models/website-user.model';
 import { WebsiteUserService } from '../../../services/website-user.service';
 import { formatDateTimeArray } from '../../../util/formatDate';
-import { Router } from '@angular/router';
 import { MediumBase64DTO } from '../../../models/medium-base64.model';
-import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './account.component.html',
+  templateUrl: './profile.component.html',
   styleUrls: ['../../../styles/profile.component.css']
 })
-export class AccountComponent implements OnInit {
-  protected account: WebsiteUserDTO | null = null;
+export class ProfileComponent implements OnInit {
+  account: WebsiteUserDTO | null = null;
   protected formatDateTimeArray = formatDateTimeArray;
-  protected profilePictureUrl: string | null = null;
+  profilePictureUrl: string | null = null;
+  username: string | null = null;
 
   constructor(
     private websiteUserService: WebsiteUserService,
-    private router: Router,
-    private toastr: ToastrService
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.loadUserAccount();
+    this.username = this.route.snapshot.paramMap.get('username');
+    if (this.username) {
+      this.loadUserProfile(this.username);
+    } else {
+      console.error('Username not provided in route');
+    }
   }
 
-  loadUserAccount(): void {
-    this.websiteUserService.getAccount().subscribe({
-      next: response => {
-        this.account = response;
-        this.loadProfilePicture(response.id);
+  loadUserProfile(username: string): void {
+    this.websiteUserService.getUserProfile(username).subscribe(
+      (data) => {
+        this.account = data;
+        this.loadProfilePicture(data.id);
       },
-      error: error => {
-        this.toastr.error('Failed to load account info');
-        console.error('Failed to load account info:', error);
+      (error) => {
+        console.error('Failed to load user profile:', error);
       }
-    });
+    );
   }
 
   loadProfilePicture(userId: number): void {
@@ -44,10 +48,11 @@ export class AccountComponent implements OnInit {
       next: (response: MediumBase64DTO) => {
         if (response && response.base64Data && response.type) {
           this.profilePictureUrl = `data:${response.type};base64,${response.base64Data}`;
+        } else {
+          console.warn("Profile picture data is missing:", response);
         }
       },
       error: error => {
-        this.toastr.error('Failed to load profile picture');
         console.error('Failed to load profile picture:', error);
       }
     });

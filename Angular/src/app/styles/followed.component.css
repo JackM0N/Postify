@@ -1,0 +1,25 @@
+.followed-users-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+.user-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.profile-picture {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.username {
+  font-size: 12px;
+  margin-top: 5px;
+  text-align: center;
+}

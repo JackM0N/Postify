@@ -7,7 +7,6 @@ import TTSW.Postify.service.MediumService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -47,5 +46,4 @@ public class MediumController {
         mediumService.deleteMedium(mediumDTO, position);
         return ResponseEntity.ok().build();
     }
-
 }

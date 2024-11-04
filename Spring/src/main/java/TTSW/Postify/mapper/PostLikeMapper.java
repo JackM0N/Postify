@@ -3,7 +3,6 @@ package TTSW.Postify.mapper;
 import TTSW.Postify.dto.PostLikeDTO;
 import TTSW.Postify.model.PostLike;
 import org.mapstruct.*;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 

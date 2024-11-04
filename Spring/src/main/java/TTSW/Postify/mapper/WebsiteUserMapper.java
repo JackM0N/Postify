@@ -5,7 +5,6 @@ import TTSW.Postify.enums.Role;
 import TTSW.Postify.model.UserRole;
 import TTSW.Postify.model.WebsiteUser;
 import org.mapstruct.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ public interface WebsiteUserMapper {
     @Mapping(target = "roles", source = "userRoles")
     WebsiteUserDTO toDto(WebsiteUser websiteUser);
 
-    @Mapping(target = "id", ignore = true)
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "profilePicture", ignore = true)

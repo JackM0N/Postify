@@ -5,12 +5,10 @@ import TTSW.Postify.filter.PostFilter;
 import TTSW.Postify.service.PostLikeService;
 import TTSW.Postify.service.PostService;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 
 @RestController
@@ -40,6 +38,11 @@ public class PostController {
         return ResponseEntity.ok(postService.getMyPosts(filter, pageable));
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Page<PostDTO>> getUserPosts(@PathVariable Long userId, PostFilter filter, Pageable pageable) {
+        return ResponseEntity.ok(postService.getUserPosts(userId, filter, pageable));
+    }
+
     @PostMapping("/create")
     public ResponseEntity<PostDTO> createPost(@ModelAttribute PostDTO postDTO) throws IOException {
         return ResponseEntity.ok(postService.createPost(postDTO));
@@ -60,5 +63,4 @@ public class PostController {
     public ResponseEntity<Boolean> likePost(@PathVariable Long id) {
         return ResponseEntity.ok(postLikeService.likePost(id));
     }
-
 }

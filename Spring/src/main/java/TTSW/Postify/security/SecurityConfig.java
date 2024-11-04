@@ -46,7 +46,7 @@ public class SecurityConfig {
                         .hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
 
                         .requestMatchers("/login", "/register", "/comment/post/**", "/medium/list/**",
-                                "/post/list","post/id/**", "/user/profile/**")
+                                "/post/list","/post/user/**", "post/id/**", "/user/profile/**")
                         .permitAll()
 
                         .anyRequest().authenticated())

@@ -9,9 +9,9 @@ import TTSW.Postify.service.WebsiteUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.util.Base64;
 
@@ -35,7 +35,7 @@ public class WebsiteUserController {
     private ResponseEntity<MediumBase64DTO> getPfp(@PathVariable Long userId) throws IOException {
         byte[] bytes = websiteUserService.getUserProfilePicture(userId);
         if (bytes == null) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return ResponseEntity.ok(
                 new MediumBase64DTO(Base64.getEncoder().encodeToString(bytes), mediumService.getMediaType(bytes))
@@ -62,5 +62,4 @@ public class WebsiteUserController {
         websiteUserService.deleteWebsiteUser(id);
         return ResponseEntity.ok().build();
     }
-
 }

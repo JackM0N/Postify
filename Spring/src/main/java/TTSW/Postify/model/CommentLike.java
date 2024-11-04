@@ -24,5 +24,4 @@ public class CommentLike {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "comment_id", nullable = false)
     private Comment comment;
-
 }

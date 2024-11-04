@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +57,7 @@ public class MediumService {
         if (currentUser.equals(post.getUser())) {
             if (index < 0) {
                 index = 0;
-            }else if (index > media.size()) {
+            } else if (index > media.size()) {
                 index = media.size() - 1;
             }
 
@@ -137,9 +136,22 @@ public class MediumService {
                 throw new EntityNotFoundException("File not found");
             }
 
-            Path filePath = Paths.get(medium.getMediumUrl());
-            Files.deleteIfExists(filePath);
-            Files.copy(mediumDTO.getFile().getInputStream(), filePath);
+            String oldExtension = getFileExtension(medium.getMediumUrl());
+            String newExtension = getFileExtension(Objects.requireNonNull(mediumDTO.getFile().getOriginalFilename()));
+
+            if (!oldExtension.equalsIgnoreCase(newExtension)) {
+                String newFileName = getFileName(post.getId(), position, newExtension);
+                Path newFilePath = Paths.get(mediaDirectory, newFileName);
+
+                Files.deleteIfExists(Paths.get(medium.getMediumUrl()));
+                Files.copy(mediumDTO.getFile().getInputStream(), newFilePath);
+
+                medium.setMediumUrl(newFilePath.toString());
+            } else {
+                Path filePath = Paths.get(medium.getMediumUrl());
+                Files.deleteIfExists(filePath);
+                Files.copy(mediumDTO.getFile().getInputStream(), filePath);
+            }
             mediumRepository.save(medium);
             return postMapper.toDto(post);
         } else {
