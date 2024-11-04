@@ -4,7 +4,6 @@ import TTSW.Postify.dto.PostDTO;
 import TTSW.Postify.model.Hashtag;
 import TTSW.Postify.model.Post;
 import org.mapstruct.*;
-
 import java.util.HashSet;
 import java.util.Set;
 

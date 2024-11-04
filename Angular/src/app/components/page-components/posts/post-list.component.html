@@ -1,6 +1,6 @@
 
 @for (post of posts; track post.id) {
-  <div class="post">
+  <div class="post bg-gray-50">
     <div class="post-header">
       <span class="username">{{ post.user.username }}</span>
       <span class="created-at">{{ formatDateTimeArray(post.createdAt) }}</span>
@@ -17,7 +17,7 @@
 
       @if (post.media.length > 0) {
         @if (post.media[post.currentMediumIndex].mediumType.includes('image')) {
-          <img [src]="post.media[post.currentMediumIndex].mediumUrl" alt="Post media" />
+          <img class="max-h-128 max-w-96" [src]="post.media[post.currentMediumIndex].mediumUrl" alt="Post media" />
         }
         @else if (post.media[post.currentMediumIndex].mediumType === 'video') {
           <video [src]="post.media[post.currentMediumIndex].mediumUrl" controls></video>

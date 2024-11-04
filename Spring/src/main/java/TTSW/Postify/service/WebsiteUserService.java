@@ -21,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,7 +45,7 @@ public class WebsiteUserService {
         if (websiteUserFilter.getIsDeleted() != null){
             if (websiteUserFilter.getIsDeleted()){
                 spec = spec.and((root, query, builder) -> builder.isNotNull(root.get("deletedAt")));
-            }else {
+            } else {
                 spec = spec.and((root, query, builder) -> builder.isNull(root.get("deletedAt")));
             }
         }
@@ -105,7 +104,13 @@ public class WebsiteUserService {
     public byte[] getUserProfilePicture(Long id) throws IOException {
         WebsiteUser websiteUser = websiteUserRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        Path path = Paths.get(websiteUser.getProfilePictureUrl());
+
+        Path path;
+        try {
+            path = Paths.get(websiteUser.getProfilePictureUrl());
+        } catch (Exception e) {
+            return null;
+        }
         return Files.readAllBytes(path);
     }
 
@@ -148,7 +153,7 @@ public class WebsiteUserService {
             Files.deleteIfExists(Path.of(websiteUser.getProfilePictureUrl()));
             websiteUser.setDeletedAt(LocalDateTime.now());
             websiteUserRepository.save(websiteUser);
-        }else {
+        } else {
             throw new BadRequestException("You dont have permission to perform this action");
         }
     }

@@ -12,5 +12,4 @@ import lombok.Setter;
 public class MediumBase64DTO {
     private String base64Data;
     private String type;
-
 }

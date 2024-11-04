@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-
 import java.time.LocalDateTime;
 
 @Getter
@@ -43,5 +42,4 @@ public class Message {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
 }
