@@ -7,6 +7,7 @@ import { MediumDTO } from '../../../models/medium.model';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PostFormDialogComponent } from './post-form-dialog.component';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -14,6 +15,8 @@ import { PostFormDialogComponent } from './post-form-dialog.component';
   styleUrls: ['../../../styles/post.component.css'],
 })
 export class PostListComponent implements OnChanges {
+  private isLoggedIn = false;
+
   @Input() public posts: PostDTO[] = [];
   @Input() public showComments = true;
   @Input() public canEdit = false;
@@ -22,11 +25,18 @@ export class PostListComponent implements OnChanges {
   private selectedFile: File | undefined;
 
   constructor(
+    private authService: AuthService,
     private commentService: CommentService,
     private postService: PostService,
     private toastr: ToastrService,
     protected dialog: MatDialog
   ) {}
+
+  ngOnInit(): void {
+    this.authService.isLoggedIn$.subscribe(status => {
+      this.isLoggedIn = status;
+    });
+  }
 
   ngOnChanges(): void {
     this.posts.forEach(post => {
@@ -77,6 +87,11 @@ export class PostListComponent implements OnChanges {
   }
 
   likePost(post: PostDTO): void {
+    if (!this.isLoggedIn) {
+      this.toastr.error('You must be logged in to like a post');
+      return;
+    }
+
     this.postService.likePost(post.id).subscribe({
       next: () => {
         post.isLiked = !post.isLiked;
