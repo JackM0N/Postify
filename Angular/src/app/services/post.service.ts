@@ -27,6 +27,12 @@ export class PostService {
     return this.http.get<Page<PostDTO>>(`${this.baseUrl}/my-posts`, { params: { ...filter, ...pageable } });
   }
 
+  getUserPosts(userId: number, filter: any, pageable: any): Observable<Page<PostDTO>> {
+    return this.http.get<Page<PostDTO>>(`${this.baseUrl}/user/${userId}`, {
+      params: { ...filter, ...pageable },
+    });
+  }
+
   getFollowedPosts(page: number, size: number): Observable<Page<PostDTO>> {
     return this.http.get<Page<PostDTO>>(`${this.baseUrl}/followed?page=${page}&size=${size}`);
   }

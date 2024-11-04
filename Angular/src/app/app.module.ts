@@ -22,6 +22,7 @@ import { environment } from '../environments/environment';
 import { PopupDialogComponent } from './components/popup.component';
 import { FollowedUsersComponent } from './components/page-components/followers/followed.component';
 import { ProfileComponent } from './components/page-components/user/profile.component';
+import { UserPostsComponent } from './components/page-components/posts/user-post.component';
 
 export function tokenGetter() {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -46,6 +47,7 @@ export function tokenGetter() {
     PopupDialogComponent,
     FollowedUsersComponent,
     ProfileComponent,
+    UserPostsComponent,
   ],
   exports: [
     PostListComponent,
