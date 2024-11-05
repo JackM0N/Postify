@@ -10,6 +10,9 @@
         <p class="bio">{{ account.bio }}</p>
         <p class="join-date">Joined: {{ formatDateTimeArray(account.joinDate) }}</p>
         <p class="roles">Roles: {{ account.roles }}</p>
+
+        <button *ngIf="!isFollowing" (click)="followUser()" class="follow-button">Follow</button>
+        <button *ngIf="isFollowing" (click)="unfollowUser()" class="follow-button">Unfollow</button>
       </div>
     </div>
   </div>

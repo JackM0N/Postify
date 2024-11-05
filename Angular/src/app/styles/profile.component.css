@@ -49,3 +49,9 @@
   font-size: 18px;
   color: #888;
 }
+
+.follow-button{
+  border: #aaaaaa 1px solid;
+  padding: 0 20px;
+  background-color: #d3d3d3;
+}

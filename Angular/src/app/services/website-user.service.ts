@@ -4,12 +4,14 @@ import { Observable } from 'rxjs';
 import { WebsiteUserDTO } from '../models/website-user.model';
 import { environment } from '../../environments/environment';
 import { MediumBase64DTO } from '../models/medium-base64.model';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
   providedIn: 'root'
 })
   export class WebsiteUserService {
   private baseUrl = environment.apiUrl + '/user';
+  private helper: JwtHelperService = new JwtHelperService();
 
   constructor(private http: HttpClient) {}
 
@@ -27,5 +29,15 @@ import { MediumBase64DTO } from '../models/medium-base64.model';
 
   getProfilePicture(userId: number): Observable<MediumBase64DTO>{
     return this.http.get<MediumBase64DTO>(`${this.baseUrl}/pfp/${userId}`)
+  }
+
+
+  getCurrentUsername(): string | null {
+    const token = localStorage.getItem(environment.tokenKey);
+    if (token && !this.helper.isTokenExpired(token)) {
+      const decodedToken = this.helper.decodeToken(token);
+      return decodedToken.username || null;
+    }
+    return null;
   }
 }
