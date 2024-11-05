@@ -7,7 +7,6 @@ import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.repository.NotificationRepository;
 import TTSW.Postify.service.FollowService;
-import TTSW.Postify.service.WebsiteUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +28,6 @@ public class FollowIntegrationTest {
 
     @Autowired
     private FollowService followService;
-
-    @Autowired
-    private WebsiteUserService websiteUserService;
 
     @Autowired
     private NotificationRepository notificationRepository;

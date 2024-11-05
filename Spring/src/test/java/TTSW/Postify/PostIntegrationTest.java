@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * This class tests Post and all other things that are created directly during post creation:
- *  - Notification (type=POST)
- *  - Hashtag
+ * - Notification (type=POST)
+ * - Hashtag
  */
 @SpringBootTest
 @Transactional
@@ -57,16 +57,17 @@ public class PostIntegrationTest {
     @Autowired
     private PostMapper postMapper;
 
-    @Value("${directory.media.posts}")
-    private final String mediaDirectory = "../Media/posts/";
-
     @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
     private FollowHelper followHelper;
+
     @Autowired
     private HashtagRepository hashtagRepository;
+
+    @Value("${directory.media.posts}")
+    private final String mediaDirectory = "../Media/posts/";
 
     @Test
     @WithAnonymousUser
@@ -125,7 +126,7 @@ public class PostIntegrationTest {
 
         // notification
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-                jane.getId(), john.getId(), NotificationType.POST,createdPost.getId()).orElseThrow();
+                jane.getId(), john.getId(), NotificationType.POST, createdPost.getId()).orElseThrow();
         assertNotNull(notification);
 
         // hashtags

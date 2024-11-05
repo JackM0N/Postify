@@ -2,11 +2,9 @@ package TTSW.Postify;
 
 import TTSW.Postify.dto.CommentDTO;
 import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
-import TTSW.Postify.dto.WebsiteUserDTO;
 import TTSW.Postify.enums.NotificationType;
 import TTSW.Postify.mapper.CommentMapperImpl;
 import TTSW.Postify.mapper.SimplifiedWebsiteUserMapperImpl;
-import TTSW.Postify.mapper.WebsiteUserMapper;
 import TTSW.Postify.model.Comment;
 import TTSW.Postify.model.Notification;
 import TTSW.Postify.model.Post;
@@ -51,9 +49,6 @@ class CommentIntegrationTest {
 
     @Autowired
     private WebsiteUserRepository websiteUserRepository;
-
-    @Autowired
-    private WebsiteUserMapper websiteUserMapper;
 
     @Autowired
     private NotificationRepository notificationRepository;
