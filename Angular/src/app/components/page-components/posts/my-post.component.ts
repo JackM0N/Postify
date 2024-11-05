@@ -12,7 +12,7 @@ import { PostFormDialogComponent } from './post-form-dialog.component';
 })
 export class MyPostsComponent implements OnInit {
   protected posts: PostDTO[] = [];
-  protected showPostForm: boolean = false;
+  protected showPostForm = false;
 
   constructor(
     private postService: PostService,

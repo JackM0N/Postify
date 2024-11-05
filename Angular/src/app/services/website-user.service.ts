@@ -6,26 +6,26 @@ import { environment } from '../../environments/environment';
 import { MediumBase64DTO } from '../models/medium-base64.model';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
-    export class WebsiteUserService {
-    private baseUrl = environment.apiUrl + '/user';
-  
-    constructor(private http: HttpClient) {}
-  
-    getAccount(): Observable<WebsiteUserDTO> {
-      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as 'json'});
-    }
+  export class WebsiteUserService {
+  private baseUrl = environment.apiUrl + '/user';
 
-    updateAccount(accountData: FormData): Observable<{ token: string }> {
-      return this.http.put<{ token: string }>(`${this.baseUrl}/edit-profile`, accountData);
-    }
+  constructor(private http: HttpClient) {}
 
-    getUserProfile(username: string): Observable<WebsiteUserDTO> {
-      return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/profile/${username}`);
-    }
+  getAccount(): Observable<WebsiteUserDTO> {
+    return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/account`, {responseType: 'json' as const});
+  }
 
-    getProfilePicture(userId: number): Observable<MediumBase64DTO>{
-      return this.http.get<MediumBase64DTO>(`${this.baseUrl}/pfp/${userId}`)
-    }
+  updateAccount(accountData: FormData): Observable<{ token: string }> {
+    return this.http.put<{ token: string }>(`${this.baseUrl}/edit-profile`, accountData);
+  }
+
+  getUserProfile(username: string): Observable<WebsiteUserDTO> {
+    return this.http.get<WebsiteUserDTO>(`${this.baseUrl}/profile/${username}`);
+  }
+
+  getProfilePicture(userId: number): Observable<MediumBase64DTO>{
+    return this.http.get<MediumBase64DTO>(`${this.baseUrl}/pfp/${userId}`)
+  }
 }

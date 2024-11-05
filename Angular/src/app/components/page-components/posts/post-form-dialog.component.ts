@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostDTO } from '../../../models/post.model';
 import { PostService } from '../../../services/post.service';
@@ -10,7 +10,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   templateUrl: './post-form-dialog.component.html',
   styleUrls: ['../../../styles/post-form.component.css']
 })
-export class PostFormDialogComponent {
+export class PostFormDialogComponent implements OnInit {
   @Output() postUpdated = new EventEmitter<void>();
 
   protected postForm: FormGroup;
@@ -99,7 +99,7 @@ export class PostFormDialogComponent {
         this.dialogRef.close(true);
         
         this.postService.editPost(post.id, formData).subscribe({
-          next: (response) => {
+          next: () => {
             this.toastr.success('Post updated successfully!');
             this.postUpdated.emit();
             window.location.reload();
@@ -119,7 +119,7 @@ export class PostFormDialogComponent {
         this.dialogRef.close(true);
     
         this.postService.addPost(formData).subscribe({
-          next: (response) => {
+          next: () => {
             this.toastr.success('Post created successfully!');
             this.postUpdated.emit();
           },
