@@ -1,6 +1,6 @@
 import { Role } from "./role.enum";
 
-export interface SimplifiedUserDTO{
+export interface SimplifiedUserDTO {
   id: number;
   username: string;
   bio: string;

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { PostDTO } from '../../../models/post.model';
 import { CommentService } from '../../../services/comment.service';
 import { PostService } from '../../../services/post.service';
@@ -14,7 +14,7 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './post-list.component.html',
   styleUrls: ['../../../styles/post.component.css'],
 })
-export class PostListComponent implements OnChanges {
+export class PostListComponent implements OnChanges, OnInit {
   private isLoggedIn = false;
 
   @Input() public posts: PostDTO[] = [];
