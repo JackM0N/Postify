@@ -8,6 +8,7 @@ import org.mapstruct.*;
 public interface MediumMapper {
     Medium toEntity(MediumDTO mediumDTO);
 
+    @Mapping(source = "post.id", target = "postId")
     MediumDTO toDto(Medium medium);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

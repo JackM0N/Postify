@@ -51,10 +51,11 @@ public class PostLikeIntegrationTest {
 
     @BeforeEach
     public void setUp() {
-        try{
+        try {
             john = websiteUserService.getCurrentUser();
             jane = websiteUserRepository.findByUsername("jane_smith").get();
-        } catch (BadCredentialsException ignored) {} // for anonymous tests it can fail
+        } catch (BadCredentialsException ignored) {
+        } // for anonymous tests it can fail
         post = postRepository.findById(2L).get();
         postLikeRepository.deleteAll();
         notificationRepository.deleteAll();
@@ -69,7 +70,7 @@ public class PostLikeIntegrationTest {
         assertTrue(result);
         assertTrue(postLikeRepository.findByUserIdAndPostId(john.getId(), post.getId()).isPresent());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-              jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).isPresent());
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).isPresent());
     }
 
     @Test
@@ -96,7 +97,7 @@ public class PostLikeIntegrationTest {
         assertFalse(result);
         assertFalse(postLikeRepository.findByUserIdAndPostId(john.getId(), post.getId()).isPresent());
         assertFalse(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-               jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).isPresent());
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).isPresent());
     }
 
     @Test
@@ -109,7 +110,7 @@ public class PostLikeIntegrationTest {
 
         postLikeService.likePost(post.getId());
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-                jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).get();
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).get();
         notification.setIsRead(true);
         notificationRepository.save(notification);
 
@@ -118,7 +119,7 @@ public class PostLikeIntegrationTest {
         assertFalse(result);
         assertFalse(postLikeRepository.findByUserIdAndPostId(john.getId(), post.getId()).isPresent());
         assertTrue(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-                jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).isPresent());
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).isPresent());
     }
 
     @Test
@@ -130,7 +131,7 @@ public class PostLikeIntegrationTest {
 
         postLikeService.likePost(post.getId());
         Notification notification = notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-                jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).get();
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).get();
         notificationRepository.delete(notification);
 
         Boolean result = postLikeService.likePost(post.getId());
@@ -138,6 +139,6 @@ public class PostLikeIntegrationTest {
         assertFalse(result);
         assertFalse(postLikeRepository.findByUserIdAndPostId(john.getId(), post.getId()).isPresent());
         assertFalse(notificationRepository.findByUserIdAndTriggeredByIdAndNotificationTypeAndPostId(
-                jane.getId(), john.getId(), NotificationType.POST_LIKE,post.getId()).isPresent());
+                jane.getId(), john.getId(), NotificationType.POST_LIKE, post.getId()).isPresent());
     }
 }

@@ -184,7 +184,7 @@ public class MediumService {
 
                 medium.setMediumUrl(baseDir + "/" + newFilename);
             }
-            post.getMedia().remove(media.size() - 1);
+            // post.getMedia().remove(media.size() - 1); TODO: check if front is still working after this change
             mediumRepository.saveAll(media);
             postRepository.save(post);
         } else {

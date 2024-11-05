@@ -169,6 +169,7 @@ public class MediumUnitTest {
         when(websiteUserService.getCurrentUser()).thenReturn(user);
         when(postMapper.toDto(post)).thenReturn(new PostDTO());
         when(file.getInputStream()).thenReturn(mock(InputStream.class));
+        when(file.getOriginalFilename()).thenReturn("media.jpg");
 
         try (MockedStatic<Files> filesMock = Mockito.mockStatic(Files.class)) {
             filesMock.when(() -> Files.deleteIfExists(any(Path.class))).thenReturn(true);
@@ -220,13 +221,20 @@ public class MediumUnitTest {
         WebsiteUser user = new WebsiteUser();
         post.setUser(user);
 
+        ArrayList<Medium> media = new ArrayList<>(2);
         Medium medium = new Medium();
-        medium.setId(0L);
-        post.setMedia(new ArrayList<>(List.of(medium)));
+        medium.setId(1L);
+        medium.setMediumUrl("medium.jpg");
+        media.add(medium);
+        Medium medium2 = new Medium();
+        medium2.setId(2L);
+        medium2.setMediumUrl("medium2.jpg");
+        media.add(medium2);
+        post.setMedia(media);
 
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(1L);
-        mediumDTO.setId(0L);
+        mediumDTO.setId(1L);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         when(authorizationService.canModifyEntity(any(HasAuthor.class))).thenReturn(true);
@@ -255,13 +263,20 @@ public class MediumUnitTest {
         WebsiteUser user = new WebsiteUser();
         post.setUser(user);
 
+        ArrayList<Medium> media = new ArrayList<>(2);
         Medium medium = new Medium();
-        medium.setId(0L);
-        post.setMedia(new ArrayList<>(List.of(medium)));
+        medium.setId(1L);
+        medium.setMediumUrl("medium.jpg");
+        media.add(medium);
+        Medium medium2 = new Medium();
+        medium2.setId(2L);
+        medium2.setMediumUrl("medium2.jpg");
+        media.add(medium2);
+        post.setMedia(media);
 
         MediumDTO mediumDTO = new MediumDTO();
         mediumDTO.setPostId(1L);
-        mediumDTO.setId(0L);
+        mediumDTO.setId(1L);
 
         when(postRepository.findById(1L)).thenReturn(Optional.of(post));
         when(authorizationService.canModifyEntity(any(HasAuthor.class))).thenReturn(false);

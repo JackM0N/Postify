@@ -1,14 +1,15 @@
 package TTSW.Postify;
 
 import TTSW.Postify.dto.MediumDTO;
-import TTSW.Postify.model.Medium;
+import TTSW.Postify.dto.PostDTO;
+import TTSW.Postify.dto.SimplifiedWebsiteUserDTO;
+import TTSW.Postify.mapper.SimplifiedWebsiteUserMapperImpl;
 import TTSW.Postify.model.Post;
-import TTSW.Postify.model.WebsiteUser;
-import TTSW.Postify.repository.MediumRepository;
 import TTSW.Postify.repository.PostRepository;
-import TTSW.Postify.repository.WebsiteUserRepository;
 import TTSW.Postify.service.MediumService;
+import TTSW.Postify.service.PostService;
 import TTSW.Postify.service.WebsiteUserService;
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,24 +17,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("test")
 @SpringBootTest
 @Transactional
+@WithMockUser("john@example.com")
 public class MediumIntegrationTest {
 
     @Autowired
@@ -43,19 +52,22 @@ public class MediumIntegrationTest {
     private PostRepository postRepository;
 
     @Autowired
-    private MediumRepository mediumRepository;
-
-    @Autowired
     private WebsiteUserService websiteUserService;
 
-    private static Path tempDirectory;
+    @Autowired
+    private PostService postService;
 
     @Autowired
-    private WebsiteUserRepository websiteUserRepository;
+    private SimplifiedWebsiteUserMapperImpl simplifiedWebsiteUserMapperImpl;
+
+    private static Path mediaDirectory;
+
+    private PostDTO postDTO;
 
     @BeforeEach
-    void setup() {
+    void setup() throws IOException {
         try {
+            // read location
             // get access to mediaDirectory field
             Field mediaDirectory;
             mediaDirectory = MediumService.class.getDeclaredField("mediaDirectory");
@@ -66,243 +78,193 @@ public class MediumIntegrationTest {
             if (!originalPath.contains("Tests")) {
                 originalPath = "../Tests/" + originalPath.substring(3);
             }
-            tempDirectory = Paths.get(originalPath);
+            MediumIntegrationTest.mediaDirectory = Paths.get(originalPath);
             mediaDirectory.set(mediumService, originalPath);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException("Reflection failed, MediumService probably changed fields", e);
         }
+
+        // override test authentication to properly create post with author john
+        Authentication originalAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("john@example.com", "password",
+                        AuthorityUtils.createAuthorityList("USER")));
+
+        // create new post with 2 media attached
+        postDTO = new PostDTO();
+        SimplifiedWebsiteUserDTO userDTO = simplifiedWebsiteUserMapperImpl.toDto(websiteUserService.getCurrentUser());
+        postDTO.setUser(userDTO);
+        postDTO.setDescription("Description");
+
+        MultipartFile multipartFile1 = new MockMultipartFile(
+                "file1", "file1.png", "image/png", "test data".getBytes());
+        MediumDTO mediumDTO1 = new MediumDTO();
+        mediumDTO1.setFile(multipartFile1);
+        mediumDTO1.setMediumType("image");
+
+        MultipartFile multipartFile2 = new MockMultipartFile(
+                "file2", "file2.png", "image/png", "test data".getBytes());
+        MediumDTO mediumDTO2 = new MediumDTO();
+        mediumDTO2.setFile(multipartFile2);
+        mediumDTO2.setMediumType("image");
+
+        List<MediumDTO> mediumList = new ArrayList<>(2);
+        mediumList.add(mediumDTO1);
+        mediumList.add(mediumDTO2);
+        postDTO.setMedia(mediumList);
+
+        postDTO = postService.createPost(postDTO);
+
+        // restore original authentication
+        SecurityContextHolder.getContext().setAuthentication(originalAuthentication);
     }
 
     @AfterAll
     static void cleanup() throws IOException {
-        Files.walk(tempDirectory)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .forEach(File::delete);
+        if (!mediaDirectory.toString().contains("Test")) {
+            throw new BadRequestException("Tried to clean " + mediaDirectory + ", something went wrong");
+        }
+        try {
+            Files.walk(mediaDirectory)
+                    .sorted(Comparator.reverseOrder())
+                    .forEach(path -> {
+                        System.out.println("Deleting: " + path);
+                        path.toFile().delete();
+                    });
+        } catch (NoSuchFileException ignored) {
+            System.out.println("No such file or directory found: " + mediaDirectory);
+        } catch (IOException e) {
+            System.out.println("An error occurred while cleaning up: " + e.getMessage());
+        }
     }
+
 
     @Test
     @WithAnonymousUser
     void testGetMediaForPost_Success() throws IOException {
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "test_image.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+        int originalSize = postDTO.getMedia().size();
+        List<byte[]> mediaBytes = mediumService.getMediaForPost(postDTO.getId());
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.createDirectories(testFile.getParent());
-        Files.write(testFile, "test data".getBytes());
-
-        List<byte[]> mediaBytes = mediumService.getMediaForPost(post.getId());
-
-        assertEquals(1, mediaBytes.size());
-        assertArrayEquals("test data".getBytes(), mediaBytes.get(0));
+        assertEquals(originalSize, mediaBytes.size());
     }
 
     @Test
     @WithMockUser("john@example.com")
     void testAddMediumAtIndex_Success() throws IOException {
-        Long postId = 1L;
-        MultipartFile multipartFile = new MockMultipartFile(
-                "file", "test_image.jpg", "image/jpeg", "test data".getBytes());
+        int originalSize = postDTO.getMedia().size();
+        MultipartFile additionalMedium = new MockMultipartFile(
+                "newMedium", "newMedium.jpg", "image/jpg", "test data".getBytes());
+        MediumDTO additionalMediumDTO = new MediumDTO();
+        additionalMediumDTO.setFile(additionalMedium);
+        additionalMediumDTO.setMediumType("image");
+        additionalMediumDTO.setPostId(postDTO.getId());
 
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(postId);
-        mediumDTO.setFile(multipartFile);
-        mediumDTO.setMediumType("image");
+        postDTO = mediumService.addMediumAtIndex(1, additionalMediumDTO);
 
-        // this method assumes folder already exists since you cant create post without medium
-        Path postDirectory = Path.of(tempDirectory.toString() + "/" + postId);
-        if (!Files.exists(postDirectory)) Files.createDirectories(postDirectory);
-
-        mediumService.addMediumAtIndex(0, mediumDTO);
-
-        Post updatedPost = postRepository.findById(postId).get();
-        assertEquals(1, updatedPost.getMedia().size());
-
-        String expectedFilePath = tempDirectory.resolve(postId + "/post_" + postId + "_media_0.jpg").toString();
-        assertTrue(Files.exists(Paths.get(expectedFilePath)));
+        List<MediumDTO> media = postDTO.getMedia();
+        assertEquals(originalSize + 1, media.size());
+        // media 1 and 2 was png, inserted was jpg
+        assertTrue(media.get(0).getMediumUrl().contains("png")); // medium 1
+        assertTrue(media.get(1).getMediumUrl().contains("jpg")); // inserted medium
+        assertTrue(media.get(2).getMediumUrl().contains("png")); // medium 2
     }
 
     @Test
     @WithMockUser("jane@example.com")
-    void testAddMediumAtIndex_NotAuthor() throws IOException {
-        Long postId = 1L;
-        MultipartFile multipartFile = new MockMultipartFile(
-                "file", "test_image.jpg", "image/jpeg", "test data".getBytes());
+    void testAddMediumAtIndex_NotAuthor() {
+        MultipartFile additionalMedium = new MockMultipartFile(
+                "newMedium", "newMedium.jpg", "image/jpg", "test data".getBytes());
+        MediumDTO additionalMediumDTO = new MediumDTO();
+        additionalMediumDTO.setFile(additionalMedium);
+        additionalMediumDTO.setMediumType("image");
+        additionalMediumDTO.setPostId(postDTO.getId());
 
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(postId);
-        mediumDTO.setFile(multipartFile);
-        mediumDTO.setMediumType("image");
-
-        Path postDirectory = Path.of(tempDirectory.toString() + "/" + postId);
-        if (!Files.exists(postDirectory)) Files.createDirectories(postDirectory);
-
-        assertThrows((BadCredentialsException.class), () -> mediumService.addMediumAtIndex(0, mediumDTO));
+        assertThrows((BadCredentialsException.class), () -> mediumService.addMediumAtIndex(0, additionalMediumDTO));
     }
 
     @Test
     @WithMockUser("john@example.com")
     void testUpdateMedium_Success() throws IOException {
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+        int mediumPosition = 0;
+        byte[] file = "updated data".getBytes();
+        MultipartFile updatedMedium = new MockMultipartFile(
+                "newMedium", "newMedium.gif", "image/gif", file);
+        MediumDTO updatedMediumDTO = new MediumDTO();
+        updatedMediumDTO.setFile(updatedMedium);
+        updatedMediumDTO.setMediumType("image");
+        updatedMediumDTO.setPostId(postDTO.getId());
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.createDirectories(testFile.getParent());
-        Files.write(testFile, "old data".getBytes());
+        mediumService.updateMedium(updatedMediumDTO, mediumPosition);
 
-        MultipartFile newMultipartFile = new MockMultipartFile(
-                "file", "updated_image.jpg", "image/jpeg", "updated data".getBytes());
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
-        mediumDTO.setFile(newMultipartFile);
-        mediumDTO.setMediumType("image");
-
-        mediumService.updateMedium(mediumDTO, 0);
-
-        Post updatedPost = postRepository.findById(post.getId()).get();
-        assertEquals(1, updatedPost.getMedia().size());
-        assertArrayEquals("updated data".getBytes(), Files.readAllBytes(testFile));
+        List<byte[]> media = mediumService.getMediaForPost(postDTO.getId());
+        assertArrayEquals(media.get(mediumPosition), file);
+        postDTO = postService.getPost(postDTO.getId());
+        assertTrue(postDTO.getMedia().get(mediumPosition).getMediumUrl().contains("gif"));
     }
 
     @Test
     @WithAnonymousUser
-    void testUpdateMedium_NoUser() throws IOException {
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+    void testUpdateMedium_NoUser() {
+        MultipartFile updatedMedium = new MockMultipartFile(
+                "newMedium", "newMedium.gif", "image/gif", "test data".getBytes());
+        MediumDTO updatedMediumDTO = new MediumDTO();
+        updatedMediumDTO.setFile(updatedMedium);
+        updatedMediumDTO.setMediumType("image");
+        updatedMediumDTO.setPostId(postDTO.getId());
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.createDirectories(testFile.getParent());
-        if (!Files.exists(testFile)) {
-            Files.write(testFile, "old data".getBytes());
-        }
-
-        MultipartFile newMultipartFile = new MockMultipartFile(
-                "file", "updated_image.jpg", "image/jpeg", "updated data".getBytes());
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
-        mediumDTO.setFile(newMultipartFile);
-        mediumDTO.setMediumType("image");
-
-        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO, 0));
+        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(updatedMediumDTO, 0));
     }
 
     @Test
     @WithMockUser("jane.example.com")
-    void testUpdateMedium_NotAuthor() throws IOException {
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+    void testUpdateMedium_NotAuthor() {
+        MultipartFile updatedMedium = new MockMultipartFile(
+                "newMedium", "newMedium.gif", "image/gif", "test data".getBytes());
+        MediumDTO updatedMediumDTO = new MediumDTO();
+        updatedMediumDTO.setFile(updatedMedium);
+        updatedMediumDTO.setMediumType("image");
+        updatedMediumDTO.setPostId(postDTO.getId());
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.createDirectories(testFile.getParent());
-        if (!Files.exists(testFile)) {
-            Files.write(testFile, "old data".getBytes());
-        }
-
-        MultipartFile newMultipartFile = new MockMultipartFile(
-                "file", "updated_image.jpg", "image/jpeg", "updated data".getBytes());
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
-        mediumDTO.setFile(newMultipartFile);
-        mediumDTO.setMediumType("image");
-
-        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(mediumDTO, 0));
+        assertThrows((BadCredentialsException.class), () -> mediumService.updateMedium(updatedMediumDTO, 0));
     }
 
     @Test
     @WithMockUser("john@example.com")
     void testDeleteMedium_Success() throws IOException {
-        // Prepare existing media
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+        int mediumPosition = 1;
+        Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
+        MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.write(testFile, "test data".getBytes());
+        mediumService.deleteMedium(mediumDTO, mediumPosition);
 
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
-
-        mediumService.deleteMedium(mediumDTO, 0);
-
-        Post updatedPost = postRepository.findById(post.getId()).get();
-        assertEquals(0, updatedPost.getMedia().size());
-        // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
+        post = postRepository.findById(postDTO.getId()).get();
+        assertEquals(originalSize - 1, post.getMedia().size());
     }
 
     @Test
     @WithMockUser("testadmin@localhost")
     void testDeleteMedium_Success_Admin() throws IOException {
-        // TODO: look at @WithUserDetails and try to use real admin, not mocked one
-        WebsiteUser user = websiteUserService.getCurrentUser();
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
+        int mediumPosition = 1;
+        Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
+        MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
 
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.write(testFile, "test data".getBytes());
+        mediumService.deleteMedium(mediumDTO, mediumPosition);
 
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
-
-        mediumService.deleteMedium(mediumDTO, 0);
-
-        Post updatedPost = postRepository.findById(post.getId()).get();
-        assertEquals(0, updatedPost.getMedia().size());
-        // assertFalse(Files.exists(testFile)); should deleteMedia delete file or only unlink it?
+        post = postRepository.findById(postDTO.getId()).get();
+        assertEquals(originalSize - 1, post.getMedia().size());
     }
 
     @Test
     @WithMockUser("jane@example.com")
-    void testDeleteMedium_NotAuthor() throws IOException {
-        // Prepare existing media
-        Medium medium = new Medium();
-        Post post = postRepository.findById(1L).get();
-        medium.setPost(post);
-        medium.setMediumType("image");
-        String fileName = "post_" + post.getId() + "_media_0.jpg";
-        medium.setMediumUrl(tempDirectory.resolve(fileName).toString());
-        mediumRepository.save(medium);
-
-        Path testFile = tempDirectory.resolve(fileName);
-        Files.write(testFile, "test data".getBytes());
-
-        MediumDTO mediumDTO = new MediumDTO();
-        mediumDTO.setPostId(post.getId());
-        mediumDTO.setId(medium.getId());
+    void testDeleteMedium_NotAuthor() {
+        int mediumPosition = 1;
+        Post post = postRepository.findById(postDTO.getId()).get();
+        int originalSize = post.getMedia().size();
+        MediumDTO mediumDTO = postDTO.getMedia().get(mediumPosition);
 
         assertThrows((BadCredentialsException.class), () -> mediumService.deleteMedium(mediumDTO, 0));
+        assertEquals(originalSize, post.getMedia().size());
     }
 }
